@@ -1,5 +1,5 @@
 ## 💻Part
-- [ ] Android
+- [ ] Frontend
 - [ ] Backend
 
 ## 📝작업 설명
