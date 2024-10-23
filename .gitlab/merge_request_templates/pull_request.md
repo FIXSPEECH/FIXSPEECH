@@ -2,7 +2,7 @@
 
 ## 🖥️ Part
 
-- [ ] Android
+- [ ] Frontend
 
 - [ ] Backend
 
