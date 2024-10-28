@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, AxiosError, Axios } from 'axios'
+import axios, { AxiosResponse, AxiosError } from 'axios'
 
 
 // axios 인스턴스 생성

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate, Navigate } from "react-router-dom";
+import Header from './components/Header/Header'
 import Login from './pages/user/Login';
 import MainPage from './pages/MainPage/MainPage'
 import AccessPage from './pages/user/AccessPage'
@@ -22,6 +23,7 @@ function AppWrapper() {
 
   return (
     <>
+    <Header/>
       <Routes>
         <Route path='/' element={<Login/>}/>
         <Route path='/user/regist/information' element={<AccessPage/>}/>

@@ -1,6 +1,10 @@
+import Buttons from '../../components/MainPage/Buttons'
+
 function MainPage() {
     return (
-        <div>메인페이지..</div>
+        <>
+            <Buttons/>
+        </>
     )
 }
 
