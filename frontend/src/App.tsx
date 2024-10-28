@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate, Navigate } from "react-router-dom";
+import Login from './pages/user/Login';
+import MainPage from './pages/MainPage/MainPage'
+import AccessPage from './pages/user/AccessPage'
 
-function App() {
-  const [count, setCount] = useState(0)
+function AppWrapper() {
+  // const navigate = useNavigate();
+  // const location = useLocation();
+
+  // useEffect(() => {
+  //   const accessToken = sessionStorage.getItem("accessToken");
+
+  //   // 인증이 필요 없는 경로 리스트
+  //   const publicPaths = ["/user/login", "/user/signUp", "/introduce"];
+
+  //   // 현재 경로가 인증이 필요 없는 경로가 아닌데, 토큰이 없으면 로그인 페이지로 이동
+  //   if (!accessToken && !publicPaths.includes(location.pathname)) {
+  //     navigate("/introduce");
+  //   }
+  // }, [location, navigate]);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Routes>
+        <Route path='/' element={<Login/>}/>
+        <Route path='/user/regist/information' element={<AccessPage/>}/>
+        <Route path='/mainpage' element={<MainPage/>}/>
+      </Routes>
+   
     </>
-  )
+  );
 }
 
-export default App
+function App() {
+  return (
+    <Router>
+      <AppWrapper />
+    </Router>
+  );
+}
+
+export default App;
