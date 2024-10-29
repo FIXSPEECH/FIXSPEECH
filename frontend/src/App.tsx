@@ -1,3 +1,4 @@
+
 // import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import Header from './components/Header/Header'
@@ -34,9 +35,11 @@ function AppWrapper() {
         <Route path='/voice/analysis' element={<VoiceAnalysis/>} />
       </Routes>
    
+
     </>
   );
 }
+
 
 function App() {
   return (
@@ -47,3 +50,4 @@ function App() {
 }
 
 export default App;
+
