@@ -10,12 +10,15 @@ const axiosInstance = axios.create({
 });
 
 
+
 // axios 인터셉터 => Access Token 재발급
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
     function(config){
+        // 엑세스 토큰을 로컬 스토리지에서 가져온다.
         const token = localStorage.getItem('authorization')
 
+        // 토큰이 있으면 토큰을 넣어서 api 요청을 보냄
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`
         }
@@ -36,7 +39,7 @@ axiosInstance.interceptors.response.use(
     async (error: AxiosError) => {
         if(error.response?.status === 401) {
             try{
-                // 로컬스토리에 저장된 엑세스 토큰 갱신
+                // 로컬스토리지에 저장된 엑세스 토큰 갱신
                 await tokenRefresh();
 
                 const accessToken = localStorage.getItem('authorization')
@@ -56,12 +59,14 @@ axiosInstance.interceptors.response.use(
 )
 
 
+// 리프레쉬 토큰으로 엑세스 토큰 재발급 요청
 const tokenRefresh = async() => {
     try {
         const response = await axiosInstance.post(
             '/api/oauth/get-user-token',
         )
 
+        // 재발급 엑세스 토큰
         const newAccessToken = response.headers.authorization.replace( /^Bearer\s+/, '');
         
         if (!newAccessToken) {
@@ -80,6 +85,7 @@ const tokenRefresh = async() => {
 
 // 로그아웃
 const Logout = async() => {
+
     localStorage.removeItem('authorization');
     window.location.replace('/');
     

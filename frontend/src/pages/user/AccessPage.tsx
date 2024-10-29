@@ -7,7 +7,7 @@ function Access() {
 
     useEffect(()=> {
         const queryParams = new URLSearchParams(window.location.search);
-        const token = queryParams.get('token'); // 쿼리 문자열에서 토큰 가져오기
+        const token = queryParams.get('accessToken'); // 쿼리 문자열에서 토큰 가져오기
         
         
         if (token) {
