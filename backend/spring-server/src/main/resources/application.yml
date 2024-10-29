@@ -41,7 +41,13 @@ jwt:
   refresh-token:
     expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
   oauth:
-    sign-up:
-      expiration: ${OAUTH_SIGN_UP_EXPIRATION}
+    access-token:
+      expiration: ${JWT_OAUTH_ACCESS_TOKEN_EXPIRATION}
+    refresh-token:
+      expiration: ${JWT_OAUTH_REFRESH_TOKEN_EXPIRATION}
 frontend:
   url: ${FRONTEND_URL}
+
+cors:
+  allowed-origin: ${CORS_ALLOWED_ORIGIN}
+  allowed-methods: ${CORS_ALLOWED_METHODS}
