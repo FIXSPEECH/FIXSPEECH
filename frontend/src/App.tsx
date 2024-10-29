@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+// import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate, Navigate } from "react-router-dom";
 import Header from './components/Header/Header'
 import Login from './pages/user/Login';
 import MainPage from './pages/MainPage/MainPage'
 import AccessPage from './pages/user/AccessPage'
+import VoiceAnalysis from "./pages/user/VoiceAnalysis";
 
 function AppWrapper() {
   // const navigate = useNavigate();
@@ -30,6 +31,7 @@ function AppWrapper() {
         <Route path='/' element={<Login/>}/>
         <Route path='/user/regist/information' element={<AccessPage/>}/>
         <Route path='/mainpage' element={<MainPage/>}/>
+        <Route path='/voice/analysis' element={<VoiceAnalysis/>} />
       </Routes>
    
     </>

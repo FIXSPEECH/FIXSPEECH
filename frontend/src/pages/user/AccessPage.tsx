@@ -20,7 +20,7 @@ function Access() {
         
         setLogin(!!token)
         
-        window.location.replace('/mainpage');
+        window.location.replace('/voice/analysis');
 
 
         }, [setLogin])
