@@ -7,7 +7,9 @@ import AccessPage from './pages/user/AccessPage'
 
 function AppWrapper() {
   // const navigate = useNavigate();
-  // const location = useLocation();
+  const location = useLocation();
+
+  const hiddenHeaderRoutes = ['/', '/user/regist/information'];
 
   // useEffect(() => {
   //   const accessToken = sessionStorage.getItem("accessToken");
@@ -23,7 +25,7 @@ function AppWrapper() {
 
   return (
     <>
-    <Header/>
+    {!hiddenHeaderRoutes.includes(location.pathname) && <Header />}
       <Routes>
         <Route path='/' element={<Login/>}/>
         <Route path='/user/regist/information' element={<AccessPage/>}/>
