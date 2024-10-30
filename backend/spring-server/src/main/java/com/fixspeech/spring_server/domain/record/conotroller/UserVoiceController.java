@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class UserVoiceController {
 	private final S3Service s3Service;
 	private final UserVoiceServiceImpl userVoiceService;
+
 	@PostMapping
 	public CommonResponse<?> upload(
 		@RequestPart(value = "record", required = false) MultipartFile file,
@@ -30,12 +31,13 @@ public class UserVoiceController {
 			String fileUrl = s3Service.upload(file);
 			userVoiceRequestDto.setUserVoiceName(fileUrl);
 			userVoiceService.saveImage(userVoiceRequestDto);
+			//fastapi보내기 추가, file 그대로 보내기
+
 			return CommonResponse.success(userVoiceRequestDto, "사용자 녹음 파일 업로드 성공");
 
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
 		}
 	}
-
 
 }
