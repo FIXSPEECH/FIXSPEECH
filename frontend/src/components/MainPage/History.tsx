@@ -1,26 +1,50 @@
-// import CalendarHeatmap from 'react-calendar-heatmap';
+import { useEffect } from 'react';
+import CalHeatmap from 'cal-heatmap';
+import 'cal-heatmap/cal-heatmap.css';
 
 function History(){
 
-    // const cal: CalendarHeatmap = new CalendarHeatmap();
-
-    // cal.init({
-    //     itemSelector: '#heatmap',
-    //     domain: 'month',
-    //     subDomain: 'x',
-    //     range: 3, // 3개월 범위
-    //     data: {
-    //       // 데이터 로드
-    //       '2024-10-01': 1,
-    //       '2024-10-02': 2,
-    //       '2024-10-03': 3,
-    //     },
-    //     // 추가 설정...
-    //   });
+    const data = {
+        "2024-10-01": 3,
+        "2024-10-02": 6,
+    };
+      
     
+    useEffect(() => {
+        const startDate = new Date(new Date().setMonth(new Date().getMonth() - 4)); // 4개월 전
+        console.log("Start Date:", startDate); // 시작 날짜 출력
+        
+        const cal = new CalHeatmap();      
+
+        cal.paint({
+            range: 5, // 범위
+            domain: { type: 'month', sort:'asc' },
+            subDomain: { type: 'day' },
+            date: {start: new Date(new Date().setMonth(new Date().getMonth() - 4))},
+            data: data,
+            scale: {
+                color: {
+                  // Try some values: Purples, Blues, Turbo, Magma, etc ...
+                  scheme: 'Cool',
+                  type: 'linear',
+                },
+              },
+        });  
+
+  
+        // 클린업 함수: 컴포넌트 언마운트 시에 실행됨
+        return () => {
+            cal.destroy(); // 필요 시 이전 인스턴스를 정리
+        };
+    }, []); // 빈 배열로 설정하여 마운트 시 한 번만 실행
+
+  
 
     return(
-        <div style={{color: 'white'}}> 잔디..</div>
+        <>
+            <div id="cal-heatmap" className='mt-4' style={{marginLeft:'3%'}}/>
+        </>
+       
     )
 }
 
