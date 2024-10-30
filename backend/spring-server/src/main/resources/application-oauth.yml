@@ -1,7 +1,7 @@
 spring:
   security:
     oauth2:
-      base-url: http://localhost:8080
+      base-url: ${OAUTH_BASE_URL}
       client:
         registration:
           kakao:
