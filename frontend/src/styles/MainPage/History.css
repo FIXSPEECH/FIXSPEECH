@@ -1,0 +1,5 @@
+/* App.css 또는 별도의 CSS 파일 */
+.custom-calendar-height svg {
+    height: 50px; /* 원하는 높이로 설정 */
+    width: 100%;
+}
