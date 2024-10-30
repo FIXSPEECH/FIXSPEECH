@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.youtube.service;
+package com.fixspeech.spring_server.domain.youtube.service;
 
 import java.io.IOException;
 import java.util.Collections;
