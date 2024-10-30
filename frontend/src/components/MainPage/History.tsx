@@ -11,9 +11,6 @@ function History(){
       
     
     useEffect(() => {
-        const startDate = new Date(new Date().setMonth(new Date().getMonth() - 4)); // 4개월 전
-        console.log("Start Date:", startDate); // 시작 날짜 출력
-        
         const cal = new CalHeatmap();      
 
         cal.paint({
