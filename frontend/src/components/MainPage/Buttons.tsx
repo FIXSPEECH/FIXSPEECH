@@ -24,10 +24,10 @@ function Buttons(){
      <Box sx={{ flexGrow: 1, marginRight:'3%', marginLeft:'3%' }}>
       <Grid container spacing={2} >
         {gridItems.map((item, index) => (
-          <Grid size={{ xs: 6, sm: 4, md: 2}} key={index} sx={{ backgroundColor: item.color, padding: 2 , borderRadius:'3%', height: 300, position:'relative'}}
+          <Grid size={{ xs: 6, sm: 4, md: 2}} key={index} sx={{ backgroundColor: item.color, padding: 2 , borderRadius:'3%', height: 300, position:'relative', overflow: 'hidden'}}
             onClick={() => navigate(item.url)}>
             <div style={{ color: 'white', fontSize: '1.5rem' , wordBreak: 'keep-all', whiteSpace: 'normal'}}>{item.label}</div>
-            <img src={item.imageSrc} alt={item.label} style={{ width: '100%', marginTop: item.imgMargin, marginLeft: 15 }} />
+            <img src={item.imageSrc} alt={item.label} style={{ width: '100%', marginTop: item.imgMargin, marginLeft: 15, objectFit: 'cover' }} />
           </Grid>
         ))}
       </Grid>
