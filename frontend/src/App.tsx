@@ -11,6 +11,9 @@ import MainPage from "./pages/MainPage/MainPage";
 import AccessPage from "./pages/user/AccessPage";
 import VoiceAnalysis from "./pages/user/VoiceAnalysis";
 import TestPage from "./pages/TestPage";
+import PracticeSelect from "./pages/PronouncePractice/PracticeSelect";
+import PracticePronouce from "./pages/PronouncePractice/PracticePronouce";
+
 function AppWrapper() {
   // const navigate = useNavigate();
   const location = useLocation();
@@ -38,6 +41,8 @@ function AppWrapper() {
         <Route path="/mainpage" element={<MainPage />} />
         <Route path="/voice/analysis" element={<VoiceAnalysis />} />
         <Route path="/testpage" element={<TestPage />} />
+        <Route path="/pronounce/practice/select" element={<PracticeSelect />} />
+        <Route path="/pronounce/practice" element={<PracticePronouce />} />
       </Routes>
     </>
   );
