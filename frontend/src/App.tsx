@@ -10,7 +10,7 @@ import Login from "./pages/user/Login";
 import MainPage from "./pages/MainPage/MainPage";
 import AccessPage from "./pages/user/AccessPage";
 import VoiceAnalysis from "./pages/user/VoiceAnalysis";
-
+import TestPage from "./pages/TestPage";
 function AppWrapper() {
   // const navigate = useNavigate();
   const location = useLocation();
@@ -33,10 +33,11 @@ function AppWrapper() {
     <>
       {!hiddenHeaderRoutes.includes(location.pathname) && <Header />}
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/user/regist/information" element={<AccessPage />} />
-        <Route path="/" element={<MainPage />} />
+        <Route path="/mainpage" element={<MainPage />} />
         <Route path="/voice/analysis" element={<VoiceAnalysis />} />
+        <Route path="/testpage" element={<TestPage />} />
       </Routes>
     </>
   );
