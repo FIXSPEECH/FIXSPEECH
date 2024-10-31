@@ -62,9 +62,8 @@ def getAMR(y, sr):
 
     return times, amr
 
-def getJitterAndShimmerVoiced(sound):
-    # 여성 음성을 위한 주파수 범위 설정 (100Hz ~ 600Hz)
-    point_process = call(sound, "To PointProcess (periodic, cc)", 100, 600)
+def getJitter(sound):
+    point_process = call(sound, "To PointProcess (periodic, cc)", 75, 600)
     
     # 유성 구간을 추출할 때 필요한 모든 매개변수를 지정
     try:
@@ -76,7 +75,7 @@ def getJitterAndShimmerVoiced(sound):
         return float('nan'), float('nan')
     
     total_jitter = 0
-    total_shimmer = 0
+    # total_shimmer = 0
     count = 0
 
     # 각 유성 구간에 대해 Jitter와 Shimmer를 계산
@@ -89,26 +88,27 @@ def getJitterAndShimmerVoiced(sound):
             jitter = call(point_process, "Get jitter (local)", start_time, end_time, 0.0001, 0.04, 1.3)
             
             # Shimmer를 다른 함수 방식으로 계산 (예: Get shimmer (apq3))
-            shimmer = call([sound, point_process], "Get shimmer (apq3)", start_time, end_time, 0.0001, 0.04, 1.3, 1.0)
+            # shimmer = call([sound, point_process], "Get shimmer (apq3)", start_time, end_time, 0.0001, 0.04, 1.3, 1.0)
             
             # 각 구간의 Jitter와 Shimmer 값 확인
-            print(f"Interval {interval_index + 1}: Start = {start_time}, End = {end_time}, Jitter = {jitter}, Shimmer = {shimmer}")
+            # print(f"Interval {interval_index + 1}: Start = {start_time}, End = {end_time}, Jitter = {jitter}")
+            # print(f"Interval {interval_index + 1}: Start = {start_time}, End = {end_time}, Jitter = {jitter}, Shimmer = {shimmer}")
             
             # 유효한 Jitter와 Shimmer 값일 때만 누적
             if jitter is not None and not (jitter != jitter):  # NaN 체크
                 total_jitter += jitter
                 count += 1
-            if shimmer is not None and not (shimmer != shimmer):  # NaN 체크
-                total_shimmer += shimmer
+            # if shimmer is not None and not (shimmer != shimmer):  # NaN 체크
+            #     total_shimmer += shimmer
 
     # 평균 Jitter와 Shimmer 계산
     avg_jitter = total_jitter / count if count > 0 else float('nan')
-    avg_shimmer = total_shimmer / count if count > 0 else float('nan')
+    # avg_shimmer = total_shimmer / count if count > 0 else float('nan')
 
     print(f"Average Jitter (Voiced): {avg_jitter}")
-    print(f"Average Shimmer (Voiced): {avg_shimmer}")
+    # print(f"Average Shimmer (Voiced): {avg_shimmer}")
 
-    return avg_jitter, avg_shimmer
+    return avg_jitter
 
 def getMel(y, sr, voiced_flag):
     mel_spectrogram = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
@@ -157,7 +157,7 @@ def calculate_metrics(file):
     times_hnr, hnr_values, mean_hnr = getHNR(sound)
     times_spectral_slope, spectral_slope = getSpectralSlope(y, sr, voiced_flag)
     times_amr, amr = getAMR(y, sr)
-    jitter, shimmer = getJitterAndShimmer(sound)
+    jitter = getJitter(sound)
     times_mel, mel_spectrogram_db, mfcc = getMel(y, sr, voiced_flag)
 
     # Calculate combined rate variability
@@ -177,7 +177,6 @@ def calculate_metrics(file):
         '휴지 타이밍(Pause Timing)': np.mean(np.diff(times_f0[~voiced_flag[:len(times_f0)]])),
         '속도 변동성(Rate Variability)': rate_variability,
         '성대 떨림(Jitter)': jitter,
-        '강도 변동성(Shimmer)': shimmer,
         '강도 변동성(AMR)': np.std(amr),
         '발화의 에너지(Utterance Energy)': utterance_energy
     }
@@ -185,12 +184,6 @@ def calculate_metrics(file):
     return metrics
 
 # Example usage
-# metrics = calculate_metrics('longsample.wav')
-# for key, value in metrics.items():
-#     print(f"{key}: {value}")
-
-y, sr = load_audio('longsample.wav')
-sound = load_sound('longsample.wav')
-getJitterAndShimmerVoiced(sound)
-
-
+metrics = calculate_metrics('longsample.wav')
+for key, value in metrics.items():
+    print(f"{key}: {value}")
