@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "gen-pwa": "pwa-assets-generator --preset minimal public/logo.svg"
+    "gen-pwa": "pwa-assets-generator --preset minimal public/icons/logo.svg"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
