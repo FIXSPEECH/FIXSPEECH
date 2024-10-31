@@ -33,9 +33,9 @@ function AppWrapper() {
     <>
       {!hiddenHeaderRoutes.includes(location.pathname) && <Header />}
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/user/regist/information" element={<AccessPage />} />
-        <Route path="/mainpage" element={<MainPage />} />
+        <Route path="/" element={<MainPage />} />
         <Route path="/voice/analysis" element={<VoiceAnalysis />} />
         <Route path="/testpage" element={<TestPage />} />
       </Routes>
