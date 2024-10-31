@@ -1,16 +1,21 @@
 // import React, { useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
-import Header from './components/Header/Header'
-import Login from './pages/user/Login';
-import MainPage from './pages/MainPage/MainPage'
-import AccessPage from './pages/user/AccessPage'
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
+import Header from "./components/Header/Header";
+import Login from "./pages/user/Login";
+import MainPage from "./pages/MainPage/MainPage";
+import AccessPage from "./pages/user/AccessPage";
 import VoiceAnalysis from "./pages/user/VoiceAnalysis";
 
 function AppWrapper() {
   // const navigate = useNavigate();
   const location = useLocation();
 
-  const hiddenHeaderRoutes = ['/', '/user/regist/information'];
+  const hiddenHeaderRoutes = ["/", "/user/regist/information"];
 
   // useEffect(() => {
   //   const accessToken = sessionStorage.getItem("accessToken");
@@ -26,19 +31,16 @@ function AppWrapper() {
 
   return (
     <>
-    {!hiddenHeaderRoutes.includes(location.pathname) && <Header />}
+      {!hiddenHeaderRoutes.includes(location.pathname) && <Header />}
       <Routes>
-        <Route path='/' element={<Login/>}/>
-        <Route path='/user/regist/information' element={<AccessPage/>}/>
-        <Route path='/mainpage' element={<MainPage/>}/>
-        <Route path='/voice/analysis' element={<VoiceAnalysis/>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/user/regist/information" element={<AccessPage />} />
+        <Route path="/" element={<MainPage />} />
+        <Route path="/voice/analysis" element={<VoiceAnalysis />} />
       </Routes>
-   
-
     </>
   );
 }
-
 
 function App() {
   return (
@@ -49,4 +51,3 @@ function App() {
 }
 
 export default App;
-
