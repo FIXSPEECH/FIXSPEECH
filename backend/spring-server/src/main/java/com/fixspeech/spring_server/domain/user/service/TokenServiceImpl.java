@@ -47,27 +47,34 @@ public class TokenServiceImpl implements TokenService {
 
 	/**
 	 * OAuth 토큰 재발급
-	 * @param refreshToken
+	 * @param accessToken
 	 * @return
 	 */
 	@Override
-	public ResponseRefreshTokenDTO reissueOAuthToken(String refreshToken) {
-		if (jwtTokenProvider.validateToken(refreshToken)) {
-			String email = jwtTokenProvider.getClaims(refreshToken).get("email", String.class);
+	public ResponseRefreshTokenDTO reissueOAuthToken(String accessToken) {
+		if (jwtTokenProvider.validateToken(accessToken)) {
+			String email = jwtTokenProvider.getClaims(accessToken).get("email", String.class);
+			String name = jwtTokenProvider.getClaims(accessToken).get("name", String.class);
 			log.info("refreshToken.email={}", email);
-			OAuthRefreshToken storedToken = oAuthRefreshRepository.findById(email)
-				.orElseThrow(() -> new IllegalArgumentException("Refresh Token not found"));
 
-			if (storedToken.getToken().equals(refreshToken)) {
+			// accessToken을 들고 탐색 ->
+			// 만료시 reefreshTokenRepository의 db를 확인해 보고 현재 사용자의 이메일이 없으면 null
+			OAuthRefreshToken storedRefreshToken = oAuthRefreshRepository.findById(email)
+				.orElseThrow(() -> new IllegalArgumentException("Refresh Token not found"));
+			log.info("storedRefreshToken={}", storedRefreshToken);
+			if (jwtTokenProvider.validateToken(storedRefreshToken.getToken())) {
+				log.info("delete Token by email");
 				oAuthRefreshRepository.deleteById(email);
 
-				String newAccessToken = jwtTokenProvider.generateAccessToken(email, "");
-				String newRefreshToken = jwtTokenProvider.generateRefreshToken(email, "");
+				// accessToken 만료 시키기
+				log.info("generate Token");
+				String newAccessToken = jwtTokenProvider.generateAccessToken(email, name);
+				String newRefreshToken = jwtTokenProvider.generateRefreshToken(email, name);
 				OAuthRefreshToken newRt = new OAuthRefreshToken(email, newRefreshToken);
 				// jwtTokenProvider.getRefreshTokenExpiration());
-				log.info("1");
+				log.info("test");
 				oAuthRefreshRepository.save(newRt);
-
+				log.info("test end");
 				return new ResponseRefreshTokenDTO(newAccessToken, newRefreshToken);
 			}
 		}
