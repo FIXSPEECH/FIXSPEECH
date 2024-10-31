@@ -36,7 +36,7 @@ def getHNR(sound):
 
     clean_hnr_values = [value for value in hnr_values if not np.isnan(value) and value > 0]
     mean_hnr = np.mean(clean_hnr_values) if clean_hnr_values else 0
-    print(f"Filtered Average HNR: {mean_hnr:.2f} dB")
+    # print(f"Filtered Average HNR: {mean_hnr:.2f} dB")
 
     return times, hnr_values, mean_hnr
 
@@ -105,7 +105,7 @@ def getJitter(sound):
     avg_jitter = total_jitter / count if count > 0 else float('nan')
     # avg_shimmer = total_shimmer / count if count > 0 else float('nan')
 
-    print(f"Average Jitter (Voiced): {avg_jitter}")
+    # print(f"Average Jitter (Voiced): {avg_jitter}")
     # print(f"Average Shimmer (Voiced): {avg_shimmer}")
 
     return avg_jitter
