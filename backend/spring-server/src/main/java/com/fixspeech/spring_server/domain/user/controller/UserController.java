@@ -54,8 +54,8 @@ public class UserController {
 		@RequestPart(value = "registUserDto") RequestRegisterDTO requestDto) {
 		try {
 			log.info("requestDto: {}", requestDto);
-			String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
-			requestDto.setPassword(encodedPassword);
+			// String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+			// requestDto.setPassword(encodedPassword);
 
 			if (profileImageFile != null) {
 				// s3 저장 로직
@@ -103,41 +103,28 @@ public class UserController {
 	}
 
 	/**
-	 * AccessToken 재발급
-	 * @param refreshToken
+	 * Token 재발급
 	 * @param response
 	 * @return
 	 */
 	@PostMapping("/public/accessToken")
 	public ResponseEntity<?> reissueToken(
-		@CookieValue(name = "accessToken", required = false) String refreshToken,
+		HttpServletRequest httpServletRequest,
 		HttpServletResponse response) {
-		log.info("refreshToken = {}", refreshToken);
+		String accessToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
+		log.info("accessToken = {}", accessToken);
 		try {
-			if (refreshToken == null || refreshToken.isEmpty()) {
+			if (accessToken == null || accessToken.isEmpty()) {
 				return new ResponseEntity<>("올바르지 않은 토큰", HttpStatus.BAD_REQUEST);
 			}
 
-			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
+			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(accessToken);
 			log.info("responseDTO={}", responseDTO);
 			if (responseDTO == null) {
 				throw new IllegalArgumentException("Refresh Token이 만료되었거나 존재하지 않습니다.");
 			}
-			String accessToken = responseDTO.getAccessToken();
-			String newRefreshToken = responseDTO.getRefreshToken();
-
-			ResponseCookie responseCookie = ResponseCookie.from("refreshToken", newRefreshToken)
-				.httpOnly(true)
-				.secure(true)
-				.maxAge(60 * 60 * 24 * 14)
-				.path("/")
-				.sameSite("None")
-				.domain("test")
-				.build();
-
-			response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
-			response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-			return new ResponseEntity<>("Refresh Token을 통한 AccessToken 재발급 성공", HttpStatus.OK);
+			String newAccessToken = responseDTO.getAccessToken();
+			return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
 		} catch (Exception e) {
 			log.info("e={}", e);
 			return null;

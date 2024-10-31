@@ -33,9 +33,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 		List<GrantedAuthority> authorities = Collections.singletonList(
 			new SimpleGrantedAuthority(users.getRole().toString()));
 		log.info("users.getEmail={}", users.getEmail());
-		log.info("users.getPassword={}", users.getPassword());
 		log.info("authorities={}", authorities);
 
-		return new User(users.getEmail(), users.getPassword(), authorities);
+		return new User(users.getEmail(), "", authorities);
 	}
 }

@@ -77,20 +77,20 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 					.path("/user/regist/information?accessToken=" + accessToken)
 					.build().toUriString();
 				log.info(targetUrl);
-				ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
-					.httpOnly(true)
-					.maxAge(60 * 60 * 24 * 14) // 쿠키 만료 시간
-					.path("/")
-					.secure(true)
-					.sameSite("None")
-					.domain("test")
-					.build();
-				log.info("responseCookie={}", responseCookie);
-				response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+				// ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
+				// 	.httpOnly(true)
+				// 	.maxAge(60 * 60 * 24 * 14) // 쿠키 만료 시간
+				// 	.path("/")
+				// 	.secure(true)
+				// 	.sameSite("None")
+				// 	.domain("test")
+				// 	.build();
+				// log.info("responseCookie={}", responseCookie);
+				// response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 			}
 		}
 		log.info("Success End");
-		// getRedirectStrategy().sendRedirect(request, response, targetUrl);
+		getRedirectStrategy().sendRedirect(request, response, targetUrl);
 	}
 
 	private String determineProviderType(HttpServletRequest request) {

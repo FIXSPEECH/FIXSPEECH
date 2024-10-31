@@ -1,23 +1,14 @@
 package com.fixspeech.spring_server.domain.user.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 @RequestMapping
 public class PageController {
-
-	@GetMapping("/ty")
-	public String ty() {
-		return "ty";
+	@GetMapping("/login")
+	public String loginPage() {
+		return "login";
 	}
-
-	@GetMapping("/test")
-	public String test() {
-		return "test";
-	}
-
-	//	@GetMapping()
-	//	public String
 }
