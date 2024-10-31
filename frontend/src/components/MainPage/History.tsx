@@ -1,48 +1,24 @@
-import { useEffect } from 'react';
-import CalHeatmap from 'cal-heatmap';
-import 'cal-heatmap/cal-heatmap.css';
+// @ts-ignore
+import CalendarHeatmap from 'react-calendar-heatmap';
+import '../../styles/MainPage/History.css';
+import { useState, useEffect } from 'react';
 
-function History(){
-
-    const data = {
-        "2024-10-01": 3,
-        "2024-10-02": 6,
-    };
-      
-    
-    useEffect(() => {
-        const cal = new CalHeatmap();      
-
-        cal.paint({
-            range: 5, // 범위
-            domain: { type: 'month', sort:'asc' },
-            subDomain: { type: 'day' },
-            date: {start: new Date(new Date().setMonth(new Date().getMonth() - 4))},
-            data: data,
-            scale: {
-                color: {
-                  // Try some values: Purples, Blues, Turbo, Magma, etc ...
-                  scheme: 'Cool',
-                  type: 'linear',
-                },
-              },
-        });  
-
-  
-        // 클린업 함수: 컴포넌트 언마운트 시에 실행됨
-        return () => {
-            cal.destroy(); // 필요 시 이전 인스턴스를 정리
-        };
-    }, []); // 빈 배열로 설정하여 마운트 시 한 번만 실행
-
-  
-
-    return(
-        <>
-            <div id="cal-heatmap" className='mt-4' style={{marginLeft:'3%'}}/>
-        </>
-       
-    )
+function History() {
+    return (
+        <div style={{ marginLeft: '3%', marginRight:'3%' }} className='mt-5 mb-10'>
+            <CalendarHeatmap
+                startDate={new Date(new Date().setMonth(new Date().getMonth() - 4))}
+                endDate={new Date(new Date().setMonth(new Date().getMonth()))}
+                values={[
+                    { date: '2024-08-01', count: 1 },
+                    { date: '2024-09-22', count: 2 },
+                    { date: '2024-10-30', count: 4 },
+                    // ...and so on
+                ]}
+                onClick={(value: any) => alert(`Clicked on value with count: ${value.count}`)}
+            />
+        </div>
+    );
 }
 
 export default History;

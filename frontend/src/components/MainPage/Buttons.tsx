@@ -21,7 +21,7 @@ function Buttons(){
       ];
 
     return (
-     <Box sx={{ flexGrow: 1, marginRight:'3%', marginLeft:'3%' }}>
+     <Box sx={{ flexGrow: 1, marginRight:'3%', marginLeft:'3%', marginBottom:'3%' }}>
       <Grid container spacing={2} >
         {gridItems.map((item, index) => (
           <Grid size={{ xs: 6, sm: 4, md: 2}} key={index} sx={{ backgroundColor: item.color, padding: 2 , borderRadius:'3%', height: 300, position:'relative', overflow: 'hidden'}}
