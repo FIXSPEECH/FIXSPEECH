@@ -20,11 +20,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.cors.CorsConfiguration;
 
 import com.fixspeech.spring_server.common.JwtTokenProvider;
+import com.fixspeech.spring_server.filter.JwtAuthenticationFilter;
 import com.fixspeech.spring_server.oauth.service.CustomOAuth2UserService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,9 +61,9 @@ public class SecurityConfig {
 			}))
 			.csrf(AbstractHttpConfigurer::disable)
 			// 인증 필터 수행
-			// .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests(requests -> requests
-				// .requestMatchers("**/**", "/login", "/login/**", "/api/user", "/api/oauth/public/**",
+				// .requestMatchers("/login", "/login/**", "/api/user", "/api/oauth/public/**",
 				// 	"/api/user/public/**")
 				.requestMatchers("*/*", "*", "**", "**/**")
 				.permitAll()
@@ -71,7 +75,19 @@ public class SecurityConfig {
 				.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
 				.successHandler(oAuth2AuthenticationSuccessHandler)
 			)
-			.formLogin(AbstractHttpConfigurer::disable);
+			.formLogin(AbstractHttpConfigurer::disable)
+			.exceptionHandling(exception -> exception
+				.authenticationEntryPoint((request, response, authException) -> {
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+					response.setContentType("application/json");
+					response.getWriter().write("{\"error\": \"Unauthorized access\"}");
+				})
+				.accessDeniedHandler((request, response, accessDeniedException) -> {
+					response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+					response.setContentType("application/json");
+					response.getWriter().write("{\"error\": \"Access Denied\"}");
+				})
+			);
 		// .exceptionHandling(exception -> exception
 		// 	.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
 		// 	.accessDeniedHandler(new CustomAccessDeniedHandler())

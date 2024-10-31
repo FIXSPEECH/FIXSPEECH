@@ -14,8 +14,6 @@ import lombok.Setter;
 public class RequestRegisterDTO {
 	private String userName;
 	private String gender;
-	@Setter
-	private String password;
 	private String nickName;
 	private String email;
 	private Integer age;
@@ -28,7 +26,6 @@ public class RequestRegisterDTO {
 		return Users.builder()
 			.name(userName)
 			.gender(gender)
-			.password(password)
 			.nickName(nickName)
 			.email(email)
 			.age(age)
