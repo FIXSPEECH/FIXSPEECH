@@ -4,21 +4,26 @@ import matplotlib.pyplot as plt
 import parselmouth
 from parselmouth.praat import call
 
+
 def load_audio(file):
     y, sr = librosa.load(file)
     return y, sr
 
+
 def load_sound(file):
     return parselmouth.Sound(file)
 
+
 def getFundamentalFrequency(y, sr):
-    f0, voiced_flag, voiced_probs = librosa.pyin(y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
+    f0, voiced_flag, voiced_probs = librosa.pyin(
+        y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
     times = librosa.times_like(f0, sr=sr)
 
     # Extract voiced F0 values
     voiced_f0 = f0[voiced_flag]
     voiced_times = times[voiced_flag]
     return voiced_times, voiced_f0, voiced_flag
+
 
 def getFormants(sound):
     formant = call(sound, "To Formant (burg)", 0.025, 5, 5500, 0.025, 50)
@@ -29,16 +34,19 @@ def getFormants(sound):
 
     return times, f1_values, f2_values, f3_values
 
+
 def getHNR(sound):
     hnr = call(sound, "To Harmonicity (cc)", 0.01, 75, 0.1, 1.0)
     times = np.arange(0, sound.duration, 0.01)
     hnr_values = [hnr.get_value(t) for t in times]
 
-    clean_hnr_values = [value for value in hnr_values if not np.isnan(value) and value > 0]
+    clean_hnr_values = [
+        value for value in hnr_values if not np.isnan(value) and value > 0]
     mean_hnr = np.mean(clean_hnr_values) if clean_hnr_values else 0
     # print(f"Filtered Average HNR: {mean_hnr:.2f} dB")
 
     return times, hnr_values, mean_hnr
+
 
 def getSpectralSlope(y, sr, voiced_flag):
     # Calculate spectral centroids
@@ -55,6 +63,7 @@ def getSpectralSlope(y, sr, voiced_flag):
 
     return voiced_times, spectral_slope
 
+
 def getAMR(y, sr):
     rms = librosa.feature.rms(y=y)[0]
     amr = librosa.feature.delta(rms)
@@ -62,38 +71,44 @@ def getAMR(y, sr):
 
     return times, amr
 
+
 def getJitter(sound):
     point_process = call(sound, "To PointProcess (periodic, cc)", 75, 600)
-    
+
     # 유성 구간을 추출할 때 필요한 모든 매개변수를 지정
     try:
         # 유성 및 무성 구간을 포함한 TextGrid 생성
-        text_grid = call(sound, "To TextGrid (silences)", 100, 0.1, -25, 0.1, 0.1, "silent", "voiced")
-        num_intervals = call(text_grid, "Get number of intervals", 1)  # 1번째 tier에서 interval 수 확인
+        text_grid = call(sound, "To TextGrid (silences)", 100,
+                         0.1, -25, 0.1, 0.1, "silent", "voiced")
+        # 1번째 tier에서 interval 수 확인
+        num_intervals = call(text_grid, "Get number of intervals", 1)
     except Exception as e:
         print(f"Error creating TextGrid or retrieving intervals: {e}")
         return float('nan'), float('nan')
-    
+
     total_jitter = 0
     # total_shimmer = 0
     count = 0
 
     # 각 유성 구간에 대해 Jitter와 Shimmer를 계산
     for interval_index in range(num_intervals):
-        start_time = call(text_grid, "Get start time of interval", 1, interval_index + 1)
-        end_time = call(text_grid, "Get end time of interval", 1, interval_index + 1)
+        start_time = call(
+            text_grid, "Get start time of interval", 1, interval_index + 1)
+        end_time = call(text_grid, "Get end time of interval",
+                        1, interval_index + 1)
         label = call(text_grid, "Get label of interval", 1, interval_index + 1)
 
         if label == "voiced" and end_time - start_time >= 0.1:  # 최소 0.1초 이상인 유성 구간만 처리
-            jitter = call(point_process, "Get jitter (local)", start_time, end_time, 0.0001, 0.04, 1.3)
-            
+            jitter = call(point_process, "Get jitter (local)",
+                          start_time, end_time, 0.0001, 0.04, 1.3)
+
             # Shimmer를 다른 함수 방식으로 계산 (예: Get shimmer (apq3))
             # shimmer = call([sound, point_process], "Get shimmer (apq3)", start_time, end_time, 0.0001, 0.04, 1.3, 1.0)
-            
+
             # 각 구간의 Jitter와 Shimmer 값 확인
             # print(f"Interval {interval_index + 1}: Start = {start_time}, End = {end_time}, Jitter = {jitter}")
             # print(f"Interval {interval_index + 1}: Start = {start_time}, End = {end_time}, Jitter = {jitter}, Shimmer = {shimmer}")
-            
+
             # 유효한 Jitter와 Shimmer 값일 때만 누적
             if jitter is not None and not (jitter != jitter):  # NaN 체크
                 total_jitter += jitter
@@ -110,6 +125,7 @@ def getJitter(sound):
 
     return avg_jitter
 
+
 def getMel(y, sr, voiced_flag):
     mel_spectrogram = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
     mel_spectrogram_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
@@ -121,6 +137,7 @@ def getMel(y, sr, voiced_flag):
     times = librosa.times_like(mfcc[0], sr=sr)
 
     return times, mel_spectrogram_db, mfcc
+
 
 def calculate_combined_rate_variability(times, voiced_flag, f0, spectral_slope):
     # Extract voiced and unvoiced segments times
@@ -137,16 +154,21 @@ def calculate_combined_rate_variability(times, voiced_flag, f0, spectral_slope):
     voiced_variability_f0 = np.std(f0_changes) if len(f0_changes) > 1 else 0
 
     # Calculate variability for spectral slope for voiced segments only
-    spectral_slope_voiced = spectral_slope[:min(len(spectral_slope), len(f0_changes))]
-    voiced_variability_slope = np.std(spectral_slope_voiced) if len(spectral_slope_voiced) > 1 else 0
+    spectral_slope_voiced = spectral_slope[:min(
+        len(spectral_slope), len(f0_changes))]
+    voiced_variability_slope = np.std(spectral_slope_voiced) if len(
+        spectral_slope_voiced) > 1 else 0
 
     # Calculate variability for unvoiced segments (length consistency)
-    unvoiced_variability = np.std(unvoiced_durations) if len(unvoiced_durations) > 1 else 0
+    unvoiced_variability = np.std(unvoiced_durations) if len(
+        unvoiced_durations) > 1 else 0
 
     # Combine the variability metrics with adjusted weights
-    rate_variability = (voiced_variability_f0 * 0.5 + voiced_variability_slope * 0.1 + unvoiced_variability * 0.4)
+    rate_variability = (voiced_variability_f0 * 0.5 +
+                        voiced_variability_slope * 0.1 + unvoiced_variability * 0.4)
 
     return rate_variability
+
 
 def calculate_metrics(file):
     y, sr = load_audio(file)
@@ -161,7 +183,8 @@ def calculate_metrics(file):
     times_mel, mel_spectrogram_db, mfcc = getMel(y, sr, voiced_flag)
 
     # Calculate combined rate variability
-    rate_variability = calculate_combined_rate_variability(times_f0, voiced_flag, f0, spectral_slope)
+    rate_variability = calculate_combined_rate_variability(
+        times_f0, voiced_flag, f0, spectral_slope)
 
     # Calculate utterance energy using RMS and Mel Spectrogram with adjusted weights
     rms = librosa.feature.rms(y=y)[0]
@@ -183,7 +206,11 @@ def calculate_metrics(file):
 
     return metrics
 
+
 # Example usage
-metrics = calculate_metrics('longsample.wav')
-for key, value in metrics.items():
-    print(f"{key}: {value}")
+a = [1, 2, 3, 6]
+for b in a:
+    print(f"SBSCU08{b}")
+    metrics = calculate_metrics(f'samples/SPK082SBSCU08{b}.wav')
+    for key, value in metrics.items():
+        print(f"{key}: {value}")
