@@ -53,8 +53,9 @@ axiosInstance.interceptors.response.use(
                 Logout();
                 return Promise.reject(refreshError)
             }
-        }
+        } 
         return Promise.reject(error)
+        
     }
 )
 
@@ -62,11 +63,18 @@ axiosInstance.interceptors.response.use(
 // 리프레쉬 토큰으로 엑세스 토큰 재발급 요청
 const tokenRefresh = async() => {
     try {
-        const response = await axiosInstance.post(
-            '/api/oauth/get-user-token',
-        )
+        // const response = await axios.post(
+        //     '/api/user/public/accessToken',
+        // )
 
         // 재발급 엑세스 토큰
+        const response = await axios.post(
+            `${import.meta.env.VITE_API_URL}/api/user/public/accessToken`,
+            {},
+            {
+              headers: { 'Content-Type': 'application/json' },
+            }
+          );
         const newAccessToken = response.headers.authorization.replace( /^Bearer\s+/, '');
         
         if (!newAccessToken) {
@@ -94,3 +102,4 @@ const Logout = async() => {
 
 
 export default axiosInstance;
+export {tokenRefresh}

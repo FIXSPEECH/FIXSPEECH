@@ -1,7 +1,6 @@
 // @ts-ignore
 import CalendarHeatmap from 'react-calendar-heatmap';
 import '../../styles/MainPage/History.css';
-import { useState, useEffect } from 'react';
 
 function History() {
     return (
