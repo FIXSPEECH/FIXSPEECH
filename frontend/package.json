@@ -8,18 +8,21 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "gen-pwa": "pwa-assets-generator --preset minimal public/logo.svg"
+    "gen-pwa": "pwa-assets-generator --preset minimal public/icons/logo.svg"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "@mui/material": "^6.1.5",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/material": "^6.1.6",
     "axios": "^1.7.7",
     "cal-heatmap": "^4.2.4",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
+    "react-calendar-heatmap": "^1.9.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
+    "react-tooltip": "^5.28.0",
     "zustand": "^5.0.0"
   },
   "devDependencies": {

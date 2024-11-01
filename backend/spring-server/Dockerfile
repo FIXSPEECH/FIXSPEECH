@@ -17,7 +17,7 @@ RUN ./gradlew clean build -x test
 
 
 RUN ls -al ./build/libs/
-RUN cp ./build/libs/spring-server-0.0.1-SNAPSHOT.jar ./build/libs/app.jar
+RUN cp ./build/libs/app-0.0.1-SNAPSHOT.jar ./build/libs/app.jar
 
 RUN ls -al ./build/libs/
 RUN cp ./build/libs/app.jar ./app.jar

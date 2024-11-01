@@ -51,7 +51,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 				.nickName(attributes.getNickName())
 				.age(attributes.getAge())
 				.isActive(true)
-				.password("")
 				.createdAt(new Date())
 				.gender(attributes.getGender())
 				.provider(registrationId)

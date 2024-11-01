@@ -38,9 +38,6 @@ public class Users {
 	@Column(name = "gender")
 	private String gender;
 
-	@Column(name = "password", nullable = false)
-	private String password;
-
 	@Column(name = "nick_name")
 	private String nickName;
 
