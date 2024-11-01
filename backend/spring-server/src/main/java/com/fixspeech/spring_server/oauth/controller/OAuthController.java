@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amazonaws.services.kms.model.NotFoundException;
-import com.fixspeech.spring_server.common.JwtCookieProvider;
-import com.fixspeech.spring_server.common.JwtTokenProvider;
+import com.fixspeech.spring_server.global.common.JwtCookieProvider;
+import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseLoginDTO;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
