@@ -26,3 +26,6 @@ RUN ls -al
 
 ENV TZ=Asia/Seoul
 ENTRYPOINT ["java", "-jar", "./app.jar"]
+
+# .env 파일 복사
+COPY src/main/resources/.env src/main/resources/.env
