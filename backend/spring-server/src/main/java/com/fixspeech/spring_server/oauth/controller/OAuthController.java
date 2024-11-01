@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.fixspeech.spring_server.global.common.ApiResponse;
 import com.fixspeech.spring_server.global.common.JwtCookieProvider;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseLoginDTO;
@@ -45,16 +46,15 @@ public class OAuthController {
 	private final OAuthCodeTokenRepository oAuthCodeTokenRepository;
 
 	@Value("${spring.security.oauth2.base-url}")
-	private String baseUrl;
+	private String oauth2BaseUrl;
 
 	@GetMapping("/login/{provider}")
-	public ResponseEntity<Map<String, String>> getOAuthLoginUrl(@PathVariable String provider) {
-		String redirectUrl = baseUrl + "/oauth2/authorization/" + provider;
+	public ApiResponse<?> getOAuthLoginUrl(@PathVariable String provider) {
+		String redirectUrl = oauth2BaseUrl + "/oauth2/authorization/" + provider;
 		log.info("provider 조회: {}", provider);
 		Map<String, String> response = new HashMap<>();
 		response.put("url", redirectUrl);
-		log.info("Redirect URL: {}", redirectUrl);
-		return ResponseEntity.ok(response);
+		return ApiResponse.createSuccess(response, "login url 반환 성공");
 	}
 
 	@GetMapping("/get-oauth-info")

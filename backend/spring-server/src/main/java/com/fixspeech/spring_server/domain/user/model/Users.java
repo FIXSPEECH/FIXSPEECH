@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import com.fixspeech.spring_server.global.common.BaseTimeEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of = "id")
-public class Users {
+public class Users extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -49,9 +51,6 @@ public class Users {
 
 	@Column(name = "is_active", nullable = false)
 	private Boolean isActive;
-
-	@Column(name = "created_at", nullable = false)
-	private Date createdAt;
 
 	@Column(name = "image", nullable = true)
 	private String image;

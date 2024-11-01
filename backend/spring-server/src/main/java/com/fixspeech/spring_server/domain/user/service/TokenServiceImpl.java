@@ -1,7 +1,10 @@
 package com.fixspeech.spring_server.domain.user.service;
 
+import java.sql.Ref;
+
 import org.springframework.stereotype.Service;
 
+import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDTO;
 import com.fixspeech.spring_server.domain.user.model.RefreshToken;
@@ -23,27 +26,17 @@ public class TokenServiceImpl implements TokenService {
 	private final OAuthRefreshRepository oAuthRefreshRepository;
 
 	@Override
-	public String generateAccessToken(String userEmail) {
-		return jwtTokenProvider.generateAccessToken(userEmail);
+	public String generateAccessToken(JwtUserClaims jwtUserClaims) {
+		return jwtTokenProvider.generateAccessToken(jwtUserClaims);
 	}
 
 	@Override
-	public String generateAccessToken(String email, String name) {
-		return jwtTokenProvider.generateAccessToken(email, name);
-	}
-
-	@Override
-	public String generateRefreshToken(String userEmail) {
-		String refreshToken = jwtTokenProvider.generateRefreshToken(userEmail);
-		saveRefreshToken(userEmail, refreshToken);
+	public String generateRefreshToken(JwtUserClaims jwtUserClaims) {
+		String email = jwtUserClaims.getEmail();
+		log.info("email={}", email);
+		String refreshToken = jwtTokenProvider.generateRefreshToken(jwtUserClaims);
+		saveRefreshToken(jwtUserClaims, refreshToken);
 		return refreshToken;
-	}
-
-	@Override
-	public String generateRefreshToken(String email, String name) {
-		String oAuthRefreshToken = jwtTokenProvider.generateRefreshToken(email, name);
-		saveRefreshToken(email, name, oAuthRefreshToken);
-		return oAuthRefreshToken;
 	}
 
 	/**
@@ -70,8 +63,8 @@ public class TokenServiceImpl implements TokenService {
 
 				// refreshToken 만료 시키기
 				log.info("generate Token");
-				String newAccessToken = jwtTokenProvider.generateAccessToken(email, name);
-				String newRefreshToken = jwtTokenProvider.generateRefreshToken(email, name);
+				String newAccessToken = jwtTokenProvider.generateAccessToken(refreshToken);
+				String newRefreshToken = jwtTokenProvider.generateRefreshToken(refreshToken);
 				OAuthRefreshToken newRt = new OAuthRefreshToken(email, newRefreshToken);
 				// jwtTokenProvider.getRefreshTokenExpiration());
 				oAuthRefreshRepository.save(newRt);
@@ -82,15 +75,9 @@ public class TokenServiceImpl implements TokenService {
 		return null;
 	}
 
-	private void saveRefreshToken(String userEmail, String refreshToken) {
-		long refreshTokenExpireTime = jwtTokenProvider.getRefreshTokenExpiration();
-		RefreshToken rt = new RefreshToken(userEmail, refreshToken, refreshTokenExpireTime);
+	private void saveRefreshToken(JwtUserClaims jwtUserClaims, String refreshToken) {
+		long refreshTokenExpireTime = jwtTokenProvider.getOAuthRefreshTokenExpiration();
+		RefreshToken rt = new RefreshToken(jwtUserClaims.getEmail(), refreshToken, refreshTokenExpireTime);
 		refreshTokenRepository.save(rt);
-	}
-
-	private void saveRefreshToken(String email, String name, String refreshToken) {
-		long refreshTokenExpireTime = jwtTokenProvider.getRefreshTokenExpiration();
-		OAuthRefreshToken rt = new OAuthRefreshToken(email, refreshToken);
-		oAuthRefreshRepository.save(rt);
 	}
 }

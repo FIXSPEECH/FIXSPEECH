@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 import com.fixspeech.spring_server.global.common.JwtCookieProvider;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.model.Users;
@@ -69,10 +70,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			if (userOptional.isPresent()) {
 				log.info("user exists");
 				Users user = userOptional.get();
+				log.info("accessToken 생성 직전!");
 				// 토큰 저장 로직
-				String accessToken = tokenService.generateAccessToken(user.getEmail(), user.getName());
-				String refreshToken = tokenService.generateRefreshToken(user.getEmail(), user.getName());
+				// String accessToken = tokenService.generateAccessToken(user.getEmail(), user.getName());
+				// String refreshToken = tokenService.generateRefreshToken(user.getEmail(), user.getName());
+				String accessToken = tokenService.generateAccessToken(JwtUserClaims.fromUsersEntity(user));
 				log.info("accessToken={}", accessToken);
+				String refreshToken = tokenService.generateRefreshToken(JwtUserClaims.fromUsersEntity(user));
 				log.info("refreshToken={}", refreshToken);
 
 				targetUrl = UriComponentsBuilder.fromUriString(frontendUrl)
