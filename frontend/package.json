@@ -13,7 +13,8 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "@mui/material": "^6.1.5",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/material": "^6.1.6",
     "axios": "^1.7.7",
     "cal-heatmap": "^4.2.4",
     "jwt-decode": "^4.0.0",
