@@ -25,10 +25,12 @@ public enum ErrorCode {
 	EXPIRED_TOKEN_ERROR("AU004", "만료된 토큰입니다.", HttpStatus.UNAUTHORIZED),
 	INVALID_TOKEN_ERROR("AU005", "유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
 	EXISTS_ADDRESS_ERROR("AU006", "이미 존재하는 주소입니다.", HttpStatus.BAD_REQUEST),
-
 	AUTHENTICATION_FAILED("AU007", "인증에 실패했습니다.", HttpStatus.UNAUTHORIZED),
 	USER_NOT_FOUND("AU008", "사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	PASSWORD_NOT_MATCH("AU009", "비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
+	ACCESS_TOKEN_EXPIRED("AU010", "Access Token이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
+	INVALID_JWT_TOKEN("AU011", "유효하지 않은 JWT 토큰입니다.", HttpStatus.UNAUTHORIZED),
+
 
 	// User
 	USER_NOT_FOUND_ERROR("U001", "사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
