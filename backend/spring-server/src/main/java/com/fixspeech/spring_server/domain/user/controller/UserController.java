@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.kms.model.NotFoundException;
-import com.fixspeech.spring_server.common.ApiResponse;
-import com.fixspeech.spring_server.common.JwtTokenProvider;
+import com.fixspeech.spring_server.global.common.ApiResponse;
+import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.dto.request.RequestLoginDTO;
 import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseLoginDTO;

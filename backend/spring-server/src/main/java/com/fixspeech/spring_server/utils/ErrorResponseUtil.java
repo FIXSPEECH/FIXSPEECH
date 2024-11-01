@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fixspeech.spring_server.common.ApiResponse;
+import com.fixspeech.spring_server.global.common.ApiResponse;
 import com.fixspeech.spring_server.global.exception.ErrorCode;
 
 import jakarta.servlet.http.HttpServletResponse;

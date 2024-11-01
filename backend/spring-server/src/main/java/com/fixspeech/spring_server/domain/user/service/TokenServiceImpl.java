@@ -2,7 +2,7 @@ package com.fixspeech.spring_server.domain.user.service;
 
 import org.springframework.stereotype.Service;
 
-import com.fixspeech.spring_server.common.JwtTokenProvider;
+import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDTO;
 import com.fixspeech.spring_server.domain.user.model.RefreshToken;
 import com.fixspeech.spring_server.domain.user.repository.redis.RefreshTokenRepository;

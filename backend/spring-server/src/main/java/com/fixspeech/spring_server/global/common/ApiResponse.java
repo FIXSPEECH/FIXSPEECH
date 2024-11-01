@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.common;
+package com.fixspeech.spring_server.global.common;
 
 import java.io.Serializable;
 

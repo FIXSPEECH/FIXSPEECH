@@ -14,8 +14,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fixspeech.spring_server.common.JwtCookieProvider;
-import com.fixspeech.spring_server.common.JwtTokenProvider;
+import com.fixspeech.spring_server.global.common.JwtCookieProvider;
+import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
 import com.fixspeech.spring_server.domain.user.service.TokenService;
