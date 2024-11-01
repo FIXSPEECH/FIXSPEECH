@@ -70,9 +70,9 @@ public class UserVoiceController {
 				requestEntity,
 				Map.class
 			);
-
+			// 응답 데이터 처리
 			Map<String, Object> responseData = response.getBody();
-			userVoiceService.saveResult(responseData,users.getId());
+
 			return ApiResponse.createSuccess(responseData, "사용자 녹음 파일 분석 및 업로드 성공");
 
 		} catch (Exception e) {
