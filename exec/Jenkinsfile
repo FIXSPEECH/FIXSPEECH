@@ -13,31 +13,35 @@ pipeline{
       stage('Build Front') {
           steps {
               dir('/var/jenkins_home/workspace/FIXSPEECH/frontend/'){
-                  sh 'ls -al'
-                  sh 'whoami'
-                  
-                  sh 'docker ps -a'
-                  // react_container 존재하면 멈추고 삭제하기
-                  sh '''
-                    if [ "$(docker ps -aq -f name=react_container)" ]; then
-                          docker stop react_container
-                          docker rm react_container
-                      fi
-                  '''
-                  
-                  // 'react-image'이라는 이미지가 존재하는지 확인하고 삭제
-                  sh '''
-                      if [ "$(docker images -q react-image 2> /dev/null)" != "" ]; then
-                          docker rmi react-image
-                      fi
-                  '''
+                  withCredentials([file(credentialsId: 'frontend-env', variable: 'FRONTEND_ENV')]) {
+                      sh '''
+                          chmod 777 .
+                          cp $FRONTEND_ENV .env
+                      '''
+                      sh 'ls -al'
+                      
+                      sh 'docker ps -a'
+                      // react_container 존재하면 멈추고 삭제하기
+                      sh '''
+                        if [ "$(docker ps -aq -f name=react_container)" ]; then
+                              docker stop react_container
+                              docker rm react_container
+                          fi
+                      '''
+                      
+                      // 'react-image'이라는 이미지가 존재하는지 확인하고 삭제
+                      sh '''
+                          if [ "$(docker images -q react-image 2> /dev/null)" != "" ]; then
+                              docker rmi react-image
+                          fi
+                      '''
 
-                  sh 'docker build --no-cache -t react-image .' // no-cache 옵션 제거
-                  // sh 'docker build -t react-image .'
-                  // 위 명령어까지 진행되면 
-                  
-                  // 컨테이너가 존재하면 삭제
-                  sh '''
+                      sh 'docker build --no-cache -t react-image .' // no-cache 옵션 제거
+                      // sh 'docker build -t react-image .'
+                      // 위 명령어까지 진행되면 
+                      
+                      // 컨테이너가 존재하면 삭제
+                      sh '''
                   if [ "$(docker ps -aq -f name=react_container)" ]; then
                       docker rm -f react_container
                   fi
@@ -54,86 +58,91 @@ pipeline{
               }
           }
         }
+      }
       
       stage('Build FastAPI') {
           steps {
               dir('/var/jenkins_home/workspace/FIXSPEECH/backend/fast-api-audio/') {
-                  sh 'ls -al'
-                  
-                  // 기존 컨테이너 정리
-                  sh '''
-                      if [ "$(docker ps -aq -f name=fastapi_container)" ]; then
-                          docker stop fastapi_container
-                          docker rm fastapi_container
-                      fi
-                  '''
-                  
-                  // 기존 이미지 정리
-                  sh '''
-                      if [ "$(docker images -q fastapi-image 2> /dev/null)" != "" ]; then
-                          docker rmi fastapi-image
-                      fi
-                  '''
-
-                  // 새 이미지 빌드 및 실행
-                  sh 'docker build --no-cache -t fastapi-image .' // no-cache 옵션 제거
-                  // sh 'docker build -t fastapi-image .'
-                  sh 'docker run -d --name fastapi_container -p 8000:8000 fastapi-image'
-              }
-          }
-      }
-      
-      stage('env file download and play cp execute') {
-          steps {
-              withCredentials([file(credentialsId: 'env', variable: 'envfile')]) {
-                  script {
+                  withCredentials([file(credentialsId: 'fastapi-env', variable: 'FASTAPI_ENV')]) {
+                      sh 'cp $FASTAPI_ENV .env'
+                      sh 'ls -al'
+                      
+                      // 기존 컨테이너 정리
                       sh '''
-                          if [ -f /var/jenkins_home/workspace/FIXSPEECH/backend/spring-server/src/main/resources/.env ]; then
-                              rm /var/jenkins_home/workspace/FIXSPEECH/backend/spring-server/src/main/resources/.env
+                          if [ "$(docker ps -aq -f name=fastapi_container)" ]; then
+                              docker stop fastapi_container
+                              docker rm fastapi_container
                           fi
                       '''
-                      sh 'cp $envfile /var/jenkins_home/workspace/FIXSPEECH/backend/spring-server/src/main/resources/.env'
+                      
+                      // 기존 이미지 정리
+                      sh '''
+                          if [ "$(docker images -q fastapi-image 2> /dev/null)" != "" ]; then
+                              docker rmi fastapi-image
+                          fi
+                      '''
+
+                      // 새 이미지 빌드 및 실행
+                      sh 'docker build --no-cache -t fastapi-image .' // no-cache 옵션 제거
+                      // sh 'docker build -t fastapi-image .'
+                      sh 'docker run -d --name fastapi_container -p 8000:8000 fastapi-image'
                   }
               }
           }
       }
       
+      // stage('env file download and play cp execute') {
+      //     steps {
+      //         withCredentials([file(credentialsId: 'env', variable: 'envfile')]) {
+      //             script {
+      //                 sh '''
+      //                     if [ -f /var/jenkins_home/workspace/FIXSPEECH/backend/spring-server/src/main/resources/.env ]; then
+      //                         rm /var/jenkins_home/workspace/FIXSPEECH/backend/spring-server/src/main/resources/.env
+      //                     fi
+      //                 '''
+      //                 sh 'cp $envfile /var/jenkins_home/workspace/FIXSPEECH/backend/spring-server/src/main/resources/.env'
+      //             }
+      //         }
+      //     }
+      // }
+      
       stage('Build Backend'){
           steps {
               dir('/var/jenkins_home/workspace/FIXSPEECH/backend/spring-server/'){
-                  
-                  sh 'ls -al'
-                  sh 'whoami'
-                  
-                  sh 'groups jenkins'
-                  sh 'docker ps -a'
-                  // my_container가 존재하면 멈추고 삭제하기
-                  sh '''
-                    if [ "$(docker ps -aq -f name=my_container)" ]; then
-                          docker stop my_container
-                          docker rm my_container
-                      fi
-                  '''
-                  
-                  // 'tem'이라는 이미지가 존재하는지 확인하고 삭제
-                  sh '''
-                      if [ "$(docker images -q tem 2> /dev/null)" != "" ]; then
-                          docker rmi tem
-                      fi
-                  '''
+                  withCredentials([file(credentialsId: 'spring-env', variable: 'SPRING_ENV')]) {
+                      sh 'cp $SPRING_ENV src/main/resources/.env'
+                      sh 'ls -al'
+                      sh 'whoami'
+                      
+                      sh 'groups jenkins'
+                      sh 'docker ps -a'
+                      // my_container가 존재하면 멈추고 삭제하기
+                      sh '''
+                        if [ "$(docker ps -aq -f name=my_container)" ]; then
+                              docker stop my_container
+                              docker rm my_container
+                          fi
+                      '''
+                      
+                      // 'tem'이라는 이미지가 존재하는지 확인하고 삭제
+                      sh '''
+                          if [ "$(docker images -q tem 2> /dev/null)" != "" ]; then
+                              docker rmi tem
+                          fi
+                      '''
 
-                  sh 'docker build -t tem .'
-                  // 위 명령어까지 진행되면 
-                  
-                  // 컨테이너가 존재하면 삭제
-                  sh '''
-                  if [ "$(docker ps -aq -f name=my_container)" ]; then
-                      docker rm -f my_container
-                  fi
-                  '''
-                  // 새로운 컨테이너 생성
-                  sh 'docker run -d --name my_container -p 8081:8081 tem'
-                  
+                      sh 'docker build -t tem .'
+                      // 위 명령어까지 진행되면 
+                      
+                      // 컨테이너가 존재하면 삭제
+                      sh '''
+                      if [ "$(docker ps -aq -f name=my_container)" ]; then
+                          docker rm -f my_container
+                      fi
+                      '''
+                      // 새로운 컨테이너 생성
+                      sh 'docker run -d --name my_container -p 8081:8081 tem'
+                  }
               }
           }
       }
