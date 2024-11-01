@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from analyze_wav_file import analyze_audio
 import logging
+from dotenv import load_dotenv
+import os
+
+# .env 파일 로드
+load_dotenv()
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -16,11 +21,8 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-origins = [
-    "http://localhost:5173",
-    "http://localhost:8000",
-    "http://localhost:8081",
-]
+# CORS origins 설정
+origins = os.getenv('ALLOWED_ORIGINS', '').split(',')
 
 app.add_middleware(
     CORSMiddleware,

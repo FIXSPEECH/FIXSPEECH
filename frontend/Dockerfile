@@ -33,3 +33,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 #RUN ls -al /usr/share/nginx/html
 CMD ["nginx", "-g","daemon off;"]
+
+# .env 파일 복사
+COPY .env .
