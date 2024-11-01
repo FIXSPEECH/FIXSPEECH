@@ -17,11 +17,12 @@ function PracticeSelect(){
       ];
 
     return (
+        <div className=''>
         <Box sx={{ flexGrow: 1, marginRight:'3%', marginLeft:'3%', marginBottom:'3%'}}>
             <Typography variant='h5' className='text-white' align="center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal'}}>
                 *원하는 훈련 종류를 선택해주세요.
             </Typography>
-            <Grid container spacing={5} justifyContent='center' alignItems='center' className='mt-10' >
+            <Grid container spacing={2} justifyContent='center' alignItems='center' className='mt-10' >
                 {gridItems.map((item, index) => (
                     <Grid size={{ xs: 6, sm: 4, md: 2}} key={index} sx={{ backgroundColor: item.color, padding: 2 , borderRadius:'3%', height: 300, position:'relative', overflow: 'hidden',cursor: 'pointer'}}
                         onClick={() => navigate(item.url)}>
@@ -33,6 +34,7 @@ function PracticeSelect(){
                 ))}
             </Grid>
         </Box>
+        </div>
     )
 }
 

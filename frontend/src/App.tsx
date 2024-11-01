@@ -11,7 +11,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
 
 function AppWrapper() {
-  const hiddenHeaderRoutes = ["/", "/user/regist/information"];
+  const hiddenHeaderRoutes = ["/login", "/user/regist/information"];
   // useEffect(() => {
   //   const accessToken = sessionStorage.getItem("accessToken");
 
