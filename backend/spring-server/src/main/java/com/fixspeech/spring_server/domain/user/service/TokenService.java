@@ -1,15 +1,13 @@
 package com.fixspeech.spring_server.domain.user.service;
 
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDTO;
+import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
+import com.fixspeech.spring_server.domain.user.model.Users;
 
 public interface TokenService {
-	String generateAccessToken(String email);
+	String generateAccessToken(JwtUserClaims jwtUserClaims);
 
-	String generateAccessToken(String email, String name);
-
-	String generateRefreshToken(String email);
-
-	String generateRefreshToken(String email, String name);
+	String generateRefreshToken(JwtUserClaims jwtUserClaims);
 
 	ResponseRefreshTokenDTO reissueOAuthToken(String refreshToken);
 }

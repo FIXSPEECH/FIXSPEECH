@@ -73,39 +73,6 @@ public class UserController {
 		}
 	}
 
-	@PostMapping("/public/login")
-	public ResponseEntity<?> login(@RequestBody RequestLoginDTO requestDTO, HttpServletResponse response) {
-		Authentication authentication = userService.authenticateUser(requestDTO.getEmail(), requestDTO.getPassword());
-
-		if (authentication.isAuthenticated()) {
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-
-			String accessToken = tokenService.generateAccessToken(authentication.getName());
-			String refreshToken = tokenService.generateRefreshToken(authentication.getName());
-
-			ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
-				.httpOnly(true)
-				.maxAge(60 * 60 * 24 * 14)
-				.path("/")
-				.secure(true)
-				.sameSite("None")
-				.domain("127.0.0.1")
-				.build();
-			response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
-			response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-
-			Users users = userService.findByEmail(requestDTO.getEmail())
-				.orElseThrow(() -> new NotFoundException("유저 정보 조회 실패"));
-			ResponseLoginDTO responseDTO = ResponseLoginDTO.fromEntity(users);
-
-			// List<SimilarDTO> similarUsers = userService.getPythonRecommendUsers(users.getUserId());
-			// responseDTO.setSimilarUsers(similarUsers);
-			return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-		}
-		// return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
-		return new ResponseEntity<>("실패", HttpStatus.BAD_REQUEST);
-	}
-
 	/**
 	 * Token 재발급
 	 * @param refreshToken
@@ -141,7 +108,7 @@ public class UserController {
 	}
 
 	@PostMapping("/public/logout")
-	public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = extractRefreshToken(request);
 
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
@@ -152,9 +119,9 @@ public class UserController {
 			cookie.setPath("/");
 			response.addCookie(cookie);
 			log.info("로그아웃 완료");
-			return new ResponseEntity<>("로그아웃 완료", HttpStatus.OK);
+			return ApiResponse.createSuccess(null, "로그아웃 성공");
 		}
-		return new ResponseEntity<>("로그아웃 실패", HttpStatus.BAD_REQUEST);
+		return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
 	}
 
 	private String extractRefreshToken(HttpServletRequest request) {
@@ -168,5 +135,4 @@ public class UserController {
 		}
 		return null;
 	}
-
 }
