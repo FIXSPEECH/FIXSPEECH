@@ -10,6 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class UserVoiceRequestDto {
+	Long userId;
 	String userVoiceTitle;
 	String userVoiceName;
 }
