@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.fixspeech.spring_server.common.JwtCookieProvider;
 import com.fixspeech.spring_server.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseLoginDTO;
 import com.fixspeech.spring_server.domain.user.model.Users;
@@ -39,6 +40,7 @@ public class OAuthController {
 
 	private final UserService userService;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtCookieProvider jwtCookieProvider;
 	private final TempUserRepository tempUserRepository;
 	private final OAuthCodeTokenRepository oAuthCodeTokenRepository;
 
@@ -98,15 +100,7 @@ public class OAuthController {
 			log.info("accessToken={}", accessToken);
 			log.info("refreshToken={}", refreshToken);
 
-			ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
-				.httpOnly(true)
-				.secure(true)
-				.maxAge(60 * 60 * 24 * 14)
-				.path("/")
-				.sameSite("None")
-				//				.domain("i11d208.p.ssafy.io")
-				.domain("test")
-				.build();
+			ResponseCookie responseCookie =  jwtCookieProvider.generateCookie(refreshToken);
 
 			response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 			response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());

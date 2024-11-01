@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.fixspeech.spring_server.common.ApiResponse;
 import com.fixspeech.spring_server.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.dto.request.RequestLoginDTO;
 import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
@@ -25,6 +26,7 @@ import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshToken
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.TokenService;
 import com.fixspeech.spring_server.domain.user.service.UserService;
+import com.fixspeech.spring_server.global.exception.ErrorCode;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -104,27 +106,28 @@ public class UserController {
 
 	/**
 	 * Token 재발급
-	 * @param response
+	 * @param refreshToken
 	 * @return
 	 */
-	@PostMapping("/public/accessToken")
-	public ResponseEntity<?> reissueToken(
-		HttpServletRequest httpServletRequest,
+	@PostMapping("/public/reissue")
+	public ApiResponse<?> reissueToken(HttpServletRequest httpServletRequest, @CookieValue String refreshToken,
 		HttpServletResponse response) {
-		String accessToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
-		log.info("accessToken = {}", accessToken);
+
+		log.info("refreshToken = {}", refreshToken);
 		try {
-			if (accessToken == null || accessToken.isEmpty()) {
-				return new ResponseEntity<>("올바르지 않은 토큰", HttpStatus.BAD_REQUEST);
+			if (refreshToken == null || refreshToken.isEmpty()) {
+				return ApiResponse.createError(ErrorCode.INVALID_TOKEN_ERROR);
 			}
 
-			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(accessToken);
+			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
 			log.info("responseDTO={}", responseDTO);
 			if (responseDTO == null) {
 				throw new IllegalArgumentException("Refresh Token이 만료되었거나 존재하지 않습니다.");
 			}
+			log.info("new AccessToken = {}", responseDTO.getAccessToken());
 			String newAccessToken = responseDTO.getAccessToken();
-			return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
+			return ApiResponse.createSuccess(newAccessToken, "토큰 재발급 성공");
+
 		} catch (Exception e) {
 			log.info("e={}", e);
 			return null;

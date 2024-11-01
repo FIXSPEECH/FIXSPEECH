@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fixspeech.spring_server.common.JwtCookieProvider;
 import com.fixspeech.spring_server.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
@@ -32,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
 	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtCookieProvider jwtCookieProvider;
 	private final TokenService tokenService;
 	private final OAuthCodeTokenRepository oAuthCodeTokenRepository;
 	private final UserRepository userRepository;
@@ -76,17 +78,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 				targetUrl = UriComponentsBuilder.fromUriString(frontendUrl)
 					.path("/user/regist/information?accessToken=" + accessToken)
 					.build().toUriString();
-				log.info(targetUrl);
-				// ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
-				// 	.httpOnly(true)
-				// 	.maxAge(60 * 60 * 24 * 14) // 쿠키 만료 시간
-				// 	.path("/")
-				// 	.secure(true)
-				// 	.sameSite("None")
-				// 	.domain("test")
-				// 	.build();
-				// log.info("responseCookie={}", responseCookie);
-				// response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+
+				ResponseCookie responseCookie = jwtCookieProvider.generateCookie(refreshToken);
+
+				response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 			}
 		}
 		log.info("Success End");
