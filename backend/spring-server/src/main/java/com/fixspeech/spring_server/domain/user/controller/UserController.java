@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.fixspeech.spring_server.global.common.ApiResponse;
+import com.fixspeech.spring_server.global.common.JwtCookieProvider;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.dto.request.RequestLoginDTO;
 import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
@@ -44,6 +45,7 @@ public class UserController {
 	private final PasswordEncoder passwordEncoder;
 	private final TokenService tokenService;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtCookieProvider jwtCookieProvider;
 
 	@GetMapping
 	public String test() {
@@ -126,11 +128,15 @@ public class UserController {
 			}
 			log.info("new AccessToken = {}", responseDTO.getAccessToken());
 			String newAccessToken = responseDTO.getAccessToken();
-			return ApiResponse.createSuccess(newAccessToken, "토큰 재발급 성공");
+			String newRefreshToken = responseDTO.getRefreshToken();
 
+			ResponseCookie responseCookie = jwtCookieProvider.generateCookie(newRefreshToken);
+
+			response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
+			response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+			return ApiResponse.createSuccess(newAccessToken, "토큰 재발급 성공");
 		} catch (Exception e) {
-			log.info("e={}", e);
-			return null;
+			return ApiResponse.createError(ErrorCode.INVALID_JWT_TOKEN);
 		}
 	}
 
