@@ -2,6 +2,8 @@ package com.fixspeech.spring_server.domain.record.model;
 
 import org.checkerframework.checker.units.qual.C;
 
+import com.fixspeech.spring_server.global.common.BaseTimeEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Table(name="analyze_result")
-public class AnalyzeResult {
+public class AnalyzeResult extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
