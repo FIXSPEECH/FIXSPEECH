@@ -14,9 +14,9 @@ function Buttons(){
     const gridItems = [
         { color: '#EE719E', label: '발음 훈련 강의', imageSrc: music, url: '/pronounce/lecture',  imgMargin: 50},
         { color: '#FF8C82', label: '발음 훈련 연습', imageSrc: music, url:'/pronounce/practice/select', imgMargin: 50 },
-        { color: '#FFAB01', label: '상황별 연습', imageSrc: geo, url:'/situation/practice' , imgMargin: 50},
+        { color: '#FFAB01', label: '상황별 연습', imageSrc: geo, url:'/situation/practice/select' , imgMargin: 50},
         { color: '#B18CFE', label: '아나운서 따라잡기', imageSrc: read, url:'/announcer/imitate' , imgMargin: 5},
-        { color: '#FE6250', label: '산성비 게임', imageSrc: clock , url:'/game',  imgMargin: 50},
+        { color: '#FE6250', label: '산성비 게임', imageSrc: clock , url:'/game/stage',  imgMargin: 50},
         { color: '#37AFE1', label: '내 목소리 분석', imageSrc: find , url: '/analysis',  imgMargin: 50},
       ];
 
