@@ -11,7 +11,7 @@ import lombok.Getter;
 @RedisHash(value = "refreshToken", timeToLive = 604800)
 public class RefreshToken {
 	@Id
-	private String userEmail;
+	private String email;
 	private String token;
 	private long expiration;
 }

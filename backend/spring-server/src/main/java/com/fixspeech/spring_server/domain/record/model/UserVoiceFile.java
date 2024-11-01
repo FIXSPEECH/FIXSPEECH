@@ -24,6 +24,8 @@ public class UserVoiceFile extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
+	@Column(name = "user_id")
+	Long userId;
 	@Column(name="record_title")
 	String recordTitle;
 

@@ -30,7 +30,6 @@ public class RequestRegisterDTO {
 			.email(email)
 			.age(age)
 			.isActive(isActive)
-			.createdAt(createdAt)
 			.image(image)
 			.role(role)
 			.build();
