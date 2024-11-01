@@ -17,13 +17,14 @@ public class JwtCookieProvider {
 	private static final long COOKIE_MAX_AGE = 60 * 60 * 24 * 14;
 
 	public ResponseCookie generateCookie(String refreshToken) {
+		log.info(refreshTokenCookieDomain);
 		ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
-			.httpOnly(true)
-			.maxAge(COOKIE_MAX_AGE)
-			.path("/")
 			.secure(true)
+			.httpOnly(true)
 			.sameSite("None")
+			.maxAge(COOKIE_MAX_AGE)
 			.domain(refreshTokenCookieDomain)
+			.path("/")
 			.build();
 		log.info("responseCookie={}", responseCookie);
 		return responseCookie;
