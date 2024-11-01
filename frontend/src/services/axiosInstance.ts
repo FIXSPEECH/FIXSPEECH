@@ -1,6 +1,9 @@
 import axios, { AxiosResponse, AxiosError } from 'axios'
 
 
+// axios 전역 설정
+axios.defaults.withCredentials = true; // withCredentials 전역 설정
+
 // axios 인스턴스 생성
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,

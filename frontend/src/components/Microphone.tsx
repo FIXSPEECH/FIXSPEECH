@@ -1,98 +1,65 @@
-// import { useState } from 'react';
-// import MicNoneIcon from '@mui/icons-material/MicNone';
-// import MicIcon from '@mui/icons-material/Mic';
-
-// interface MicrophoneProps {
-//     color: string; // color prop의 타입 정의
-// }
-
-// function Microphone({color}: MicrophoneProps){
-//     const [isRecord, setIsRecord] = useState<boolean>(false)
-
-//     const handleToggleRecord = () => {
-//         setIsRecord(prev => !prev); // isRecord 값을 토글
-//     };
-
-//     return (
-//         <div onClick={handleToggleRecord} style={{ cursor: 'pointer' }}> 
-//         {isRecord ? (
-//             <MicIcon style={{ color }} /> 
-//         ) : (
-//             <MicNoneIcon style={{ color }} /> 
-//         )}
-//     </div>
-//     )
-// }
-
-// export default Microphone;
-
-
-import { useState, useEffect } from 'react';
+import  { useState, useRef, useEffect } from 'react';
 import MicNoneIcon from '@mui/icons-material/MicNone';
 import MicIcon from '@mui/icons-material/Mic';
 
 interface MicrophoneProps {
     color: string; // color prop의 타입 정의
+    size: number;
 }
 
-function Microphone({ color }: MicrophoneProps) {
-    const [isRecord, setIsRecord] = useState<boolean>(false);
-    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-    const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
-    const [audioUrl, setAudioUrl] = useState<string | null>(null);
+function AudioRecorder ({color, size}: MicrophoneProps){
+  const [audioURL, setAudioURL] = useState<string | null>(null);  // 녹음후 오디오 파일 재생을 위한 URL
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
-    const handleToggleRecord = async () => {
-        if (!isRecord) {
-            try {
-                // 녹음을 시작하는 경우
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const recorder = new MediaRecorder(stream);
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
 
-                recorder.ondataavailable = (event) => {
-                    setAudioChunks((prev) => [...prev, event.data]); // 데이터 조각을 저장
-                };
-
-                recorder.onstop = () => {
-                    if (audioChunks.length > 0) {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                        const url = URL.createObjectURL(audioBlob);
-                        setAudioUrl(url); // 생성된 오디오 URL을 상태에 저장
-                    }
-                    setAudioChunks([]); // 조각 초기화
-                };
-
-                recorder.start();
-                setMediaRecorder(recorder);
-            } catch (error) {
-                console.error('Error accessing microphone:', error);
-            }
-        } else {
-            // 녹음을 중지하는 경우
-            mediaRecorder?.stop();
-            mediaRecorder?.stream.getTracks().forEach(track => track.stop()); // 스트림 종료
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
         }
+      };
 
-        setIsRecord(prev => !prev); // isRecord 값을 토글
-    };
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        setAudioURL(audioUrl);
+      };
 
-    useEffect(() => {
-        return () => {
-            // 컴포넌트가 언마운트될 때 스트림 종료
-            mediaRecorder?.stream.getTracks().forEach(track => track.stop());
-        };
-    }, [mediaRecorder]);
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error accessing microphone', error);
+    }
+  };
 
-    return (
-        <div onClick={handleToggleRecord} style={{ cursor: 'pointer' }}>
-            {isRecord ? (
-                <MicIcon style={{ color }} />
-            ) : (
-                <MicNoneIcon style={{ color }} />
-            )}
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      setAudioURL(null);
+    }
+  };
 
-            {audioUrl && <audio controls src={audioUrl}>녹음된 소리 듣기</audio>}
+  return (
+    <div>
+      
+      <button onClick={isRecording ? stopRecording : startRecording}>
+        {isRecording ? <MicIcon style={{ color, fontSize: `${size}rem`}} className='cursor-pointer'/>  :  <MicNoneIcon style={{ color, fontSize: `${size}rem`}} className='cursor-pointer'/> }
+      </button>
+      {!isRecording && audioURL && (
+        <div>
+          <audio src={audioURL} controls />
         </div>
-    );
-}
+      )}
+    </div>
+  );
+};
 
-export default Microphone;
+export default AudioRecorder;
