@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.oauth.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import com.fixspeech.spring_server.oauth.model.TempUser;
 import com.fixspeech.spring_server.oauth.repository.OAuthCodeTokenRepository;
 import com.fixspeech.spring_server.oauth.repository.TempUserRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,12 +51,12 @@ public class OAuthController {
 	private String oauth2BaseUrl;
 
 	@GetMapping("/login/{provider}")
-	public ApiResponse<?> getOAuthLoginUrl(@PathVariable String provider) {
+	public void getOAuthLoginUrl(@PathVariable String provider , HttpServletRequest request, HttpServletResponse response) throws
+		IOException {
 		String redirectUrl = oauth2BaseUrl + "/oauth2/authorization/" + provider;
 		log.info("provider 조회: {}", provider);
-		Map<String, String> response = new HashMap<>();
-		response.put("url", redirectUrl);
-		return ApiResponse.createSuccess(response, "login url 반환 성공");
+
+		response.sendRedirect(redirectUrl);
 	}
 
 	@GetMapping("/get-oauth-info")
