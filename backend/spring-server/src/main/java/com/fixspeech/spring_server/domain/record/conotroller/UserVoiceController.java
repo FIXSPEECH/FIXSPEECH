@@ -43,7 +43,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/record")
+@RequestMapping("/record")
 public class UserVoiceController {
 	private final S3Service s3Service;
 	private final UserVoiceServiceImpl userVoiceService;
