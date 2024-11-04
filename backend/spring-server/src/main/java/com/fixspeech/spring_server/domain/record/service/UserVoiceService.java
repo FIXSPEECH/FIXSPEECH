@@ -9,9 +9,9 @@ import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
 
 public interface UserVoiceService {
-	void saveImage(UserVoiceRequestDto userVoiceRequestDto);
+	Long saveImage(UserVoiceRequestDto userVoiceRequestDto);
 
-	void saveResult(Map<String, Object> responseData, Long id);
+	void saveResult(Map<String, Object> responseData, Long userId,Long recordId);
 
 	UserVoiceListResponseDto getUserRecordDetail(Long resultId);
 

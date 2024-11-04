@@ -31,7 +31,7 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 	private final AnalyzeResultRepository analyzeResultRepository;
 	@Transactional
 	@Override
-	public void saveImage(UserVoiceRequestDto userVoiceRequestDto) {
+	public Long saveImage(UserVoiceRequestDto userVoiceRequestDto) {
 		System.out.println("service: "+userVoiceRequestDto);
 		UserVoiceFile userVoiceFile = UserVoiceFile.builder()
 			.userId(userVoiceRequestDto.getUserId())
@@ -40,15 +40,18 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 			.build();
 		System.out.println("file: "+userVoiceFile);
 		userVoiceRepository.save(userVoiceFile);
+		UserVoiceFile newUserVoiceFile= userVoiceRepository.findTopByUserIdOrderByCreatedAtDesc(userVoiceRequestDto.getUserId());
+		return newUserVoiceFile.getId();
 	}
 
 	@Override
-	public void saveResult(Map<String, Object> responseData, Long userId) {
+	public void saveResult(Map<String, Object> responseData, Long userId,Long recordId) {
 
 		Map<String, Object> metricsData = (Map<String, Object>)((Map<String, Object>) responseData.get("data")).get("metrics");
 		// AnalyzeResult 엔티티 생성
 		AnalyzeResult analyzeResult = AnalyzeResult.builder()
 			.userId(userId)
+			.recordId(recordId)
 			.clarity((float) Double.parseDouble(metricsData.get("명료도(Clarity)").toString()))
 			.intonationPatternConsistency((float) Double.parseDouble(metricsData.get("억양 패턴 일관성 (Intonation Pattern Consistency)").toString()))
 			.melodyIndex((float) Double.parseDouble(metricsData.get("멜로디 지수(Melody Index)").toString()))

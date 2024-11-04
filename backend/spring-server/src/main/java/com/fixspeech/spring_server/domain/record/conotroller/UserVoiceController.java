@@ -61,7 +61,7 @@ public class UserVoiceController {
 			String fileUrl = s3Service.upload(file);
 			userVoiceRequestDto.setUserId(users.getId());
 			userVoiceRequestDto.setUserVoiceAddress(fileUrl);
-			userVoiceService.saveImage(userVoiceRequestDto);
+			Long recordId= userVoiceService.saveImage(userVoiceRequestDto);
 			System.out.println("controller: "+ fileUrl);
 			//fastapi보내기 추가, file 그대로 보내기
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -81,7 +81,7 @@ public class UserVoiceController {
 			);
 			System.out.println(response.getBody());
 			Map<String, Object> responseData = response.getBody();
-			userVoiceService.saveResult(responseData,users.getId());
+			userVoiceService.saveResult(responseData,users.getId(),recordId);
 			return ApiResponse.createSuccess(responseData, "사용자 녹음 파일 분석 및 업로드 성공");
 
 		} catch (Exception e) {
