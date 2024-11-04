@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fixspeech.spring_server.domain.training.dto.TrainingRequestDto;
 import com.fixspeech.spring_server.domain.training.dto.TrainingResponseDto;
 import com.fixspeech.spring_server.domain.training.service.TrainingService;
 import com.fixspeech.spring_server.global.common.ApiResponse;
@@ -33,16 +34,16 @@ public class TrainingController {
 			String s = trainingService.getSentence(trainingId);
 			return ApiResponse.createSuccess(s, "연습 문장 불러오기 성공");
 		} catch (Exception e) {
-			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+			throw new CustomException(ErrorCode.Fail_TO_LOAD_SENTENCE);
 		}
 	}
 
 	@PostMapping("/answer")
 	public ApiResponse<?> answer(
-		@RequestBody String s
+		@RequestBody TrainingRequestDto trainingRequestDto
 	) {
 		try {
-			TrainingResponseDto trainingResponseDto = trainingService.checkClarity(s);
+			TrainingResponseDto trainingResponseDto = trainingService.checkClarity(trainingRequestDto.userRecord());
 			return ApiResponse.createSuccess(trainingResponseDto, "채점 성공");
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
