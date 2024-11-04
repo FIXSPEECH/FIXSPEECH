@@ -66,8 +66,9 @@ public class Users extends BaseTimeEntity {
 	@Column(name = "provider_id")
 	private String providerId;
 
-	public void updateOAuthInfo(String provider, String providerId) {
+	public void updateOAuthInfo(String provider, String providerId, String image) {
 		this.provider = provider;
 		this.providerId = providerId;
+		this.image = image;
 	}
 }
