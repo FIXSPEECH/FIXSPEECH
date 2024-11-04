@@ -1,9 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from 'axios'
 
 
-// axios 전역 설정
-axios.defaults.withCredentials = true; // withCredentials 전역 설정
-
 // axios 인스턴스 생성
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -19,7 +16,26 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
     function(config){
         // 엑세스 토큰을 로컬 스토리지에서 가져온다.
-        const token = localStorage.getItem('authorization')
+        // const token = localStorage.getItem('authorization')
+        let token: string | null = null;
+
+
+        if (window.location.hostname === 'localhost') {
+            const authData = localStorage.getItem('auth-storage');
+        
+            if (authData) {
+                // JSON 문자열을 객체로 변환합니다.
+                const parsedData = JSON.parse(authData);
+        
+                // token 값을 추출합니다.
+                token = parsedData.state?.token;
+            }
+        } else{
+             token = localStorage.getItem('authorization')
+        }
+     
+
+
 
         // 토큰이 있으면 토큰을 넣어서 api 요청을 보냄
         if (token) {
@@ -72,7 +88,7 @@ const tokenRefresh = async() => {
 
         // 재발급 엑세스 토큰
         const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/user/public/accessToken`,
+            `${import.meta.env.VITE_API_URL}/user/public/accessToken`,
             {},
             {
               headers: { 'Content-Type': 'application/json' },
