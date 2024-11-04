@@ -1,14 +1,14 @@
-import  { useState, useRef, useEffect } from 'react';
-import MicNoneIcon from '@mui/icons-material/MicNone';
-import MicIcon from '@mui/icons-material/Mic';
+import { useState, useRef } from "react";
+import MicNoneIcon from "@mui/icons-material/MicNone";
+import MicIcon from "@mui/icons-material/Mic";
 
 interface MicrophoneProps {
-    color: string; // color prop의 타입 정의
-    size: number;
+  color: string; // color prop의 타입 정의
+  size: number;
 }
 
-function AudioRecorder ({color, size}: MicrophoneProps){
-  const [audioURL, setAudioURL] = useState<string | null>(null);  // 녹음후 오디오 파일 재생을 위한 URL
+function AudioRecorder({ color, size }: MicrophoneProps) {
+  const [audioURL, setAudioURL] = useState<string | null>(null); // 녹음후 오디오 파일 재생을 위한 URL
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -27,7 +27,9 @@ function AudioRecorder ({color, size}: MicrophoneProps){
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/wav",
+        });
         const audioUrl = URL.createObjectURL(audioBlob);
         setAudioURL(audioUrl);
       };
@@ -35,7 +37,7 @@ function AudioRecorder ({color, size}: MicrophoneProps){
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
-      console.error('Error accessing microphone', error);
+      console.error("Error accessing microphone", error);
     }
   };
 
@@ -49,9 +51,18 @@ function AudioRecorder ({color, size}: MicrophoneProps){
 
   return (
     <div>
-      
       <button onClick={isRecording ? stopRecording : startRecording}>
-        {isRecording ? <MicIcon style={{ color, fontSize: `${size}rem`}} className='cursor-pointer'/>  :  <MicNoneIcon style={{ color, fontSize: `${size}rem`}} className='cursor-pointer'/> }
+        {isRecording ? (
+          <MicIcon
+            style={{ color, fontSize: `${size}rem` }}
+            className="cursor-pointer"
+          />
+        ) : (
+          <MicNoneIcon
+            style={{ color, fontSize: `${size}rem` }}
+            className="cursor-pointer"
+          />
+        )}
       </button>
       {!isRecording && audioURL && (
         <div>
@@ -60,6 +71,6 @@ function AudioRecorder ({color, size}: MicrophoneProps){
       )}
     </div>
   );
-};
+}
 
 export default AudioRecorder;
