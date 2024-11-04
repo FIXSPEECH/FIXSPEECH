@@ -14,4 +14,5 @@ public interface UserService {
 
 	Authentication authenticateUser(String email, String password);
 
+	Optional<Users> findGrassByEmail(String email);
 }

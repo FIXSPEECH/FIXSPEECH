@@ -1,6 +1,7 @@
 package com.fixspeech.spring_server.domain.user.model;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.ColumnDefault;
 
@@ -10,9 +11,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,6 +24,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "users")
 @Entity
@@ -65,6 +70,11 @@ public class Users extends BaseTimeEntity {
 
 	@Column(name = "provider_id")
 	private String providerId;
+
+	@Setter
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id") // 외래키
+	private List<Grass> grassList = new ArrayList<>();
 
 	public void updateOAuthInfo(String provider, String providerId, String image) {
 		this.provider = provider;

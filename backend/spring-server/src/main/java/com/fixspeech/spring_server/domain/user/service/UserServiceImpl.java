@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.domain.user.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,5 +34,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Authentication authenticateUser(String email, String password) {
 		return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+	}
+
+	@Override
+	public Optional<Users> findGrassByEmail (String email) {
+		return userRepository.findGrassByEmail(email);
 	}
 }

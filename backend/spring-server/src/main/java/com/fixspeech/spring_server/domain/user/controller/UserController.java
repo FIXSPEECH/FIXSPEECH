@@ -4,25 +4,22 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import com.fixspeech.spring_server.global.common.ApiResponse;
 import com.fixspeech.spring_server.global.common.JwtCookieProvider;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
-import com.fixspeech.spring_server.domain.user.dto.request.RequestLoginDTO;
 import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
-import com.fixspeech.spring_server.domain.user.dto.response.ResponseLoginDTO;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDTO;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.TokenService;
@@ -37,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -46,11 +43,6 @@ public class UserController {
 	private final TokenService tokenService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtCookieProvider jwtCookieProvider;
-
-	@GetMapping
-	public String test() {
-		return "HEllo";
-	}
 
 	@PostMapping("/regist")
 	public ResponseEntity<?> registUser(
@@ -122,6 +114,25 @@ public class UserController {
 			return ApiResponse.createSuccess(null, "로그아웃 성공");
 		}
 		return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
+	}
+
+	@GetMapping
+	public ApiResponse<?> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+		Users users;
+		try {
+			log.info("사용자 정보 = {}", userDetails.getUsername());
+
+			String email = userDetails.getUsername();
+			// 사용자 grass 정보 조회
+			users = userService.findGrassByEmail(email).orElse(null);
+			log.info("user grass 정보 = {}", users);
+
+		} catch (UsernameNotFoundException e) {
+			return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+		} catch (Exception e) {
+			return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
+		}
+		return ApiResponse.createSuccess(users, "성공");
 	}
 
 	private String extractRefreshToken(HttpServletRequest request) {
