@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import MicNoneIcon from "@mui/icons-material/MicNone";
 import MicIcon from "@mui/icons-material/Mic";
+import useVoiceStore from "../store/voiceStore";
 
 interface MicrophoneProps {
   color: string; // color prop의 타입 정의
@@ -8,8 +9,8 @@ interface MicrophoneProps {
 }
 
 function AudioRecorder({ color, size }: MicrophoneProps) {
-  const [audioURL, setAudioURL] = useState<string | null>(null); // 녹음후 오디오 파일 재생을 위한 URL
-  const [isRecording, setIsRecording] = useState<boolean>(false);
+  // const [audioURL, setAudioURL] = useState<string | null>(null); // 녹음후 오디오 파일 재생을 위한 URL
+  const { isRecording, setIsRecording, audioURL, setAudioURL } = useVoiceStore();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
@@ -64,11 +65,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
           />
         )}
       </button>
-      {!isRecording && audioURL && (
-        <div>
-          <audio src={audioURL} controls />
-        </div>
-      )}
+
     </div>
   );
 }
