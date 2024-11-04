@@ -44,8 +44,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			oAuth2User.getAttributes());
 		log.info("registrationId={}", registrationId);
 		Users user = userRepository.findByEmail(attributes.getEmail()).orElse(null);
-
+		log.info("user={}", user.getImage());
+		log.info("attribute={}", attributes.getImage());
 		if (user == null) {
+			log.info("empty");
 			user = Users.builder()
 				.email(attributes.getEmail())
 				.name(attributes.getName())
@@ -53,6 +55,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 				.age(attributes.getAge())
 				.isActive(true)
 				.gender(attributes.getGender())
+				.image(attributes.getImage())
 				.provider(registrationId)
 				.providerId(attributes.getProviderId())
 				.role(Role.ROLE_USER)
@@ -66,8 +69,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			String refreshToken = jwtTokenProvider.generateRefreshToken(jwtUserClaims);
 
 		} else if (!registrationId.equals(user.getProvider()) || !attributes.getProviderId()
-			.equals(user.getProviderId())) {
-			user.updateOAuthInfo(attributes.getProviderId(), registrationId);
+			.equals(user.getProviderId()) || !attributes.getImage().equals(user.getImage())) {
+			log.info("다른 정보 존재");
+			user.updateOAuthInfo(attributes.getProviderId(), registrationId, attributes.getImage());
 			user = userRepository.save(user);
 		}
 		log.info("getNameAttributeKey={}", attributes.getNameAttributeKey());

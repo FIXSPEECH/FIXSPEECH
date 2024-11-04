@@ -6,7 +6,7 @@ import AccessPage from "./pages/user/AccessPage";
 import VoiceAnalysis from "./pages/user/VoiceAnalysis";
 import TestPage from "./pages/TestPage";
 import PracticeSelect from "./pages/PronouncePractice/PracticeSelect";
-import PracticePronouce from "./pages/PronouncePractice/PracticePronouce";
+import PracticePronouce from "./pages/PronouncePractice/PracticePronounce";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
 import Lecture from "./pages/PronounceLecture/Lecture";
@@ -48,10 +48,10 @@ function AppWrapper() {
           <Route path="/testpage" element={<TestPage />} />
           <Route path="/" element={<MainPage />} />
           <Route path="/pronounce/practice/select" element={<PracticeSelect />} />
-          <Route path="/pronounce/practice" element={<PracticePronouce />} />
+          <Route path="/pronounce/:options" element={<PracticePronouce />} />
           <Route path='/pronounce/lecture' element={<Lecture/>}/>
           <Route path='/situation/practice/select' element={<SelectOptions/>}/>
-          <Route path='/situation/practice/select/script' element={<RegistScript/>} />
+          <Route path='/situation/practice/regist/script' element={<RegistScript/>} />
           <Route path='/situation/practice/select/script' element={<SelectScript/>} />
           <Route path='/situation/practice/' element={<SituationPractice/>} />
           <Route path='/announcer/imitate' element={<AnnouncerPractice/>} />
