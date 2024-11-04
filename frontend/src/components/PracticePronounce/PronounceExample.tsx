@@ -14,6 +14,8 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
     const {audioURL, isRecording} = useVoiceStore();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
+    const [example, setExample] = useState<string>("")
+
 
     const handlePlayAudio = () => {
         if (audioRef.current) {
@@ -33,7 +35,8 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
     useEffect(() => {
         const getExample = async () => {
             try {
-                const example = await ExampleGet(trainingId);
+                const response = await ExampleGet(trainingId);
+                setExample(response)
                 console.log('연습 데이터', example)
             } catch(e) {
                 console.log(e)
@@ -62,6 +65,8 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
             </div>
             )}
            </div>
+
+            <div className="text-white">{example}</div>
 
             <div className="text-[#FF8C82] text-4xl break-words"> 떡볶이 떡은 떡볶이용 떡이고 떡국 떡은 떡국용 떡이다 </div>
          
