@@ -29,7 +29,7 @@ public class UserVoiceFile extends BaseTimeEntity {
 	@Column(name="record_title")
 	String recordTitle;
 
-	@Column(name = "record_name")
-	String recordName;
+	@Column(name = "record_address")
+	String recordAddress;
 
 }

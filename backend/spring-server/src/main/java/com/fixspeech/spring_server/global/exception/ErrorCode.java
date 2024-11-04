@@ -40,9 +40,10 @@ public enum ErrorCode {
 	CHECK_SELF_FOLLOW_ERROR("U005", "자기 자신은 확인할 수 없습니다.", HttpStatus.BAD_REQUEST),
 
 	// UserRecord
-	FAIL_TO_UPLOAD_RECORD("R001","유저 목소리 녹음 업로드 실패하였습니다.", HttpStatus.BAD_REQUEST)
-	;
+	FAIL_TO_UPLOAD_RECORD("R001","유저 목소리 녹음 업로드 실패하였습니다.", HttpStatus.BAD_REQUEST),
 
+	//training
+	Fail_TO_LOAD_SENTENCE("T001","문장 불러오기 실패하였습니다",HttpStatus.BAD_REQUEST);
 
 	private final String code;
 	private final String message;

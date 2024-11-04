@@ -29,11 +29,14 @@ public class AnalyzeResult extends BaseTimeEntity {
 	@Column(name = "user_id")
 	private Long userId;
 
+	@Column(name = "record_id")
+	private Long recordId;
+
 	@Column(name ="clarity")
 	private float clarity;
 
 	@Column(name = "intonation_pattern_consistency")
-	private String intonationPatternConsistency;
+	private float intonationPatternConsistency;
 
 	@Column(name = "melody_index")
 	private float melodyIndex;
@@ -49,9 +52,6 @@ public class AnalyzeResult extends BaseTimeEntity {
 
 	@Column(name = "jitter")
 	private float jitter;
-
-	@Column(name = "shimmer")
-	private float shimmer;
 
 	@Column(name = "amr")
 	private float amr;
