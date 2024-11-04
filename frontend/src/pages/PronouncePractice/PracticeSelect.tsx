@@ -12,7 +12,7 @@ function PracticeSelect(){
     const navigate = useNavigate()
 
     const gridItems = [
-        { color: '#FF8C82', label: '문장연습', imageSrc: music, url:'practice', imgMargin: 50 },
+        { color: '#FF8C82', label: '문장연습', imageSrc: music, url:'sentence', imgMargin: 50 },
         { color: '#FF8C82', label: '잰말놀이', imageSrc: puzzle, url:'tongue-twister', imgMargin: 50 },
       ];
 

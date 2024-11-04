@@ -30,24 +30,25 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
     
 
     // 연습 문제 가져오기
-    // useEffect(() => {
-    //     const getExample = async () => {
-    //         try {
-    //             const example = await ExampleGet(trainingId);
-    //             console.log('연습 데이터', example)
-    //         } catch(e) {
-    //             console.log(e)
-    //         }
-    //     }
+    useEffect(() => {
+        const getExample = async () => {
+            try {
+                const example = await ExampleGet(trainingId);
+                console.log('연습 데이터', example)
+            } catch(e) {
+                console.log(e)
+            }
+        }
 
 
-    //     getExample();
-    // })
+        getExample();
+    })
      
     
 
     return (
-        <>
+        <div className="flex justify-center items-center ">
+         <div style={{ width: `${size}rem`, height: `${size}rem`}}>
             {!isRecording && audioURL && (
             <div>
             <audio ref={audioRef} src={audioURL} 
@@ -55,15 +56,16 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
             /> 
             <VolumeDownIcon 
             onClick={handlePlayAudio} 
-            style={{ cursor: 'pointer', color, fontSize: `${size}rem` }} 
+            style={{ cursor: 'pointer', color, fontSize: `${size}rem` }}
+            className="mb-6" 
             />
             </div>
             )}
+           </div>
 
-            <div className="text-[#FF8C82] text-4xl"> 떡볶이 떡은 떡볶이용 떡이고 떡국 떡은 떡국용 떡이다 </div>
+            <div className="text-[#FF8C82] text-4xl break-words"> 떡볶이 떡은 떡볶이용 떡이고 떡국 떡은 떡국용 떡이다 </div>
          
-        </>
-   
+        </div>
     )
 }
 
