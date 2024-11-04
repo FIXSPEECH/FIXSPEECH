@@ -14,6 +14,7 @@ public class OAuthAttributes {
 	private String nameAttributeKey;
 	private String name;
 	private String email;
+	private String image;
 	private String providerId;
 	private Integer age;
 	private String gender;
@@ -37,6 +38,7 @@ public class OAuthAttributes {
 			.name((String)kakaoAccount.get("name"))
 			.email((String)kakaoAccount.get("email"))
 			.nickName((String)kakaoProfile.get("nickname"))
+			.image((String)kakaoProfile.get("profile_image_url"))
 			.age(Integer.parseInt(((String)kakaoAccount.get("age_range")).split("~")[0]))
 			.gender((String)kakaoAccount.get("gender"))
 			.providerId(String.valueOf(attributes.get("id")))
