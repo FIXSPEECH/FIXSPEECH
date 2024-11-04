@@ -132,7 +132,7 @@ public class UserController {
 		} catch (Exception e) {
 			return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
 		}
-		return ApiResponse.createSuccess(users, "성공");
+		return ApiResponse.createSuccess(users, "사용자 정보 조회 성공");
 	}
 
 	private String extractRefreshToken(HttpServletRequest request) {
