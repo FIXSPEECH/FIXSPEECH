@@ -41,6 +41,26 @@ export default defineConfig({
           },
         ],
       },
+      // Service Worker 설정
+      workbox: {
+        navigateFallback: "/index.html",
+        // API 요청을 네트워크 우선으로 처리
+        runtimeCaching: [
+          {
+            urlPattern: /^https?:\/\/.*\/api\/.*/,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-cache",
+              networkTimeoutSeconds: 10,
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+        // API 요청 경로는 React Router에서 제외
+        navigateFallbackDenylist: [/^\/api\//],
+      },
     }),
   ],
 
