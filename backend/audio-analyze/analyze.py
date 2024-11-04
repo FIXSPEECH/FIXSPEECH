@@ -90,7 +90,7 @@ def getJitter(sound):
     # total_shimmer = 0
     count = 0
 
-    # 각 유성 구간에 대해 Jitter와 Shimmer를 계산
+    # 각 유성 구간에 대해 Jitter를 계산
     for interval_index in range(num_intervals):
         start_time = call(
             text_grid, "Get start time of interval", 1, interval_index + 1)
@@ -102,26 +102,13 @@ def getJitter(sound):
             jitter = call(point_process, "Get jitter (local)",
                           start_time, end_time, 0.0001, 0.04, 1.3)
 
-            # Shimmer를 다른 함수 방식으로 계산 (예: Get shimmer (apq3))
-            # shimmer = call([sound, point_process], "Get shimmer (apq3)", start_time, end_time, 0.0001, 0.04, 1.3, 1.0)
-
-            # 각 구간의 Jitter와 Shimmer 값 확인
-            # print(f"Interval {interval_index + 1}: Start = {start_time}, End = {end_time}, Jitter = {jitter}")
-            # print(f"Interval {interval_index + 1}: Start = {start_time}, End = {end_time}, Jitter = {jitter}, Shimmer = {shimmer}")
-
-            # 유효한 Jitter와 Shimmer 값일 때만 누적
+            # 유효한 Jitter값일 때만 누적
             if jitter is not None and not (jitter != jitter):  # NaN 체크
                 total_jitter += jitter
                 count += 1
-            # if shimmer is not None and not (shimmer != shimmer):  # NaN 체크
-            #     total_shimmer += shimmer
 
     # 평균 Jitter와 Shimmer 계산
     avg_jitter = total_jitter / count if count > 0 else float('nan')
-    # avg_shimmer = total_shimmer / count if count > 0 else float('nan')
-
-    # print(f"Average Jitter (Voiced): {avg_jitter}")
-    # print(f"Average Shimmer (Voiced): {avg_shimmer}")
 
     return avg_jitter
 
@@ -205,12 +192,3 @@ def calculate_metrics(file):
     }
 
     return metrics
-
-
-# Example usage
-a = [1, 2, 3, 6]
-for b in a:
-    print(f"SBSCU08{b}")
-    metrics = calculate_metrics(f'samples/SPK082SBSCU08{b}.wav')
-    for key, value in metrics.items():
-        print(f"{key}: {value}")
