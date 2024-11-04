@@ -5,7 +5,7 @@ function PracticePronouce() {
     return (
         <>
             <PronounceExample/>
-            <Microphone color={'#FF8C82'}/>
+            <Microphone color={'#FF8C82'} size={5} />
         </>
     )
 }

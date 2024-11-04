@@ -24,10 +24,12 @@ public class UserVoiceFile extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
+	@Column(name = "user_id")
+	Long userId;
 	@Column(name="record_title")
 	String recordTitle;
 
-	@Column(name = "record_name")
-	String recordName;
+	@Column(name = "record_address")
+	String recordAddress;
 
 }

@@ -8,8 +8,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.fixspeech.spring_server.common.JwtTokenProvider;
+import com.fixspeech.spring_server.global.common.JwtTokenProvider;
+import com.fixspeech.spring_server.global.exception.CustomException;
+import com.fixspeech.spring_server.global.exception.ErrorCode;
+import com.fixspeech.spring_server.utils.ErrorResponseUtil;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws ServletException, IOException {
 
 		String jwt = getJwtFromRequest(request);
-		String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
 		try {
 			if (jwt != null && jwtTokenProvider.validateToken(jwt)) {
@@ -40,11 +43,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				log.info("auth={}", auth);
 				SecurityContextHolder.getContext().setAuthentication(auth);
 			}
-		} catch (Exception e) {
-			log.info("FilterInternal 오류 발생: " + e);
-		} finally {
-			filterChain.doFilter(request, response);
+		} catch (CustomException e) {
+			SecurityContextHolder.clearContext();
+			ErrorResponseUtil.sendErrorResponse(response, ErrorCode.ACCESS_TOKEN_EXPIRED);
+			return;
+		} catch (JwtException e) {
+			SecurityContextHolder.clearContext();
+			ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_JWT_TOKEN);
+			return;
 		}
+		filterChain.doFilter(request, response);
 	}
 
 	// 토큰 정보 추출
@@ -52,8 +60,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		log.info("RequestURL={}", request.getRequestURL());
 		String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 		log.info("bearerToken={}", bearerToken);
-		log.info("bearerToken.startsWith(\"Bearer \")={}", bearerToken.startsWith("Bearer "));
 		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+			log.info("bearerToken.startsWith(\"Bearer \")={}", bearerToken.startsWith("Bearer "));
 			return bearerToken.split(" ")[1].trim();
 		}
 		return null;

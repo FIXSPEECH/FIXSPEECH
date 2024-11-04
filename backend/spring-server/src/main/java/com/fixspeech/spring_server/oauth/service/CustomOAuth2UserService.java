@@ -11,7 +11,8 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import com.fixspeech.spring_server.common.JwtTokenProvider;
+import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
+import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.model.Role;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
@@ -43,16 +44,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			oAuth2User.getAttributes());
 		log.info("registrationId={}", registrationId);
 		Users user = userRepository.findByEmail(attributes.getEmail()).orElse(null);
-
+		log.info("user={}", user.getImage());
+		log.info("attribute={}", attributes.getImage());
 		if (user == null) {
+			log.info("empty");
 			user = Users.builder()
 				.email(attributes.getEmail())
 				.name(attributes.getName())
 				.nickName(attributes.getNickName())
 				.age(attributes.getAge())
 				.isActive(true)
-				.createdAt(new Date())
 				.gender(attributes.getGender())
+				.image(attributes.getImage())
 				.provider(registrationId)
 				.providerId(attributes.getProviderId())
 				.role(Role.ROLE_USER)
@@ -61,13 +64,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			user = userRepository.save(user);
 
 			// 이메일 이름으로 JWT 토큰 생성
-			String accessToken = jwtTokenProvider.generateAccessToken(attributes.getEmail(), attributes.getName());
-			String refreshToken = jwtTokenProvider.generateRefreshToken(attributes.getEmail(),
-				attributes.getName());
+			JwtUserClaims jwtUserClaims = JwtUserClaims.fromUsersEntity(user);
+			String accessToken = jwtTokenProvider.generateAccessToken(jwtUserClaims);
+			String refreshToken = jwtTokenProvider.generateRefreshToken(jwtUserClaims);
 
 		} else if (!registrationId.equals(user.getProvider()) || !attributes.getProviderId()
-			.equals(user.getProviderId())) {
-			user.updateOAuthInfo(attributes.getProviderId(), registrationId);
+			.equals(user.getProviderId()) || !attributes.getImage().equals(user.getImage())) {
+			log.info("다른 정보 존재");
+			user.updateOAuthInfo(attributes.getProviderId(), registrationId, attributes.getImage());
 			user = userRepository.save(user);
 		}
 		log.info("getNameAttributeKey={}", attributes.getNameAttributeKey());

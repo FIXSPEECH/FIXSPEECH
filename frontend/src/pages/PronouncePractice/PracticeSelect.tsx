@@ -17,6 +17,7 @@ function PracticeSelect(){
       ];
 
     return (
+       
         <Box sx={{ flexGrow: 1, marginRight:'3%', marginLeft:'3%', marginBottom:'3%'}}>
             <Typography variant='h5' className='text-white' align="center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal'}}>
                 *원하는 훈련 종류를 선택해주세요.
@@ -28,11 +29,10 @@ function PracticeSelect(){
                         <div style={{ color: 'white', fontSize: '1.5rem' , wordBreak: 'keep-all', whiteSpace: 'normal'}}>{item.label}</div>
                         <img src={item.imageSrc} alt={item.label} style={{ width: '100%', marginTop: item.imgMargin, marginLeft: 15, objectFit: 'cover' }} />
                     </Grid>
-              
-             
                 ))}
             </Grid>
         </Box>
+  
     )
 }
 

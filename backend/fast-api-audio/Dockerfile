@@ -17,3 +17,6 @@ COPY . .
 
 # FastAPI 서버 실행
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# .env 파일 복사
+COPY .env .

@@ -9,9 +9,18 @@ import PracticeSelect from "./pages/PronouncePractice/PracticeSelect";
 import PracticePronouce from "./pages/PronouncePractice/PracticePronouce";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
+import Lecture from "./pages/PronounceLecture/Lecture";
+import SelectOptions from "./pages/SituationPractice/SelectOptions";
+import RegistScript from "./pages/SituationPractice/RegistScript";
+import SelectScript from "./pages/SituationPractice/SelectScript";
+import SituationPractice from "./pages/SituationPractice/SituationPractice";
+import AnnouncerPractice from "./pages/AnnouncerImmitate/AnnouncerPractice";
+import GameStage from "./pages/Game/GameStage";
+import Game from "./pages/Game/Game";
+import Analysis from "./pages/Analysis/Analysis";
 
 function AppWrapper() {
-  const hiddenHeaderRoutes = ["/", "/user/regist/information"];
+  const hiddenHeaderRoutes = ["/login", "/user/regist/information"];
   // useEffect(() => {
   //   const accessToken = sessionStorage.getItem("accessToken");
 
@@ -40,6 +49,15 @@ function AppWrapper() {
           <Route path="/" element={<MainPage />} />
           <Route path="/pronounce/practice/select" element={<PracticeSelect />} />
           <Route path="/pronounce/practice" element={<PracticePronouce />} />
+          <Route path='/pronounce/lecture' element={<Lecture/>}/>
+          <Route path='/situation/practice/select' element={<SelectOptions/>}/>
+          <Route path='/situation/practice/select/script' element={<RegistScript/>} />
+          <Route path='/situation/practice/select/script' element={<SelectScript/>} />
+          <Route path='/situation/practice/' element={<SituationPractice/>} />
+          <Route path='/announcer/imitate' element={<AnnouncerPractice/>} />
+          <Route path='/game/stage' element={<GameStage/>} />
+          <Route path='/game' element={<Game/>} />
+          <Route path='/analysis' element={<Analysis/>} />
         </Route>
       </Routes>
     </>

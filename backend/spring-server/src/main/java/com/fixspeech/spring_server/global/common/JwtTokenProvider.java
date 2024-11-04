@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.common;
+package com.fixspeech.spring_server.global.common;
 
 import java.util.Date;
 
@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.fixspeech.spring_server.config.CustomUserDetailsService;
+import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -56,47 +57,20 @@ public class JwtTokenProvider {
 		this.secretKey = Keys.hmacShaKeyFor(keyBytes);
 	}
 
-	/**
-	 * @implSpec
-	 * AccessToken 생성 메서드
-	 * @param userEmail 사용자 이메일
-	 * @return JWT 토큰 문자열
-	 */
-	public String generateAccessToken(String userEmail) {
-		return generateToken(userEmail, accessTokenExpiration);
+	public String generateAccessToken(JwtUserClaims jwtUserClaims) {
+		return generateOAuthToken(jwtUserClaims, accessTokenExpiration);
 	}
 
-	/**
-	 * @implSpec
-	 * OAuth AccessToken 생성 메서드
-	 * @param email 사용자 이메일
-	 * @param name 사용자 이름
-	 * @return JWT 토큰 문자열
-	 */
-	public String generateAccessToken(String email, String name) {
-		return generateOAuthToken(email, name, oAuthAccessTokenExpiration);
+	public String generateRefreshToken(JwtUserClaims jwtUserClaims) {
+		return generateOAuthToken(jwtUserClaims, refreshTokenExpiration);
 	}
 
-	/**
-	 * @implSpec
-	 * RefreshToken 생성 메서드
-	 * @param userEmail 사용자 이메일
-	 * @return JWT 토큰 문자열
-	 */
-	public String generateRefreshToken(String userEmail) {
-		return generateToken(userEmail, refreshTokenExpiration);
+	public String generateAccessToken(String accessToken) {
+		return generateOAuthToken(accessToken, accessTokenExpiration);
 	}
 
-	/**
-	 * @implSpec
-	 * OAuth RefreshToken 생성 메서드
-	 * @param email 사용자 이메일
-	 * @param name 사용자 이름
-	 * @return JWT 토큰 문자열
-	 */
-	public String generateRefreshToken(String email, String name) {
-		log.info("OAuth generate RefreshToken");
-		return generateOAuthToken(email, name, oAuthRefreshTokenExpiration);
+	public String generateRefreshToken(String refreshToken) {
+		return generateOAuthToken(refreshToken, refreshTokenExpiration);
 	}
 
 	/**
@@ -143,37 +117,38 @@ public class JwtTokenProvider {
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 
-	/**
-	 *
-	 * @param userEmail 사용자 이메일 정보, 토큰에 포함될 클레임 값
-	 * @param expiration 토큰의 만료 시간 (밀리초 단위)
-	 * @return 생성된 JWT 토큰 문자열
-	 */
-	private String generateToken(String userEmail, long expiration) {
+	private String generateOAuthToken(JwtUserClaims jwtUserClaims, long expiration) {
 		return Jwts.builder()
 			.issuer("FixSpeech")        // 토큰을 발행한 주체 (발급자)
-			.subject("JWT Token")        // 토큰의 주제 (설명)
-			.claim("userEmail", userEmail)        // 사용자 이메일을 클레임에 포함
+			.subject("JWT token")        // 토큰의 주제 (설명)
+			.claim("email", jwtUserClaims.getEmail())        // 사용자 이메일을 클레임에 포함
+			.claim("name", jwtUserClaims.getName())        // 사용자 이름을 클레임에 포함
+			.claim("image", jwtUserClaims.getImage())
+			.claim("gender", jwtUserClaims.getGender())
+			.claim("age", jwtUserClaims.getAge())
 			.issuedAt(new Date())        // 토큰 발행 시간
-			.expiration(new Date(new Date().getTime() + expiration))        // 토큰 만료 시간 설정
+			.expiration(new Date(new Date().getTime() + expiration))
 			.signWith(secretKey)        // 비밀 키를 사용해 서명
 			.compact();        // JWT 토큰 문자열 생성
 	}
 
 	/**
+	 * 이전 토큰이 존재하는 경우 수행
 	 * @implSpec
-	 * OAuth Token 생성 메서드
-	 * @param email 사용자 이메일
-	 * @param name 사용자 이름
-	 * @param expiration 만료 기간
-	 * @return Jwts 정보
+	 * @param token refreshToken
+	 * @param expiration 만료 시간
+	 * @return Jwts
 	 */
-	private String generateOAuthToken(String email, String name, long expiration) {
+	private String generateOAuthToken(String token, long expiration) {
+		Claims claims = this.getClaims(token);
 		return Jwts.builder()
 			.issuer("FixSpeech")        // 토큰을 발행한 주체 (발급자)
 			.subject("JWT token")        // 토큰의 주제 (설명)
-			.claim("email", email)        // 사용자 이메일을 클레임에 포함
-			.claim("name", name)        // 사용자 이름을 클레임에 포함
+			.claim("email", claims.get("email"))        // 사용자 이메일을 클레임에 포함
+			.claim("name", claims.get("name"))        // 사용자 이름을 클레임에 포함
+			.claim("image", claims.get("image"))
+			.claim("gender", claims.get("gender"))
+			.claim("age", claims.get("age"))
 			.issuedAt(new Date())        // 토큰 발행 시간
 			.expiration(new Date(new Date().getTime() + expiration))
 			.signWith(secretKey)        // 비밀 키를 사용해 서명

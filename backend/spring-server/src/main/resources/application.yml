@@ -57,6 +57,8 @@ jwt:
       expiration: ${JWT_OAUTH_ACCESS_TOKEN_EXPIRATION}
     refresh-token:
       expiration: ${JWT_OAUTH_REFRESH_TOKEN_EXPIRATION}
+      cookie:
+        domain: ${JWT_OAUTH_REFRESH_TOKEN_COOKIE_DOMAIN}
 frontend:
   url: ${FRONTEND_URL}
 

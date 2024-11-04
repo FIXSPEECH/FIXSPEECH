@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fixspeech.spring_server.domain.training.dto.TrainingRequestDto;
 import com.fixspeech.spring_server.domain.training.dto.TrainingResponseDto;
 import com.fixspeech.spring_server.domain.training.service.TrainingService;
-import com.fixspeech.spring_server.global.common.CommonResponse;
+import com.fixspeech.spring_server.global.common.ApiResponse;
 import com.fixspeech.spring_server.global.exception.CustomException;
 import com.fixspeech.spring_server.global.exception.ErrorCode;
 
@@ -23,27 +24,27 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/training")
+@RequestMapping("/training")
 public class TrainingController {
 	private final TrainingService trainingService;
 
 	@GetMapping("/{trainingId}/start")
-	public CommonResponse<?> start(@PathVariable Long trainingId) {
+	public ApiResponse<?> start(@PathVariable Long trainingId) {
 		try {
 			String s = trainingService.getSentence(trainingId);
-			return CommonResponse.success(s, "연습 문장 불러오기 성공");
+			return ApiResponse.createSuccess(s, "연습 문장 불러오기 성공");
 		} catch (Exception e) {
-			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+			throw new CustomException(ErrorCode.Fail_TO_LOAD_SENTENCE);
 		}
 	}
 
 	@PostMapping("/answer")
-	public CommonResponse<?> answer(
-		@RequestBody String s
+	public ApiResponse<?> answer(
+		@RequestBody TrainingRequestDto trainingRequestDto
 	) {
 		try {
-			TrainingResponseDto trainingResponseDto = trainingService.checkClarity(s);
-			return CommonResponse.success(trainingResponseDto, "채점 성공");
+			TrainingResponseDto trainingResponseDto = trainingService.checkClarity(trainingRequestDto.userRecord());
+			return ApiResponse.createSuccess(trainingResponseDto, "채점 성공");
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
 		}

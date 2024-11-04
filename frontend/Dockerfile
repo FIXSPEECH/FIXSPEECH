@@ -14,8 +14,10 @@ COPY . .
 
 RUN npm run build
 
-
 FROM nginx:alpine
+# SSL 인증서를 위한 디렉토리 생성
+RUN mkdir -p /etc/nginx/ssl/
+
 # Nginx 설정 파일을 복사합니다.
 COPY default.conf /etc/nginx/conf.d/default.conf
 # Nginx가 수신 대기할 포트 노출
@@ -24,9 +26,13 @@ COPY default.conf /etc/nginx/conf.d/default.conf
 EXPOSE 5173
 RUN ls -al
 
+EXPOSE 80 443
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-#RUN ls -al /usr/share/nginx/html/kiosk
+
 
 #RUN ls -al /usr/share/nginx/html
 CMD ["nginx", "-g","daemon off;"]
+
+# .env 파일 복사
+COPY .env .
