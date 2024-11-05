@@ -1,124 +1,93 @@
-import axios, { AxiosResponse, AxiosError } from 'axios'
-
+import axios, { AxiosResponse, AxiosError } from "axios";
+import useAuthStore from "../store/authStore";
 
 // axios 인스턴스 생성
 const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
-    headers: {
-        'Content-Type':'application/json'
-    }
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
-
-
 
 // axios 인터셉터 => Access Token 재발급
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
-    function(config){
-        // 엑세스 토큰을 로컬 스토리지에서 가져온다.
-        // const token = localStorage.getItem('authorization')
-        let token: string | null = null;
+  function (config) {
+    const token = useAuthStore.getState().token;
 
-
-        if (window.location.hostname === 'localhost') {
-            const authData = localStorage.getItem('auth-storage');
-        
-            if (authData) {
-                // JSON 문자열을 객체로 변환합니다.
-                const parsedData = JSON.parse(authData);
-        
-                // token 값을 추출합니다.
-                token = parsedData.state?.token;
-            }
-        } else{
-             token = localStorage.getItem('authorization')
-        }
-     
-
-
-
-        // 토큰이 있으면 토큰을 넣어서 api 요청을 보냄
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`
-        }
-        return config
-    },
-
-    function (error) {
-        console.log('인터셉터 에러', error)
-        return Promise.reject(error);
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+      // 토큰 확인을 위한 콘솔 로그
+      console.log("토큰 전송", token);
     }
-)
+    return config;
+  },
+
+  function (error) {
+    console.log("인터셉터 에러", error);
+    return Promise.reject(error);
+  }
+);
 
 // 응답 인터셉터
 axiosInstance.interceptors.response.use(
-    function (response: AxiosResponse){
-        return response
-    },
-    async (error: AxiosError) => {
-        if(error.response?.status === 401) {
-            try{
-                // 로컬스토리지에 저장된 엑세스 토큰 갱신
-                await tokenRefresh();
+  function (response: AxiosResponse) {
+    return response;
+  },
+  async (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      try {
+        await tokenRefresh();
+        const token = useAuthStore.getState().token;
 
-                const accessToken = localStorage.getItem('authorization')
-                if (accessToken && error.config) {
-                    console.log( '새 엑세스 토큰 발급', error.config)
-
-                    error.config.headers.Authorization = `Bearer ${accessToken}`;
-                    return axiosInstance(error.config)
-                }
-            } catch (refreshError){
-                Logout();
-                return Promise.reject(refreshError)
-            }
-        } 
-        return Promise.reject(error)
-        
+        if (token && error.config) {
+          // 토큰 재발급 확인을 위한 콘솔 로그
+          console.log("새 엑세스 토큰 발급", error.config);
+          error.config.headers.Authorization = `Bearer ${token}`;
+          return axiosInstance(error.config);
+        }
+      } catch (refreshError) {
+        Logout();
+        return Promise.reject(refreshError);
+      }
     }
-)
-
+    return Promise.reject(error);
+  }
+);
 
 // 리프레쉬 토큰으로 엑세스 토큰 재발급 요청
-const tokenRefresh = async() => {
-    try {
-        // const response = await axios.post(
-        //     '/api/user/public/accessToken',
-        // )
+const tokenRefresh = async () => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/user/public/accessToken`,
+      {},
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    const newAccessToken = response.headers.authorization.replace(
+      /^Bearer\s+/,
+      ""
+    );
 
-        // 재발급 엑세스 토큰
-        const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/user/public/accessToken`,
-            {},
-            {
-              headers: { 'Content-Type': 'application/json' },
-            }
-          );
-        const newAccessToken = response.headers.authorization.replace( /^Bearer\s+/, '');
-        
-        if (!newAccessToken) {
-            console.log('엑세스 토큰 재발급 실패')
-            return
-        }
-
-        // 재발급 한 엑세스 토큰 저장
-        localStorage.setItem('authorization', newAccessToken)
-    } catch (e) {
-        console.error('리프레시 토큰 요청 중 오류', e)
-        throw e;
+    if (!newAccessToken) {
+      console.log("엑세스 토큰 재발급 실패");
+      return;
     }
-}
 
+    // Zustand store를 통해 토큰 저장
+    useAuthStore.getState().setToken(newAccessToken);
+  } catch (e) {
+    console.error("리프레시 토큰 요청 중 오류", e);
+    throw e;
+  }
+};
 
 // 로그아웃
-const Logout = async() => {
-
-    localStorage.removeItem('authorization');
-    window.location.replace('/');
-    
-}
-
-
+const Logout = async () => {
+  useAuthStore.getState().setToken(null);
+  window.location.replace("/");
+};
 
 export default axiosInstance;
-export {tokenRefresh}
+export { tokenRefresh };
