@@ -7,4 +7,6 @@ import com.fixspeech.spring_server.domain.game.model.Game;
 
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
+
+	Game findTopByLevel(int level);
 }
