@@ -68,7 +68,12 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
 
             <div className="text-white">{example}</div>
 
-            <div className="text-[#FF8C82] text-4xl break-words"> 떡볶이 떡은 떡볶이용 떡이고 떡국 떡은 떡국용 떡이다 </div>
+            {/* <div className="text-[#FF8C82] text-4xl break-words"> 떡볶이 떡은 떡볶이용 떡이고 떡국 떡은 떡국용 떡이다 </div>
+             */}
+
+            <div className="text-[#FF8C82] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
+            떡볶이 떡은 떡볶이용 떡이고 떡국 떡은 떡국용 떡이다
+            </div>
          
         </div>
     )
