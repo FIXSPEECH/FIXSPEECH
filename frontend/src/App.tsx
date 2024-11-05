@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import ParticleBackground from "./components/ParticleBackground";
 import Header from "./components/Header/Header";
 import LoginPage from "./pages/Login/LoginPage";
 import MainPage from "./pages/MainPage";
@@ -24,6 +25,7 @@ import ErrorPage from "./pages/ErrorPage";
 const Layout = () => {
   return (
     <>
+      <ParticleBackground />
       <Header />
       <Outlet />
     </>
