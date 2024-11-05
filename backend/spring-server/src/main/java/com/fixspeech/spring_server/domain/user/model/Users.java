@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import com.fixspeech.spring_server.domain.record.model.UserVoiceFile;
 import com.fixspeech.spring_server.global.common.BaseTimeEntity;
 
 import jakarta.persistence.Column;
@@ -24,7 +25,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Table(name = "users")
 @Entity
@@ -71,10 +71,14 @@ public class Users extends BaseTimeEntity {
 	@Column(name = "provider_id")
 	private String providerId;
 
-	@Setter
+	// @Setter
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id") // 외래키
 	private List<Grass> grassList = new ArrayList<>();
+
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id") // 외래키
+	private List<UserVoiceFile> userVoiceFiles = new ArrayList<>();
 
 	public void updateOAuthInfo(String provider, String providerId, String image) {
 		this.provider = provider;

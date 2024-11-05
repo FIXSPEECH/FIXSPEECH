@@ -9,7 +9,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
+import com.fixspeech.spring_server.domain.user.model.Grass;
 import com.fixspeech.spring_server.domain.user.model.Users;
+import com.fixspeech.spring_server.domain.user.repository.GrassRepository;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
+	private final GrassRepository grassRepository;
 	private final AuthenticationManager authenticationManager;
 
 	@Override
@@ -37,7 +40,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Optional<Users> findGrassByEmail (String email) {
-		return userRepository.findGrassByEmail(email);
+	public Optional<List<Grass>> findUserGrassByEmail (Long userId) {
+		return grassRepository.findUserGrassByUserId(userId);
 	}
 }
