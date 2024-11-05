@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.domain.user.model;
+package com.fixspeech.spring_server.domain.grass.model;
 
 import java.time.LocalDate;
 

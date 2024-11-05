@@ -1,10 +1,10 @@
-package com.fixspeech.spring_server.domain.user.dto.response;
+package com.fixspeech.spring_server.domain.grass.dto.response;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.fixspeech.spring_server.domain.user.model.Grass;
+import com.fixspeech.spring_server.domain.grass.model.Grass;
 
 import lombok.Builder;
 import lombok.Getter;
