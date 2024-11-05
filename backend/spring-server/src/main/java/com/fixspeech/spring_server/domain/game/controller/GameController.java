@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.domain.game.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,9 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fixspeech.spring_server.domain.game.dto.ResultRequestDto;
+import com.fixspeech.spring_server.domain.game.dto.ResultResponseDto;
 import com.fixspeech.spring_server.domain.game.service.GameService;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
@@ -33,7 +36,7 @@ public class GameController {
 
 	@GetMapping("/{level}")
 	public ApiResponse<?> getGameWord(
-		@PathVariable Long level
+		@PathVariable int level
 	) {
 		return ApiResponse.createSuccess(gameService.getWord(level), "게임 단어 조회 성공");
 	}
@@ -47,5 +50,15 @@ public class GameController {
 			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND_ERROR));
 		gameService.saveResult(user, resultRequestDto);
 		return ApiResponse.createSuccess(resultRequestDto, "게임 결과 저장 성공");
+	}
+
+	@GetMapping("{level}/result")
+	public ApiResponse<?> getResult(
+		@PathVariable int level,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size
+	) {
+		Page<ResultResponseDto> result = gameService.getResult(page, size, level);
+		return ApiResponse.createSuccess(result, "게임 랭킹 출력");
 	}
 }
