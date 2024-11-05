@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import com.fixspeech.spring_server.domain.grass.model.Grass;
 import com.fixspeech.spring_server.domain.record.model.UserVoiceFile;
 import com.fixspeech.spring_server.global.common.BaseTimeEntity;
 
