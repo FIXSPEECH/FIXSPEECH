@@ -5,22 +5,19 @@ from parselmouth.praat import call
 from fastapi import UploadFile, HTTPException
 import tempfile
 import os
-import matplotlib.pyplot as plt
-import librosa.display
 import logging
+import json
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def load_audio(file):
-    y, sr = librosa.load(file)
+    y, sr = librosa.load(file)  # 원본 샘플링 속도 유지
     return y, sr
-
 
 def load_sound(file):
     return parselmouth.Sound(file)
-
 
 def getFundamentalFrequency(y, sr):
     f0, voiced_flag, voiced_probs = librosa.pyin(
@@ -32,7 +29,6 @@ def getFundamentalFrequency(y, sr):
     voiced_times = times[voiced_flag]
     return voiced_times, voiced_f0, voiced_flag
 
-
 def getFormants(sound):
     formant = call(sound, "To Formant (burg)", 0.025, 5, 5500, 0.025, 50)
     times = np.arange(0, sound.duration, 0.01)
@@ -42,35 +38,26 @@ def getFormants(sound):
 
     return times, f1_values, f2_values, f3_values
 
-
 def getHNR(sound):
     hnr = call(sound, "To Harmonicity (cc)", 0.01, 75, 0.1, 1.0)
     times = np.arange(0, sound.duration, 0.01)
     hnr_values = [hnr.get_value(t) for t in times]
 
-    clean_hnr_values = [
-        value for value in hnr_values if not np.isnan(value) and value > 0]
+    clean_hnr_values = [value for value in hnr_values if not np.isnan(value) and value > 0]
     mean_hnr = np.mean(clean_hnr_values) if clean_hnr_values else 0
-    # print(f"Filtered Average HNR: {mean_hnr:.2f} dB")
-
     return times, hnr_values, mean_hnr
 
-
 def getSpectralSlope(y, sr, voiced_flag):
-    # Calculate spectral centroids
     spectral_centroids = librosa.feature.spectral_centroid(y=y, sr=sr)[0]
     times = librosa.times_like(spectral_centroids, sr=sr)
 
-    # 유성구간만 사용
     valid_indices = voiced_flag[:min(len(times), len(voiced_flag))]
     voiced_times = times[valid_indices]
     voiced_spectral_centroids = spectral_centroids[valid_indices]
 
-    # Calculate spectral slope for voiced segments only
     spectral_slope = np.gradient(voiced_spectral_centroids)
 
     return voiced_times, spectral_slope
-
 
 def getAMR(y, sr):
     rms = librosa.feature.rms(y=y)[0]
@@ -79,53 +66,37 @@ def getAMR(y, sr):
 
     return times, amr
 
-
 def getJitter(sound):
     point_process = call(sound, "To PointProcess (periodic, cc)", 75, 600)
 
-    # 유성 구간을 추출할 때 필요한 모든 매개변수를 지정
     try:
-        # 유성 및 무성 구간을 포함한 TextGrid 생성
-        text_grid = call(sound, "To TextGrid (silences)", 100,
-                         0.1, -25, 0.1, 0.1, "silent", "voiced")
-        # 1번째 tier에서 interval 수 확인
+        text_grid = call(sound, "To TextGrid (silences)", 100, 0.1, -25, 0.1, 0.1, "silent", "voiced")
         num_intervals = call(text_grid, "Get number of intervals", 1)
     except Exception as e:
-        print(f"Error creating TextGrid or retrieving intervals: {e}")
-        return float('nan'), float('nan')
+        logger.error(f"Error creating TextGrid or retrieving intervals: {e}")
+        return float('nan')
 
     total_jitter = 0
-    # total_shimmer = 0
     count = 0
 
-    # 각 유성 구간에 대해 Jitter를 계산
     for interval_index in range(num_intervals):
-        start_time = call(
-            text_grid, "Get start time of interval", 1, interval_index + 1)
-        end_time = call(text_grid, "Get end time of interval",
-                        1, interval_index + 1)
+        start_time = call(text_grid, "Get start time of interval", 1, interval_index + 1)
+        end_time = call(text_grid, "Get end time of interval", 1, interval_index + 1)
         label = call(text_grid, "Get label of interval", 1, interval_index + 1)
 
-        if label == "voiced" and end_time - start_time >= 0.1:  # 최소 0.1초 이상인 유성 구간만 처리
-            jitter = call(point_process, "Get jitter (local)",
-                          start_time, end_time, 0.0001, 0.04, 1.3)
-
-            # 유효한 Jitter값일 때만 누적
+        if label == "voiced" and end_time - start_time >= 0.1:
+            jitter = call(point_process, "Get jitter (local)", start_time, end_time, 0.0001, 0.04, 1.3)
             if jitter is not None and not (jitter != jitter):  # NaN 체크
                 total_jitter += jitter
                 count += 1
 
-    # 평균 Jitter와 Shimmer 계산
     avg_jitter = total_jitter / count if count > 0 else float('nan')
-
     return avg_jitter
-
 
 def getMel(y, sr, voiced_flag):
     mel_spectrogram = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
     mel_spectrogram_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
 
-    # 유성구간만 고려하여 MFCC 계산
     valid_indices = voiced_flag[:mel_spectrogram_db.shape[1]]
     voiced_mel_spectrogram_db = mel_spectrogram_db[:, valid_indices]
     mfcc = librosa.feature.mfcc(S=voiced_mel_spectrogram_db, sr=sr, n_mfcc=13)
@@ -133,37 +104,24 @@ def getMel(y, sr, voiced_flag):
 
     return times, mel_spectrogram_db, mfcc
 
-
 def calculate_combined_rate_variability(times, voiced_flag, f0, spectral_slope):
-    # Extract voiced and unvoiced segments times
     valid_indices = voiced_flag[:len(times)]
     voiced_times = times[valid_indices]
     unvoiced_times = times[~valid_indices]
 
-    # Calculate the duration of voiced and unvoiced segments
     voiced_durations = np.diff(voiced_times)
     unvoiced_durations = np.diff(unvoiced_times)
 
-    # Calculate variability for voiced segments (F0 changes)
     f0_changes = np.diff(f0)
     voiced_variability_f0 = np.std(f0_changes) if len(f0_changes) > 1 else 0
 
-    # Calculate variability for spectral slope for voiced segments only
-    spectral_slope_voiced = spectral_slope[:min(
-        len(spectral_slope), len(f0_changes))]
-    voiced_variability_slope = np.std(spectral_slope_voiced) if len(
-        spectral_slope_voiced) > 1 else 0
+    spectral_slope_voiced = spectral_slope[:min(len(spectral_slope), len(f0_changes))]
+    voiced_variability_slope = np.std(spectral_slope_voiced) if len(spectral_slope_voiced) > 1 else 0
 
-    # Calculate variability for unvoiced segments (length consistency)
-    unvoiced_variability = np.std(unvoiced_durations) if len(
-        unvoiced_durations) > 1 else 0
+    unvoiced_variability = np.std(unvoiced_durations) if len(unvoiced_durations) > 1 else 0
 
-    # Combine the variability metrics with adjusted weights
-    rate_variability = (voiced_variability_f0 * 0.5 +
-                        voiced_variability_slope * 0.1 + unvoiced_variability * 0.4)
-
+    rate_variability = (voiced_variability_f0 * 0.5 + voiced_variability_slope * 0.1 + unvoiced_variability * 0.4)
     return rate_variability
-
 
 def calculate_metrics(file):
     y, sr = load_audio(file)
@@ -177,11 +135,8 @@ def calculate_metrics(file):
     jitter = getJitter(sound)
     times_mel, mel_spectrogram_db, mfcc = getMel(y, sr, voiced_flag)
 
-    # Calculate combined rate variability
-    rate_variability = calculate_combined_rate_variability(
-        times_f0, voiced_flag, f0, spectral_slope)
+    rate_variability = calculate_combined_rate_variability(times_f0, voiced_flag, f0, spectral_slope)
 
-    # Calculate utterance energy using RMS and Mel Spectrogram with adjusted weights
     rms = librosa.feature.rms(y=y)[0]
     mean_rms = np.mean(rms)
     mean_mel_energy = np.mean(mel_spectrogram_db)
@@ -201,24 +156,28 @@ def calculate_metrics(file):
 
     return metrics
 
+def convert_np_to_python(obj):
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    if isinstance(obj, np.float32):
+        return float(obj)
+    if isinstance(obj, np.integer):
+        return int(obj)
+    return obj
+
 async def analyze_audio(file: UploadFile):
-    temp_file = None
     try:
         contents = await file.read()
-        
+
         with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
             temp_file.write(contents)
             temp_file.flush()
             temp_path = temp_file.name
-        
+
         try:
             metrics = calculate_metrics(temp_path)
-            
-            # 최종 검사
-            for key, value in metrics.items():
-                if isinstance(value, (np.floating, float)) and np.isnan(value):
-                    metrics[key] = 0.0
-            
+            # Convert numpy types to Python native types
+            metrics = json.loads(json.dumps(metrics, default=convert_np_to_python))
             return {
                 "status": "success",
                 "data": {
@@ -227,11 +186,8 @@ async def analyze_audio(file: UploadFile):
             }
         finally:
             if os.path.exists(temp_path):
-                try:
-                    os.unlink(temp_path)
-                except Exception as e:
-                    logger.error(f"Error deleting temporary file: {str(e)}")
-                    
+                os.remove(temp_path)
+
     except Exception as e:
         logger.error(f"Error in analyze_audio: {str(e)}", exc_info=True)
         raise HTTPException(
