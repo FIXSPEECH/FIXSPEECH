@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/training")
-public class TrainingController {
+public class TrainingController implements TrainingApi {
 	private final TrainingService trainingService;
 
 	@GetMapping("/{trainingId}/start")

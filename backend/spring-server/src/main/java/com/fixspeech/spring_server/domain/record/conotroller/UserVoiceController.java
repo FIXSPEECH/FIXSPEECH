@@ -39,7 +39,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/record")
-public class UserVoiceController {
+public class UserVoiceController implements UserVoiceApi {
 	private final S3Service s3Service;
 	private final UserVoiceServiceImpl userVoiceService;
 	private final UserService userService;
@@ -85,7 +85,7 @@ public class UserVoiceController {
 
 	//리스트 목록
 	@GetMapping
-	private ApiResponse<?> getUserRecordList(
+	public ApiResponse<?> getUserRecordList(
 		@AuthenticationPrincipal UserDetails userDetails,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
@@ -102,7 +102,7 @@ public class UserVoiceController {
 
 	//음성 분석 단일 조회
 	@GetMapping("{resultId}")
-	private ApiResponse<?> getUserRecordDetail(
+	public ApiResponse<?> getUserRecordDetail(
 		@PathVariable Long resultId
 	) {
 		try {
