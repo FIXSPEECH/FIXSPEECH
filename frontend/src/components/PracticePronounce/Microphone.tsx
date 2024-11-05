@@ -120,7 +120,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
   };
 
   return (
-    <div className="text-center mt-10">
+    <div className="text-center mt-20">
       <button onClick={isRecording ? stopRecording : startRecording}>
         {isRecording ? (
           <>
@@ -178,7 +178,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
 
       </button>
 
-      <div className="text-white mt-2">
+      <div className="text-white break-words mt-2 text-xs sm:text-sm md:text-base lg:text-text-base xl:text-lg">
         {audioURL
           ? "*다시 녹음하려면 아이콘을 눌러주세요."
           : "*아이콘을 누르고 제시된 문장을 읽어주세요."}
