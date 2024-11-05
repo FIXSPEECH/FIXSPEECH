@@ -31,14 +31,23 @@ public class GameController {
 
 	@GetMapping
 	public ApiResponse<?> getGame() {
-		return ApiResponse.createSuccess(gameService.getGame(), "게임 목록 조회 성공");
+		try {
+			return ApiResponse.createSuccess(gameService.getGame(), "게임 목록 조회 성공");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_GAME);
+
+		}
 	}
 
 	@GetMapping("/{level}")
 	public ApiResponse<?> getGameWord(
 		@PathVariable int level
 	) {
-		return ApiResponse.createSuccess(gameService.getWord(level), "게임 단어 조회 성공");
+		try {
+			return ApiResponse.createSuccess(gameService.getWord(level), "게임 단어 조회 성공");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_WORD);
+		}
 	}
 
 	@PostMapping
@@ -46,10 +55,14 @@ public class GameController {
 		@AuthenticationPrincipal UserDetails userDetails,
 		@RequestBody ResultRequestDto resultRequestDto
 	) {
-		Users user = userService.findByEmail(userDetails.getUsername())
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND_ERROR));
-		gameService.saveResult(user, resultRequestDto);
-		return ApiResponse.createSuccess(resultRequestDto, "게임 결과 저장 성공");
+		try {
+			Users user = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+			gameService.saveResult(user, resultRequestDto);
+			return ApiResponse.createSuccess(resultRequestDto, "게임 결과 저장 성공");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_SAVE_RESULT);
+		}
 	}
 
 	@GetMapping("{level}/result")
@@ -58,7 +71,11 @@ public class GameController {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		Page<ResultResponseDto> result = gameService.getResult(page, size, level);
-		return ApiResponse.createSuccess(result, "게임 랭킹 출력");
+		try {
+			Page<ResultResponseDto> result = gameService.getResult(page, size, level);
+			return ApiResponse.createSuccess(result, "게임 랭킹 출력");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_RESULT);
+		}
 	}
 }

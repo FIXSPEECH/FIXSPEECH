@@ -90,10 +90,14 @@ public class UserVoiceController {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		Users user = userService.findByEmail(userDetails.getUsername())
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-		Page<UserVoiceListResponseDto> result = userVoiceService.getUserRecordList(page, size, user.getId());
-		return ApiResponse.createSuccess(result, "사용자 분석 결과 목록 조회 성공");
+		try {
+			Users user = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+			Page<UserVoiceListResponseDto> result = userVoiceService.getUserRecordList(page, size, user.getId());
+			return ApiResponse.createSuccess(result, "사용자 분석 결과 목록 조회 성공");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_RECORD_LIST);
+		}
 	}
 
 	//음성 분석 단일 조회
@@ -101,8 +105,12 @@ public class UserVoiceController {
 	private ApiResponse<?> getUserRecordDetail(
 		@PathVariable Long resultId
 	) {
-		UserVoiceListResponseDto result = userVoiceService.getUserRecordDetail(resultId);
-		return ApiResponse.createSuccess(result, "음성분석 상세 조회");
+		try {
+			UserVoiceListResponseDto result = userVoiceService.getUserRecordDetail(resultId);
+			return ApiResponse.createSuccess(result, "음성분석 상세 조회");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_RECORD_DETAIL);
+		}
 	}
 
 	// MultipartFile의 InputStream을 처리하기 위한 헬퍼 클래스
