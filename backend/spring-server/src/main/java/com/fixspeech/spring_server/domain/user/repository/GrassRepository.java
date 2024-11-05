@@ -14,4 +14,7 @@ import com.fixspeech.spring_server.domain.user.model.Grass;
 public interface GrassRepository extends JpaRepository<Grass, Long> {
 	@Query("SELECT g FROM Grass g WHERE g.userId = :userId")
 	Optional<List<Grass>> findUserGrassByUserId(@Param("userId") Long userId);
+
+	@Query("SELECT g FROM Grass g WHERE g.userId = :userId AND FUNCTION('DATE_FORMAT', g.createdAt, '%Y-%m-%d') = CURRENT_DATE")
+	Optional<Grass> findGrassRecordExists(@Param("userId") Long userId);
 }

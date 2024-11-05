@@ -148,6 +148,18 @@ public class UserController {
 		}
 	}
 
+	@PostMapping("/grass")
+	public ApiResponse<?> addGrassRecord(@AuthenticationPrincipal UserDetails userDetails) {
+		log.info("사용자 정보 = {}", userDetails);
+		String email = userDetails.getUsername();
+		Users user = userService.findByEmail(email).orElse(null);
+		if (user == null) return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+
+		userService.addGrassRecord(user.getId());
+
+		return ApiResponse.createSuccess(null, "완료");
+	}
+
 	private String extractRefreshToken(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {

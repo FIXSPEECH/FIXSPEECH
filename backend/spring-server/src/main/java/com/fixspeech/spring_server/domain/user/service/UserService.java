@@ -17,4 +17,6 @@ public interface UserService {
 	Authentication authenticateUser(String email, String password);
 
 	Optional<List<Grass>> findUserGrassByEmail(Long userId);
+
+	void addGrassRecord(Long userId);
 }
