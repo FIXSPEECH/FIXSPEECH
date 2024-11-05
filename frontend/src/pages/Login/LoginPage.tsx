@@ -1,5 +1,5 @@
 import "../../styles/user/Login.css";
-import Kakao from "../../assets/kakao.png";
+import Kakao from "/kakao.png";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
 

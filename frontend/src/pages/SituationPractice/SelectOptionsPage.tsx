@@ -1,71 +1,48 @@
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
-// 아이콘 img import
-import clock from "/buttons/clock.png";
-import find from "/buttons/find.png";
-import geo from "/buttons/geo.png";
-import music from "/buttons/music.png";
-import read from "/buttons/read.png";
+import Typography from "@mui/material/Typography";
+// 필요한 아이콘 이미지 import
+import register from "/buttons/clock.png"; // 이미지 파일 필요
+import load from "/buttons/clock.png"; // 이미지 파일 필요
 
-function Buttons() {
+function SelectOptions() {
   const navigate = useNavigate();
 
   const gridItems = [
     {
-      color: "#EE719E",
-      label: "발음 훈련 강의",
-      imageSrc: music,
-      url: "/lecture",
+      color: "#FF8C82",
+      label: "대본 등록",
+      imageSrc: register,
+      url: "regist",
       imgMargin: 50,
     },
     {
       color: "#FF8C82",
-      label: "발음 훈련 연습",
-      imageSrc: music,
-      url: "/training",
-      imgMargin: 50,
-    },
-    {
-      color: "#FFAB01",
-      label: "상황별 연습",
-      imageSrc: geo,
-      url: "/situation",
-      imgMargin: 50,
-    },
-    {
-      color: "#B18CFE",
-      label: "아나운서 따라잡기",
-      imageSrc: read,
-      url: "/announcer",
-      imgMargin: 5,
-    },
-    {
-      color: "#FE6250",
-      label: "산성비 게임",
-      imageSrc: clock,
-      url: "/game",
-      imgMargin: 50,
-    },
-    {
-      color: "#37AFE1",
-      label: "내 목소리 분석",
-      imageSrc: find,
-      url: "/analysis",
+      label: "대본 불러오기",
+      imageSrc: load,
+      url: "select",
       imgMargin: 50,
     },
   ];
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        marginRight: "3%",
-        marginLeft: "3%",
-        marginBottom: "3%",
-      }}
-    >
-      <Grid container spacing={2}>
+    <Box sx={{ flexGrow: 1, marginRight: "3%", marginLeft: "3%" }}>
+      <Typography
+        variant="h5"
+        className="text-white"
+        align="center"
+        style={{ wordBreak: "keep-all", whiteSpace: "normal" }}
+      >
+        *원하는 작업을 선택해주세요. (코드 수정 필요)
+      </Typography>
+      <Grid
+        container
+        spacing={5}
+        justifyContent="center"
+        alignItems="center"
+        className="mt-10"
+      >
         {gridItems.map((item, index) => (
           <Grid
             size={{ xs: 6, sm: 4, md: 2 }}
@@ -79,7 +56,7 @@ function Buttons() {
               overflow: "hidden",
               cursor: "pointer",
             }}
-            onClick={() => navigate(item.url)}
+            onClick={() => navigate(`/situation/${item.url}`)}
           >
             <div
               style={{
@@ -108,4 +85,4 @@ function Buttons() {
   );
 }
 
-export default Buttons;
+export default SelectOptions;
