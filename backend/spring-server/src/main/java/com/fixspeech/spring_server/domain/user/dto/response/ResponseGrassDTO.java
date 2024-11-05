@@ -1,6 +1,6 @@
 package com.fixspeech.spring_server.domain.user.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 public class ResponseGrassDTO {
 	private int count;
-	private LocalDateTime createdAt;
+	private LocalDate createdAt;
 
 	public static ResponseGrassDTO fromEntity(Grass grass) {
 		return ResponseGrassDTO.builder()

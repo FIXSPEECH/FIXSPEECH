@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
 			grass = Grass.builder()
 				.userId(userId)
 				.count(1)
+				// .createdAt(LocalDate.now())
 				.build();
 			grassRepository.save(grass);
 			log.info("오늘 해결한 잔디 기록이 존재하지 않습니다.");

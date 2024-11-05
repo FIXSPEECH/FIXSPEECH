@@ -1,9 +1,13 @@
 package com.fixspeech.spring_server.domain.user.model;
 
-import com.fixspeech.spring_server.global.common.BaseTimeEntity;
+import java.time.LocalDate;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,7 +25,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "grass")
-public class Grass extends BaseTimeEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class Grass {
 	@Id
 	@Column(name = "id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,5 +37,9 @@ public class Grass extends BaseTimeEntity {
 
 	@Column(name = "count", nullable = false)
 	private Integer count;
+
+	@CreatedDate
+	@Column(name = "created_at", nullable = false, unique = true)
+	private LocalDate createdAt;
 }
 
