@@ -105,9 +105,9 @@ public class UserController {
 	@PostMapping("/public/logout")
 	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = extractRefreshToken(request);
-
+		log.info(refreshToken);
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-			// tokenService.blacklistRefreshToken(refreshToken);
+			tokenService.blacklistRefreshToken(refreshToken);
 
 			Cookie cookie = new Cookie("refreshToken", null);
 			cookie.setMaxAge(0);

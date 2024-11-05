@@ -19,4 +19,6 @@ public interface UserService {
 	Optional<List<Grass>> findUserGrassByEmail(Long userId);
 
 	void addGrassRecord(Long userId);
+
+	void deleteByEmail(String email);
 }

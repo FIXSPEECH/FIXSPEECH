@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final GrassRepository grassRepository;
 	private final AuthenticationManager authenticationManager;
+	private final TokenService tokenService;
 
 	@Override
 	public void registUser(RequestRegisterDTO requestDto) {
@@ -48,6 +50,17 @@ public class UserServiceImpl implements UserService {
 	public Optional<List<Grass>> findUserGrassByEmail (Long userId) {
 		return grassRepository.findUserGrassByUserId(userId);
 	}
+
+	@Override
+	@Transactional
+	public void deleteByEmail(String email) {
+		Users users = userRepository.findByEmail(email)
+			.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+		userRepository.delete(users);
+		tokenService.invalidateAllUserTokens(email);
+	}
+
 
 	@Override
 	@Transactional
