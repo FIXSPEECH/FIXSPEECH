@@ -3,8 +3,6 @@ import MicNoneIcon from "@mui/icons-material/MicNone";
 import MicIcon from "@mui/icons-material/Mic";
 import useVoiceStore from "../../store/voiceStore";
 import { LiveAudioVisualizer } from "react-audio-visualize";
-// @ts-ignore
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 interface MicrophoneProps {
   color: string; // color prop의 타입 정의
@@ -85,38 +83,15 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       setIsRecording(false);
       setAudioURL(null);
     }
+    if (recognition) {
+      recognition.stop(); // STT 종료
+    }
   };
 
   return (
     <div className="text-center mt-10">
       <button onClick={isRecording ? stopRecording : startRecording}>
         {isRecording ? (
-          //   <>
-          //   <div style={{ position: 'relative', width: '300px', height: '75px' }}>
-          //     {mediaRecorder && (
-          //       <LiveAudioVisualizer
-          //         mediaRecorder={mediaRecorder}
-          //         width={300}
-          //         height={75}
-          //         barColor="rgb(236,90,77)"
-          //         gap={3}
-          //         barWidth={5}
-          //       />
-          //     )}
-          //     <MicIcon
-          //       style={{
-          //         position: 'absolute',
-          //         top: '50%', // 가운데 정렬
-          //         left: '50%', // 가운데 정렬
-          //         transform: 'translate(-50%, -50%)', // 아이콘을 정확히 가운데에 배치
-          //         color,
-          //         fontSize: `${size}rem`
-          //       }}
-          //       className="cursor-pointer"
-          //     />
-          //   </div>
-          // </>
-
           <>
             <div
               style={{ position: "relative", width: "300px", height: "75px" }}
@@ -167,6 +142,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
             className="cursor-pointer"
           />
         )}
+
       </button>
 
       <div className="text-white mt-2">
