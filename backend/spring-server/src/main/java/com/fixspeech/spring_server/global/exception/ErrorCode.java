@@ -33,11 +33,10 @@ public enum ErrorCode {
 
 
 	// User
-	USER_NOT_FOUND_ERROR("U001", "사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-	SELF_FOLLOW_ERROR("U002", "자기 자신은 팔로우할 수 없습니다.", HttpStatus.BAD_REQUEST),
-	ALREADY_FOLLOW_ERROR("U003", "이미 팔로우한 사용자입니다.", HttpStatus.BAD_REQUEST),
-	NOT_FOLLOW_ERROR("U004", "팔로우 목록에 없는 사용자입니다.", HttpStatus.NOT_FOUND),
-	CHECK_SELF_FOLLOW_ERROR("U005", "자기 자신은 확인할 수 없습니다.", HttpStatus.BAD_REQUEST),
+	SELF_FOLLOW_ERROR("U001", "자기 자신은 팔로우할 수 없습니다.", HttpStatus.BAD_REQUEST),
+	ALREADY_FOLLOW_ERROR("U002", "이미 팔로우한 사용자입니다.", HttpStatus.BAD_REQUEST),
+	NOT_FOLLOW_ERROR("U003", "팔로우 목록에 없는 사용자입니다.", HttpStatus.NOT_FOUND),
+	CHECK_SELF_FOLLOW_ERROR("U004", "자기 자신은 확인할 수 없습니다.", HttpStatus.BAD_REQUEST),
 
 	// UserRecord
 	FAIL_TO_UPLOAD_RECORD("R001","유저 목소리 녹음 업로드 실패하였습니다.", HttpStatus.BAD_REQUEST),

@@ -73,6 +73,7 @@ public class SecurityConfig {
 				.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
 				.successHandler(oAuth2AuthenticationSuccessHandler)
 			)
+			.cors(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
 			.exceptionHandling(exception -> exception
 			.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
