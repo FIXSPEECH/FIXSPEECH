@@ -1,7 +1,6 @@
 import Microphone from "../../components/PracticePronounce/Microphone";
 import PronounceExample from "../../components/PracticePronounce/PronounceExample";
 import { useParams } from "react-router-dom";
-// import Test from '../../components/PracticePronounce/test'
 
 function TrainPronounce() {
   const { options } = useParams();

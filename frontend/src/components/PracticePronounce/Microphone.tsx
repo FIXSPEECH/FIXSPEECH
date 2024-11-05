@@ -120,7 +120,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
   };
 
   return (
-    <div className="text-center mt-10">
+    <div className="text-center mt-20">
       <button onClick={isRecording ? stopRecording : startRecording}>
         {isRecording ? (
           <>

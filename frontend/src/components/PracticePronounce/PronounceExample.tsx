@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import useVoiceStore from "../../store/voiceStore";
 import VolumeDownIcon from '@mui/icons-material/VolumeDown';
 import { ExampleGet } from "../../services/PronouncePractice/PronouncePracticeGet";
+import ArrowRight from '../../Icons/ArrowRightIcon'
 
 interface PronounceExampleProps {
     color: string; // color prop의 타입 정의
@@ -36,7 +37,7 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
         const getExample = async () => {
             try {
                 const response = await ExampleGet(trainingId);
-                setExample(response)
+                setExample(response.data)
                 console.log('연습 데이터', example)
             } catch(e) {
                 console.log(e)
@@ -45,11 +46,12 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
 
 
         getExample();
-    })
+    },[])
      
     
 
     return (
+    <>
         <div className="flex justify-center items-center ">
          <div style={{ width: `${size}rem`, height: `${size}rem`}}>
             {!isRecording && audioURL && (
@@ -66,16 +68,17 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
             )}
            </div>
 
-            <div className="text-white">{example}</div>
-
-            {/* <div className="text-[#FF8C82] text-4xl break-words"> 떡볶이 떡은 떡볶이용 떡이고 떡국 떡은 떡국용 떡이다 </div>
-             */}
-
             <div className="text-[#FF8C82] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
-            떡볶이 떡은 떡볶이용 떡이고 떡국 떡은 떡국용 떡이다
+            {example}
             </div>
-         
-        </div>
+            </div>
+
+            {/* ArrowRight 컴포넌트를 수직 중앙에 정렬하고 오른쪽에 붙이기 */}
+            <div className="ml-auto flex">
+            <ArrowRight />
+            </div>     
+        </>
+        
     )
 }
 
