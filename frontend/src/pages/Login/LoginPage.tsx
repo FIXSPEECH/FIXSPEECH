@@ -14,8 +14,7 @@ function Login() {
 
   // 테스트 로그인 처리
   const handleTestLogin = () => {
-    const testToken =
-      "eyJhbGciOiJIUzM4NCJ9.eyJpc3MiOiJGaXhTcGVlY2giLCJzdWIiOiJKV1QgdG9rZW4iLCJlbWFpbCI6InRlc3RAa2FrYW8uY29tIiwibmFtZSI6Iuq5gOywrOuvvCIsImlhdCI6MTczMDM1NjE3MiwiZXhwIjoxNzMyOTQ4MTcyfQ.vI90r6baJh9m9iWChpwdNmoa-45yDXWFJLp5pw42p32OMyJlxU8BdMquZ0xE-rn2";
+    const testToken = import.meta.env.VITE_TEST_TOKEN;
 
     setToken(testToken); // zustand가 자동으로 localStorage에 저장
     navigate("/");
