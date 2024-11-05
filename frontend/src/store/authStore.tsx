@@ -16,7 +16,6 @@ import { createJSONStorage, persist } from "zustand/middleware";
 interface AuthState {
   token: string | null;
   isLogin: boolean;
-  setLogin: (status: boolean) => void;
   setToken: (token: string | null) => void;
 }
 
@@ -35,7 +34,6 @@ const useAuthStore = create<AuthState>()(
       (set) => ({
         token: null,
         isLogin: false,
-        setLogin: (status) => set({ isLogin: status }),
         setToken: (token) => {
           const tokenData = token ? jwtDecode<TokenPayload>(token) : null;
           set({
