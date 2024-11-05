@@ -34,7 +34,7 @@ public class TrainingController {
 			String s = trainingService.getSentence(trainingId);
 			return ApiResponse.createSuccess(s, "연습 문장 불러오기 성공");
 		} catch (Exception e) {
-			throw new CustomException(ErrorCode.Fail_TO_LOAD_SENTENCE);
+			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
 		}
 	}
 
