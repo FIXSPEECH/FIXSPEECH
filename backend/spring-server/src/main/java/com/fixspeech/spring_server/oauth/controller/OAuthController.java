@@ -1,8 +1,6 @@
 package com.fixspeech.spring_server.oauth.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -18,12 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amazonaws.services.kms.model.NotFoundException;
-import com.fixspeech.spring_server.global.common.ApiResponse;
-import com.fixspeech.spring_server.global.common.JwtCookieProvider;
-import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseLoginDTO;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
+import com.fixspeech.spring_server.global.common.JwtCookieProvider;
+import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.oauth.dto.response.ResponseOAuthInfoDTO;
 import com.fixspeech.spring_server.oauth.model.OAuthCodeToken;
 import com.fixspeech.spring_server.oauth.model.TempUser;
@@ -37,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/oauth")
+@RequestMapping("/oauth")
 @RequiredArgsConstructor
 public class OAuthController {
 

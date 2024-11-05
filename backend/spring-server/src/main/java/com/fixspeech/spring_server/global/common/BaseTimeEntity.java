@@ -16,5 +16,4 @@ public abstract class BaseTimeEntity {
 
 	@CreatedDate
 	protected LocalDateTime createdAt;
-
 }
