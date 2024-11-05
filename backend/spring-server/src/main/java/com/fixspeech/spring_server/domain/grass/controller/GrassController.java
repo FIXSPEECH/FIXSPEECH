@@ -58,7 +58,7 @@ public class GrassController {
 		}
 	}
 
-	@PostMapping("/grass")
+	@PostMapping
 	public ApiResponse<?> addGrassRecord(@AuthenticationPrincipal UserDetails userDetails) {
 		log.info("사용자 정보 = {}", userDetails);
 		String email = userDetails.getUsername();
