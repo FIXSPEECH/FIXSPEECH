@@ -56,7 +56,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		if (oAuth2User.getAttribute("token") != null) {
 			log.info("임시 토큰 이미 있음");
 			// 임시 토큰이 존재하는 경우 := 새로운 사용자인 경우
-			String tempToken = oAuth2User.getAttribute("token");
+			String tempToken = oAuth2User.getAttribute("tempToken");
 			targetUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/user/regist/information")
 				.queryParam("token", tempToken)
 				.build().toUriString();
