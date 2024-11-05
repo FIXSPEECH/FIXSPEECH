@@ -16,7 +16,12 @@ import { createJSONStorage, persist } from "zustand/middleware";
 interface AuthState {
   token: string | null;
   isLogin: boolean;
-  setLogin: (status: boolean) => void;
+  userProfile: {
+    name: string | null;
+    image: string | null;
+    gender: string | null;
+    age: number | null;
+  };
   setToken: (token: string | null) => void;
 }
 
@@ -25,6 +30,9 @@ interface TokenPayload {
   sub: string; // 토큰 제목 (subject)
   email: string; // 사용자 이메일
   name: string; // 사용자 이름
+  image: string; // 프로필 이미지 URL
+  gender: string; // 성별
+  age: number; // 나잇대
   iat: number; // 토큰 발급 시간 (issued at)
   exp: number; // 토큰 만료 시간 (expiration)
 }
@@ -35,18 +43,56 @@ const useAuthStore = create<AuthState>()(
       (set) => ({
         token: null,
         isLogin: false,
-        setLogin: (status) => set({ isLogin: status }),
+        userProfile: {
+          name: null,
+          image: null,
+          gender: null,
+          age: null,
+        },
         setToken: (token) => {
-          const tokenData = token ? jwtDecode<TokenPayload>(token) : null;
-          set({
-            token,
-            isLogin: !!tokenData,
-          });
+          if (token) {
+            const tokenData = jwtDecode<TokenPayload>(token);
+            set({
+              token,
+              isLogin: true,
+              userProfile: {
+                name: tokenData.name,
+                image: tokenData.image,
+                gender: tokenData.gender,
+                age: tokenData.age,
+              },
+            });
+          } else {
+            // 로그아웃 시 모든 상태 초기화
+            set({
+              token: null,
+              isLogin: false,
+              userProfile: {
+                name: null,
+                image: null,
+                gender: null,
+                age: null,
+              },
+            });
+          }
         },
       }),
       {
         name: "auth-storage",
         storage: createJSONStorage(() => localStorage),
+        partialize: (state) =>
+          state.isLogin
+            ? state
+            : {
+                token: null,
+                isLogin: false,
+                userProfile: {
+                  name: null,
+                  image: null,
+                  gender: null,
+                  age: null,
+                },
+              },
       }
     )
   )
