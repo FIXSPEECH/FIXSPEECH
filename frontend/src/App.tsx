@@ -1,71 +1,126 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import Header from "./components/Header/Header";
-import Login from "./pages/user/Login";
-import MainPage from "./pages/MainPage/MainPage";
-import AccessPage from "./pages/user/AccessPage";
-import VoiceAnalysis from "./pages/user/VoiceAnalysis";
-import TestPage from "./pages/TestPage";
-import PracticeSelect from "./pages/PronouncePractice/PracticeSelect";
-import PracticePronouce from "./pages/PronouncePractice/PracticePronounce";
+import LoginPage from "./pages/Login/LoginPage";
+import MainPage from "./pages/MainPage";
+import AccessPage from "./pages/Login/AccessPage";
+import VoiceRecord from "./pages/VoiceAnalysis/VoiceRecordPage";
+import VoiceAnalysisList from "./pages/VoiceAnalysis/VoiceAnalysisListPage";
+import VoiceAnalysisDetail from "./pages/VoiceAnalysis/VoiceAnalysisDetailPage";
+import TrainSelect from "./pages/PronounceTraining/TrainSelectPage";
+import TrainPronounce from "./pages/PronounceTraining/TrainPronouncePage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
-import Lecture from "./pages/PronounceLecture/Lecture";
-import SelectOptions from "./pages/SituationPractice/SelectOptions";
-import RegistScript from "./pages/SituationPractice/RegistScript";
-import SelectScript from "./pages/SituationPractice/SelectScript";
-import SituationPractice from "./pages/SituationPractice/SituationPractice";
-import AnnouncerPractice from "./pages/AnnouncerImmitate/AnnouncerPractice";
-import GameStage from "./pages/Game/GameStage";
-import Game from "./pages/Game/Game";
-import MyVoice from "./pages/Analysis/Analysis";
+import Lecture from "./pages/LecturePage";
+import SelectOptions from "./pages/SituationPractice/SelectOptionsPage";
+import RegistScript from "./pages/SituationPractice/RegistScriptPage";
+import SelectScript from "./pages/SituationPractice/SelectScriptPage";
+import SituationPractice from "./pages/SituationPractice/SituationPracticePage";
+import AnnouncerPractice from "./pages/AnnouncerPracticePage";
+import Game from "./pages/GamePage";
+import MyVoice from "./pages/MyVoicePage";
+import ErrorPage from "./pages/ErrorPage";
 
-function AppWrapper() {
-  const hiddenHeaderRoutes = ["/user/regist/information"];
+// 레이아웃 컴포넌트 생성
+const Layout = () => {
   return (
     <>
-      {!hiddenHeaderRoutes.includes(location.pathname) && <Header />}
-      <Routes>
-        {/* Public Routes - 로그인 사용자는 / 으로 리다이렉트 */}
-        <Route element={<PublicRoute />}>
-          <Route path="/login" element={<Login />} />
-        </Route>
-
-        {/* Protected Routes - 비로그인 사용자는 /login으로 리다이렉트 */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/voice/analysis" element={<VoiceAnalysis />} />
-          <Route path="/pronounce" element={<PracticeSelect />} />
-          <Route path="/pronounce/:options" element={<PracticePronouce />} />
-          <Route path="/lecture" element={<Lecture />} />
-          <Route path="/situation" element={<SelectOptions />} />
-          <Route
-            path="/situation/practice/regist/script"
-            element={<RegistScript />}
-          />
-          <Route
-            path="/situation/practice/select/script"
-            element={<SelectScript />}
-          />
-          <Route path="/situation/practice/" element={<SituationPractice />} />
-          <Route path="/announcer" element={<AnnouncerPractice />} />
-          <Route path="/game/stage" element={<GameStage />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/myvoice" element={<MyVoice />} />
-        </Route>
-
-        <Route path="/user/regist/information" element={<AccessPage />} />
-        <Route path="/testpage" element={<TestPage />} />
-      </Routes>
+      <Header />
+      <Outlet />
     </>
   );
-}
+};
+
+// 라우터 설정
+const router = createBrowserRouter([
+  {
+    element: <Layout />,
+    children: [
+      {
+        // Public Routes
+        element: <PublicRoute />,
+        children: [
+          {
+            path: "/login",
+            element: <LoginPage />,
+          },
+        ],
+      },
+      {
+        // Protected Routes
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "/",
+            element: <MainPage />,
+          },
+          {
+            path: "/record",
+            element: <VoiceRecord />,
+          },
+          {
+            path: "/analysis",
+            element: <VoiceAnalysisList />,
+          },
+          {
+            path: "/analysis/:id",
+            element: <VoiceAnalysisDetail />,
+          },
+          {
+            path: "/lecture",
+            element: <Lecture />,
+          },
+          {
+            path: "/training",
+            element: <TrainSelect />,
+          },
+          {
+            path: "/training/:options",
+            element: <TrainPronounce />,
+          },
+          {
+            path: "/situation",
+            element: <SelectOptions />,
+          },
+          {
+            path: "/situation/regist",
+            element: <RegistScript />,
+          },
+          {
+            path: "/situation/select",
+            element: <SelectScript />,
+          },
+          {
+            path: "/situation/practice/",
+            element: <SituationPractice />,
+          },
+          {
+            path: "/announcer",
+            element: <AnnouncerPractice />,
+          },
+          {
+            path: "/game",
+            element: <Game />,
+          },
+          {
+            path: "/myvoice",
+            element: <MyVoice />,
+          },
+        ],
+      },
+      {
+        path: "/user/regist/information",
+        element: <AccessPage />,
+      },
+      {
+        path: "*",
+        element: <ErrorPage />,
+      },
+    ],
+  },
+]);
 
 function App() {
-  return (
-    <Router>
-      <AppWrapper />
-    </Router>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
