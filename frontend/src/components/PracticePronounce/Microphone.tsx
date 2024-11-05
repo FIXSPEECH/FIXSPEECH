@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import MicNoneIcon from "@mui/icons-material/MicNone";
 import MicIcon from "@mui/icons-material/Mic";
 import useVoiceStore from "../../store/voiceStore";
@@ -9,33 +9,65 @@ interface MicrophoneProps {
   size: number;
 }
 
-// Web Speech API의 SpeechRecognition 설정
-const SpeechRecognition =
-  (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
 
 function AudioRecorder({ color, size }: MicrophoneProps) {
-  // const [audioURL, setAudioURL] = useState<string | null>(null); // 녹음후 오디오 파일 재생을 위한 URL
   const { isRecording, audioURL, setIsRecording, setAudioURL } =
     useVoiceStore();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  // const [transcript, setTranscript] = useState<string>("");
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
-
-  const startRecording = async () => {
-    // STT를 위한 초기화
-    if (recognition) {
+  const [interimTranscript, setInterimTranscript] = useState("");
+  const recognitionRef = useRef<any>(null);
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  useEffect(() => {
+    if ("webkitSpeechRecognition" in window) {
+      const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.lang = "ko-KR"; // 한국어 설정
-    }
+      recognition.lang = "ko-KR";
 
-    // 녹음 시작하기 전에 audioURL과 STT 결과를 초기화
+      recognition.onresult = (event: any) => {
+        let finalTranscript = "";
+        let interimTranscript = "";
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript;
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        setInterimTranscript(interimTranscript);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error:", event.error);
+      };
+
+      recognitionRef.current = recognition;
+    } else {
+      alert("이 브라우저는 음성 인식을 지원하지 않습니다.");
+    }
+  }, []);
+
+  const startRecording = async () => {
+
+    // 녹음 시작하기 전에 audioURL 결과 초기화
     setAudioURL(null);
-    // setTranscript("");
+    setInterimTranscript("")
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -62,16 +94,6 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       mediaRecorder.start();
       setIsRecording(true);
 
-      // STT 시작
-      //  if (recognition) {
-      //   recognition.start();
-      //   recognition.onresult = (event: SpeechRecognitionEvent) => {
-      //     const transcriptArray = Array.from(event.results)
-      //       .map((result) => result[0].transcript)
-      //       .join("");
-      //     setTranscript(transcriptArray); // 변환된 텍스트 저장
-      //   };
-      // }
     } catch (error) {
       console.error("Error accessing microphone", error);
     }
@@ -83,8 +105,17 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       setIsRecording(false);
       setAudioURL(null);
     }
-    if (recognition) {
-      recognition.stop(); // STT 종료
+  };
+
+  const handleStartStop = () => {
+    if (!isRecording) {
+      recognitionRef.current?.start();
+      startRecording();
+      console.log("[System] 음성 인식이 시작되었습니다.");
+    } else {
+      recognitionRef.current?.stop();
+      stopRecording();
+      console.log("[System] 음성 인식이 중지되었습니다.");
     }
   };
 
@@ -130,9 +161,10 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
                   transform: "translate(-50%, -50%)", // 아이콘을 정확히 가운데에 배치
                   color,
                   fontSize: `${size}rem`,
-                  zIndex: 3, // 아이콘을 마스킹 레이어 위에 올리기 위해 z-index 사용
+                  zIndex: 3, // 아이콘을 마스킹 레이어 위에 올리기 위해 z-index 사용                  
                 }}
                 className="cursor-pointer"
+                onClick={handleStartStop}
               />
             </div>
           </>
@@ -140,6 +172,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
           <MicNoneIcon
             style={{ color, fontSize: `${size}rem` }}
             className="cursor-pointer"
+            onClick={handleStartStop}
           />
         )}
 
@@ -150,6 +183,9 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
           ? "*다시 녹음하려면 아이콘을 눌러주세요."
           : "*아이콘을 누르고 제시된 문장을 읽어주세요."}
       </div>
+
+
+      <div className="text-white">{interimTranscript}</div>
     </div>
   );
 }
