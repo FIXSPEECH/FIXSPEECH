@@ -12,11 +12,11 @@ const ParticleBackground = () => {
 
     // Renderer 설정
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: false,
       alpha: true,
       powerPreference: "high-performance",
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(1);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 1);
 
@@ -43,7 +43,7 @@ const ParticleBackground = () => {
 
     // 파티클 생성
     const particleGeometry = new THREE.BufferGeometry();
-    const particleCount = 5000;
+    const particleCount = 2000;
     const posArray = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
 
@@ -164,8 +164,8 @@ const ParticleBackground = () => {
       );
 
       // 파티클 시스템 자체 회전
-      particleSystem.rotation.x += 0.0001;
-      particleSystem.rotation.y += 0.0001;
+      particleSystem.rotation.x += 0.00005;
+      particleSystem.rotation.y += 0.00005;
 
       renderer.render(scene, camera);
     };
