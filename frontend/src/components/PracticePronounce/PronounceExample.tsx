@@ -33,18 +33,19 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
     
 
     // 연습 문제 가져오기
-    useEffect(() => {
-        const getExample = async () => {
-            try {
-                const response = await ExampleGet(trainingId);
-                setExample(response.data)
-                console.log('연습 데이터', example)
-            } catch(e) {
-                console.log(e)
-            }
+    const getExample = async () => {
+        try {
+            const response = await ExampleGet(trainingId);
+            setExample(response.data)
+            console.log('연습 데이터', example)
+        } catch(e) {
+            console.log(e)
         }
+    }
 
 
+    // 페이지 로딩 시 연습문제 가져오기
+    useEffect(() => {
         getExample();
     },[])
      
@@ -75,7 +76,7 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
 
             {/* ArrowRight 컴포넌트를 수직 중앙에 정렬하고 오른쪽에 붙이기 */}
             <div className="ml-auto mr-10 flex">
-            <ArrowRight />
+            <ArrowRight  onClick={getExample}/>
             </div>     
         </>
         
