@@ -52,7 +52,7 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
 
     return (
     <>
-        <div className="flex justify-center items-center ">
+        <div className="flex justify-center items-center w-screen">
          <div style={{ width: `${size}rem`, height: `${size}rem`}}>
             {!isRecording && audioURL && (
             <div>
@@ -68,13 +68,13 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
             )}
            </div>
 
-            <div className="text-[#FF8C82] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
+            <div className="text-[#FF8C82] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
             {example}
             </div>
             </div>
 
             {/* ArrowRight 컴포넌트를 수직 중앙에 정렬하고 오른쪽에 붙이기 */}
-            <div className="ml-auto flex">
+            <div className="ml-auto mr-10 flex">
             <ArrowRight />
             </div>     
         </>
