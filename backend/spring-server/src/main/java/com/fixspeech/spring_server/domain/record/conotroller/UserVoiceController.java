@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.config.s3.S3Service;
+import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
 import com.fixspeech.spring_server.domain.record.service.UserVoiceServiceImpl;
@@ -111,6 +112,15 @@ public class UserVoiceController implements UserVoiceApi {
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.FAIL_TO_LOAD_RECORD_DETAIL);
 		}
+	}
+
+	@GetMapping("voice-analysis/latest")
+	public ApiResponse<?> getUserOneAnalyzeResult(@AuthenticationPrincipal UserDetails userDetails) {
+		Users user = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+		AnalyzeResultResponseDto analyzeResultResponseDto = userVoiceService.getUserOneAnalyzeResult(user.getId());
+		return ApiResponse.createSuccess(analyzeResultResponseDto, "사용자 최근 목소리 녹음 결과 출력 성공");
 	}
 
 	// MultipartFile의 InputStream을 처리하기 위한 헬퍼 클래스
