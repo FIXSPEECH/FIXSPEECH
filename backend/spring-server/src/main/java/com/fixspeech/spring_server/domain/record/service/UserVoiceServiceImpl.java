@@ -75,6 +75,12 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 		return convertTouserVoiceDto(resultId);
 	}
 
+	/**
+	 * @implSpec
+	 * 사용자가 가장 최근에 녹음한 음성 결과를 조회
+	 * @param userId 사용자 PK
+	 * @return AnalyzeResultResponseDto
+	 */
 	@Override
 	public AnalyzeResultResponseDto getUserOneAnalyzeResult(Long userId) {
 		AnalyzeResult analyzeResult = analyzeResultRepository.findTopByUserIdOrderByCreatedAtDesc(userId);
