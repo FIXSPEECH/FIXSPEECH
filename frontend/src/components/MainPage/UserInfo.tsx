@@ -34,7 +34,7 @@ function UserInfo() {
             내 목소리 분석하기
           </div>
           <div
-            className="flex justify-center items-center text-white bg-white bg-opacity-25 rounded-md w-48 h-9 cursor-pointer"
+            className="flex justify-center items-center text-white bg-white bg-opacity-25 rounded-md w-24 h-9 cursor-pointer"
             onClick={handleLogout}
           >
             로그아웃
