@@ -2,6 +2,10 @@ package com.fixspeech.spring_server.domain.announcer.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.fixspeech.spring_server.domain.announcer.dto.AnnouncerResponseDto;
@@ -45,5 +49,19 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 			return null;
 		}
 		return UserAnnouncerVoiceComparisonResultDto.from(userAnnouncerVoiceComparisonResult);
+	}
+
+	/**
+	 * 사용자가 녹음한 아나운서 음성 분석 결과 전체 조회
+	 * @param pageNo 현재 페이지
+	 * @param criteria 정렬 기준
+	 * @param userId 사용자 id
+	 * @return Page<UserAnnouncerVoiceComparisonResult>
+	 */
+	@Override
+	public Page<UserAnnouncerVoiceComparisonResult> getAllUserToAnnouncerVoiceComparison(int pageNo, String criteria, Long userId) {
+		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
+		Page<UserAnnouncerVoiceComparisonResult> page = userAnnouncerVoiceComparisonRepository.findByUserId(pageable, userId);
+		return page;
 	}
 }
