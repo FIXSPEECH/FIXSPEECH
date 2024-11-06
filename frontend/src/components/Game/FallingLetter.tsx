@@ -28,7 +28,7 @@ export default function FallingLetter({ letter, left, onRemove }: FallingLetterP
 
     return (
         <div
-            className="absolute text-xl text-blue-600"
+            className="absolute text-xl font-bold text-blue-600"
             style={{
                 top: `${top}px`,
                 left: `${left}px`,
