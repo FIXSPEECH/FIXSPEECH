@@ -16,7 +16,7 @@ interface PronounceExampleProps {
 
 function PronounceExample({color, trainingId, size}:PronounceExampleProps){
     const {audioURL, isRecording} = useVoiceStore();
-    const {isNumber, setIsNumber, setIsCorrect, setIsNumberZero} = usePronounceScoreStore();
+    const {isNumber, setIsNumber,  setIsNumberZero} = usePronounceScoreStore();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
     const [example, setExample] = useState<string>("")

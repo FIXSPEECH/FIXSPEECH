@@ -67,7 +67,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
 
     // 녹음 시작하기 전에 audioURL 결과 초기화
     setAudioURL(null);
-    setInterimTranscript("")
+
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -186,6 +186,9 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
 
 
       <div className="text-white">{interimTranscript}</div>
+      {/* stt 결과 post 보내고 나면
+          // setInterimTranscript("")를 통해 초기화
+      */}
     </div>
   );
 }
