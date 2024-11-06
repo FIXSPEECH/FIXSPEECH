@@ -72,14 +72,39 @@ const ParticleBackground = () => {
     scene.add(particles);
     camera.position.z = 500;
 
+    // 디바이스 방향 상태 추적
+    let tiltX = 0;
+    let tiltY = 0;
+    let targetTiltX = 0;
+    let targetTiltY = 0;
+
+    // 디바이스 방향 이벤트 핸들러
+    const handleDeviceOrientation = (event: DeviceOrientationEvent) => {
+      if (event.beta && event.gamma) {
+        // beta는 앞뒤 기울기 (-180° ~ 180°)
+        // gamma는 좌우 기울기 (-90° ~ 90°)
+        targetTiltX = (event.gamma / 90) * Math.PI * 0.1;
+        targetTiltY = (event.beta / 180) * Math.PI * 0.1;
+      }
+    };
+
     // 애니메이션
     let time = 0;
     const animate = () => {
       requestAnimationFrame(animate);
       time += 0.001;
 
-      particles.rotation.x += 0.0002;
-      particles.rotation.y += 0.0002;
+      // 부드러운 틸트 효과
+      tiltX += (targetTiltX - tiltX) * 0.05;
+      tiltY += (targetTiltY - tiltY) * 0.05;
+
+      particles.rotation.x += 0.0002 + tiltY * 0.01;
+      particles.rotation.y += 0.0002 + tiltX * 0.01;
+
+      // 카메라 위치도 기울기에 따라 조정
+      camera.position.x = tiltX * 50;
+      camera.position.y = -tiltY * 50;
+      camera.lookAt(scene.position);
 
       // 파티클 움직임 추가
       const positions = particles.geometry.attributes.position
@@ -117,8 +142,12 @@ const ParticleBackground = () => {
 
     window.addEventListener("resize", handleResize);
 
+    // 이벤트 리스너 추가
+    window.addEventListener("deviceorientation", handleDeviceOrientation);
+
     // 클린업
     return () => {
+      window.removeEventListener("deviceorientation", handleDeviceOrientation);
       window.removeEventListener("resize", handleResize);
       containerRef.current?.removeChild(renderer.domElement);
     };
