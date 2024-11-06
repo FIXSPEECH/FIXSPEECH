@@ -6,12 +6,13 @@ import java.util.Optional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
-import com.fixspeech.spring_server.domain.user.model.Grass;
+import com.fixspeech.spring_server.domain.grass.model.Grass;
 import com.fixspeech.spring_server.domain.user.model.Users;
-import com.fixspeech.spring_server.domain.user.repository.GrassRepository;
+import com.fixspeech.spring_server.domain.grass.repository.GrassRepository;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
 
 import jakarta.persistence.EntityManager;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final GrassRepository grassRepository;
 	private final AuthenticationManager authenticationManager;
+	private final TokenService tokenService;
 
 	@Override
 	public void registUser(RequestRegisterDTO requestDto) {
@@ -51,22 +53,11 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public void addGrassRecord(Long userId) {
-		// 만약 같은 날짜가 있다면 count를 증가 시킨다.
-		Grass grass = grassRepository.findGrassRecordExists(userId).orElse(null);
-		if (grass != null) {
-			grass.setCount(grass.getCount() + 1);
-			grassRepository.save(grass);
-			log.info("오늘 해결한 잔디 기록이 존재합니다.");
-		} else {
-			// 같은 날짜가 없다면 새로 추가한다.
-			grass = Grass.builder()
-				.userId(userId)
-				.count(1)
-				// .createdAt(LocalDate.now())
-				.build();
-			grassRepository.save(grass);
-			log.info("오늘 해결한 잔디 기록이 존재하지 않습니다.");
-		}
+	public void deleteByEmail(String email) {
+		Users users = userRepository.findByEmail(email)
+			.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+		userRepository.delete(users);
+		tokenService.invalidateAllUserTokens(email);
 	}
 }

@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { Canvas } from "@react-three/fiber";
+import AudioCubeVisualizer from "../../components/Visualizer/AudioCubeVisualizer";
 
 function VoiceRecord() {
   const navigate = useNavigate();
@@ -47,14 +49,17 @@ function VoiceRecord() {
 
       <div
         style={{
-          color: "#B9E5E8",
           position: "absolute",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
+          width: "300px",
+          height: "300px",
         }}
       >
-        (마이크 아이콘)
+        <Canvas camera={{ position: [7, 7, 7], fov: 70 }}>
+          <AudioCubeVisualizer />
+        </Canvas>
       </div>
 
       <div
