@@ -115,7 +115,6 @@ public class UserVoiceController implements UserVoiceApi {
 	}
 
 	/**
-	 * @implSpec
 	 * 사용자가 가장 최근에 녹음한 음성 결과를 조회하는 API
 	 * @param userDetails 사용자 정보
 	 * @return 가장 최근에 녹음한 음성 결과
