@@ -11,7 +11,7 @@ export default function Game() {
     const [recognizedText, setRecognizedText] = useState('');
     const [isGameRunning, setIsGameRunning] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
-    const recognitionRef = useRef<null | SpeechRecognition>(null);
+    const recognitionRef = useRef<any>(null);
 
     const getRandomFruit = () => {
         const fruits = ['사과', '바나나', '딸기', '포도', '복숭아', '오렌지', '수박', '참외', '자두', '귤'];
@@ -42,53 +42,28 @@ export default function Game() {
         }
     };
 
-    const handleInput = (input: string) => {
-        const cleanedInput = input.trim().toLowerCase(); // 공백 제거 및 소문자 변환
-        setRecognizedText(cleanedInput);
-        console.log('인식된 텍스트:', cleanedInput)
-        console.log(letters)
-    
-        const matchedLetter = letters.find(
-            (letter) => letter.letter.toLowerCase() === cleanedInput
-        );
-    
-        if (matchedLetter) {
-            setScore((prevScore) => prevScore + 1); // 점수 증가
-            removeLetter(matchedLetter.id); // 해당 단어 제거
-        }
-    };
-
-    const startGame = () => {
-        setScore(0);
-        setLives(5);
-        setLetters([]);
-        setIsGameOver(false);
-        setIsGameRunning(true);
-        startRecording();
-    };
-
     const initializeRecognition = () => {
         if (!('webkitSpeechRecognition' in window)) {
             alert('이 브라우저는 음성 인식을 지원하지 않습니다.');
             return null;
         }
 
-        const recognition = new (window as any).webkitSpeechRecognition() as SpeechRecognition;
+        const recognition = new (window as any).webkitSpeechRecognition() as any;
         recognition.continuous = true;
         recognition.interimResults = true;
         recognition.lang = 'ko-KR';
 
-        recognition.onresult = (event: SpeechRecognitionEvent) => {
+        recognition.onresult = (event: any) => {
             for (let i = event.resultIndex; i < event.results.length; i++) {
                 const transcript = event.results[i][0].transcript.trim().toLowerCase();
                 if (event.results[i].isFinal) {
                     console.log('최종 인식된 텍스트:', transcript);
-                    handleInput(transcript); // 음성 입력이 최종일 때만 처리
+                    setRecognizedText(transcript); // 음성 입력이 최종일 때만 처리
                 }
             }
         };
 
-        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        recognition.onerror = (event:any) => {
             console.error('음성 인식 오류:', event.error);
         };
 
@@ -119,38 +94,57 @@ export default function Game() {
         setIsRecording(false);
     };
 
+    // UseEffect to check letters on recognizedText change
+    useEffect(() => {
+        if (!recognizedText) return;
+
+        letters.forEach((letter) => {
+            const normalizedLetter = letter.letter.toLowerCase().normalize("NFC");
+            if (normalizedLetter === recognizedText) {
+                console.log('정답 매칭:', letter.letter);
+                setScore((prevScore) => prevScore + 1);
+                removeLetter(letter.id);
+            } else {
+                console.log('정답 불일치:', letter.letter);
+            }
+        });
+    }, [recognizedText, letters]);
+
+    const startGame = () => {
+        setScore(0);
+        setLives(5);
+        setLetters([]);
+        setIsGameOver(false);
+        setIsGameRunning(true);
+        startRecording();
+    };
+
     useEffect(() => {
         if (!isGameRunning) return;
 
         const letterInterval = setInterval(addLetter, 1000);
 
-        return () =>  clearInterval(letterInterval);
-    }, [isGameRunning,]);
-
-
+        return () => clearInterval(letterInterval);
+    }, [isGameRunning]);
 
     return (
         <div className="flex flex-col min-h-[70vh] justify-between" style={{ backgroundColor: '#2C2C2E' }}>
             <div className="flex flex-col min-h-[70vh]">
-
-                {/* 상단 영역: 하트 아이콘 */}
                 <div className="flex flex-col justify-start p-4">
                     <div className="flex">
                         {Array.from({ length: lives }).map((_, index) => (
                             <FavoriteIcon key={index} style={{ color: 'red', margin: '0 5px' }} />
                         ))}
                     </div>
-                    <div className="text-white mt-2">Score: {score}</div> {/* Score 표시 */}
+                    <div className="text-white mt-2">Score: {score}</div>
                 </div>
-
-                {/* 게임 영역 */}
                 <div className="flex-1 relative w-full overflow-hidden">
                     {letters.map((letter) => (
                         <FallingLetter
                             key={letter.id}
                             letter={letter.letter}
                             left={letter.left}
-                            onRemove={() => removeLetter(letter.id, true)} // 바닥에 닿았을 때 라이프 감소
+                            onRemove={() => removeLetter(letter.id, true)}
                         />
                     ))}
                     {!isGameRunning && !isGameOver && (
@@ -168,15 +162,11 @@ export default function Game() {
                     )}
                 </div>
             </div>
-
-            {/* 음성 인식 결과 출력 */}
             {isGameRunning && (
                 <div className="flex justify-center p-4 min-h-[10vh]">
                     <h2 className="text-white">Recognized: {recognizedText}</h2>
                 </div>
             )}
-
-            {/* 게임 종료 시 버튼 */}
             {isGameOver && (
                 <div className="flex justify-center gap-4 mt-4 text-white">
                     <Button variant="text" color="error" onClick={() => window.location.href = '/'}>
