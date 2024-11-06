@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import usePronounceScoreStore from '../../store/pronounceScoreStore';
 
 
 interface FinishModalProps {
@@ -13,8 +14,9 @@ interface FinishModalProps {
   }
 
 export default function AlertDialog({isOpen, onClose}: FinishModalProps) {
+  
+  const {isNumber} = usePronounceScoreStore();
 
-      
   return (
     <React.Fragment>
    
@@ -27,7 +29,7 @@ export default function AlertDialog({isOpen, onClose}: FinishModalProps) {
         <DialogTitle id="alert-dialog-title">{"연습이 완료되었습니다!"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-          축하합니다! 연습을 모두 마쳤습니다.
+          축하합니다! {isNumber} 개의 문장연습을 모두 마쳤습니다.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
