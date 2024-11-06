@@ -96,8 +96,8 @@ function RegistScript() {
 
   return (
     <>
-    <div className="min-h-[70vh] flex justify-center items-center">
-        <div className="flex flex-col justify-center align-middle">
+    <div className="min-h-[70vh] flex justify-center">
+        <div className="flex flex-col align-middle">
       {/* 제목 입력 */}
       <div className="text-[#FFAB01] sm:text-lg md:text-lg lg:text-xl xl:text-xl mb-4">*연습할 대본의 제목을 입력해주세요.</div>
       <TextField
@@ -105,6 +105,7 @@ function RegistScript() {
           label="제목을 입력해주세요."
           onChange={handleTitleChange}
           sx={CustomTextFieldStyle}
+          fullWidth
         />
 
       {/* 내용 입력 */}
@@ -114,6 +115,7 @@ function RegistScript() {
       label="대본을 입력해주세요."
       multiline
       rows={4}
+      fullWidth
       onChange={handleContentChange}
       variant="outlined" // outlined 속성 추가
       sx={CustomTextFieldStyle}
@@ -139,6 +141,7 @@ function RegistScript() {
           '& .MuiFormControlLabel-label': {
             color: '#FFAB01',
           },
+          width: '100%'
         }}
       >
         <FormControlLabel value="power" control={<Radio />} label="힘있게 말하기" />
@@ -148,11 +151,12 @@ function RegistScript() {
     {/* 시간 선택 */}
     <div className="text-[#FFAB01] sm:text-lg md:text-lg lg:text-xl xl:text-xl mb-4 mt-8">*연습시간을 설정해주세요.</div>
    
+   <div className="flex flex-row justify-center">
     {/* 분 선택 */}
     <FormControl 
       sx={{
         m: 1, 
-        minWidth: 120, 
+        minWidth: 120,
         '& .MuiInputLabel-root': {
           color: '#FFAB01', // 기본 라벨 색상
           '&.Mui-focused': {
@@ -238,6 +242,8 @@ function RegistScript() {
     </FormControl>
     </div>
     </div>
+    </div>
+ 
 
     
       {/* 연습 시작 버튼 */}
