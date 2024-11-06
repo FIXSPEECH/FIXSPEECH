@@ -51,13 +51,21 @@ function RegistScript() {
     },
   };
 
-  const [age, setAge] = useState('');
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
+  // 분 선택 핸들러
+  const handleMinutesChange = (event: SelectChangeEvent) => {
+    setMinutes(Number(event.target.value));
+  };
+
+  // 초 선택 핸들러
+  const handleSecondsChange = (event: SelectChangeEvent) => {
+    setSeconds(Number(event.target.value));
   };
 
   return (
+    <>
     <div className="min-h-[70vh] flex justify-center items-center">
         <div className="flex flex-col justify-center align-middle">
       {/* 제목 입력 */}
@@ -141,7 +149,8 @@ function RegistScript() {
         labelId="demo-select-small-label"
         id="demo-select-small"
         label="0 분"
-        onChange={handleChange}
+        value={minutes.toString()}
+        onChange={handleMinutesChange}
       >
         <MenuItem value={0}>0 분</MenuItem>
         <MenuItem value={1}>1 분</MenuItem>
@@ -182,9 +191,9 @@ function RegistScript() {
       <Select
         labelId="demo-select-small-label"
         id="demo-select-small"
-        value={age}
+        value={seconds.toString()}
         label="Age"
-        onChange={handleChange}
+        onChange={handleSecondsChange}
       >
         <MenuItem value={0}>0 초</MenuItem>
         <MenuItem value={10}>10 초</MenuItem>
@@ -194,10 +203,12 @@ function RegistScript() {
         <MenuItem value={50}>50 초</MenuItem>
       </Select>
     </FormControl>
+    </div>
+    </div>
 
-
+    
       {/* 연습 시작 버튼 */}
-      <div></div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
       <Button variant="contained"
         onClick={handlePracticeClick}
         sx={{
@@ -209,11 +220,19 @@ function RegistScript() {
             md: "1.125rem",  // md:text-lg
             lg: "1.25rem",   // lg:text-xl
             xl: "1.5rem",    // xl:text-2xl
-          },}}
-      >연습 시작하기</Button>
+          },
+          marginRight: '10%',
+          marginLeft: 'auto',
+          marginBottom: { xs: '5%', sm: '0' }, 
+          marginTop: { xs: '5%', sm: '5%', md: '0' },
+        }}
+      >
+        연습 시작하기
+      </Button>
+    </div>
       {/*  /situation/practice (SituationPractice.tsx) */}
-    </div>
-    </div>
+
+      </>
   );
 }
 
