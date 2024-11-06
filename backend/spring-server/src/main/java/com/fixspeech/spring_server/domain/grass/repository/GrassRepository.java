@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.domain.user.repository;
+package com.fixspeech.spring_server.domain.grass.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.fixspeech.spring_server.domain.user.model.Grass;
+import com.fixspeech.spring_server.domain.grass.model.Grass;
 
 @Repository
 public interface GrassRepository extends JpaRepository<Grass, Long> {

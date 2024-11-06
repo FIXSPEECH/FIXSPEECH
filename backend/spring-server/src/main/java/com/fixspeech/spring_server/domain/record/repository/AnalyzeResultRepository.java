@@ -9,4 +9,6 @@ import com.fixspeech.spring_server.domain.record.model.AnalyzeResult;
 public interface AnalyzeResultRepository extends JpaRepository<AnalyzeResult,Long> {
 
 	Page<AnalyzeResult> findAllByUserId(Long userId, Pageable pageable);
+
+	AnalyzeResult findTopByUserIdOrderByCreatedAtDesc(Long userId);
 }

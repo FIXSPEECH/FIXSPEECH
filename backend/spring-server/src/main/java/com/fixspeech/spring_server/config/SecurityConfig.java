@@ -23,8 +23,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.filter.JwtAuthenticationFilter;
+import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.oauth.service.CustomOAuth2UserService;
 
 import lombok.RequiredArgsConstructor;

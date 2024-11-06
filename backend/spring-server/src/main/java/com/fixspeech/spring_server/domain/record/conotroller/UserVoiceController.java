@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.config.s3.S3Service;
+import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
 import com.fixspeech.spring_server.domain.record.service.UserVoiceServiceImpl;
@@ -39,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/record")
-public class UserVoiceController {
+public class UserVoiceController implements UserVoiceApi {
 	private final S3Service s3Service;
 	private final UserVoiceServiceImpl userVoiceService;
 	private final UserService userService;
@@ -85,7 +86,7 @@ public class UserVoiceController {
 
 	//리스트 목록
 	@GetMapping
-	private ApiResponse<?> getUserRecordList(
+	public ApiResponse<?> getUserRecordList(
 		@AuthenticationPrincipal UserDetails userDetails,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
@@ -102,7 +103,7 @@ public class UserVoiceController {
 
 	//음성 분석 단일 조회
 	@GetMapping("{resultId}")
-	private ApiResponse<?> getUserRecordDetail(
+	public ApiResponse<?> getUserRecordDetail(
 		@PathVariable Long resultId
 	) {
 		try {
@@ -111,6 +112,20 @@ public class UserVoiceController {
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.FAIL_TO_LOAD_RECORD_DETAIL);
 		}
+	}
+
+	/**
+	 * 사용자가 가장 최근에 녹음한 음성 결과를 조회하는 API
+	 * @param userDetails 사용자 정보
+	 * @return 가장 최근에 녹음한 음성 결과
+	 */
+	@GetMapping("voice-analysis/latest")
+	public ApiResponse<?> getUserOneAnalyzeResult(@AuthenticationPrincipal UserDetails userDetails) {
+		Users user = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+		AnalyzeResultResponseDto analyzeResultResponseDto = userVoiceService.getUserOneAnalyzeResult(user.getId());
+		return ApiResponse.createSuccess(analyzeResultResponseDto, "사용자 최근 목소리 녹음 결과 출력 성공");
 	}
 
 	// MultipartFile의 InputStream을 처리하기 위한 헬퍼 클래스

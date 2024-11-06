@@ -1,7 +1,8 @@
 package com.fixspeech.spring_server.oauth.service;
 
 import java.util.Collections;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -12,10 +13,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
-import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.model.Role;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
+import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.oauth.OAuthAttributes;
 
 import lombok.RequiredArgsConstructor;
@@ -44,10 +45,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			oAuth2User.getAttributes());
 		log.info("registrationId={}", registrationId);
 		Users user = userRepository.findByEmail(attributes.getEmail()).orElse(null);
-		log.info("user={}", user.getImage());
 		log.info("attribute={}", attributes.getImage());
 		if (user == null) {
-			log.info("empty");
 			user = Users.builder()
 				.email(attributes.getEmail())
 				.name(attributes.getName())
@@ -63,11 +62,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 			user = userRepository.save(user);
 
-			// 이메일 이름으로 JWT 토큰 생성
 			JwtUserClaims jwtUserClaims = JwtUserClaims.fromUsersEntity(user);
-			String accessToken = jwtTokenProvider.generateAccessToken(jwtUserClaims);
 			String refreshToken = jwtTokenProvider.generateRefreshToken(jwtUserClaims);
 
+			Map<String, Object> tempAttributes = new HashMap<>();
+			tempAttributes.put("tempToken", refreshToken);
+
+			return new DefaultOAuth2User(
+				Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())),
+				tempAttributes,
+				"tempToken");
 		} else if (!registrationId.equals(user.getProvider()) || !attributes.getProviderId()
 			.equals(user.getProviderId()) || !attributes.getImage().equals(user.getImage())) {
 			log.info("다른 정보 존재");

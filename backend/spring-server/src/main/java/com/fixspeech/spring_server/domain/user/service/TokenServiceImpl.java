@@ -1,14 +1,16 @@
 package com.fixspeech.spring_server.domain.user.service;
 
-import java.sql.Ref;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
-import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDTO;
+import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 import com.fixspeech.spring_server.domain.user.model.RefreshToken;
+import com.fixspeech.spring_server.domain.user.model.TokenBlacklist;
 import com.fixspeech.spring_server.domain.user.repository.redis.RefreshTokenRepository;
+import com.fixspeech.spring_server.domain.user.repository.redis.TokenBlacklistRepository;
+import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.oauth.model.OAuthRefreshToken;
 import com.fixspeech.spring_server.oauth.repository.OAuthRefreshRepository;
 
@@ -24,6 +26,7 @@ public class TokenServiceImpl implements TokenService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final OAuthRefreshRepository oAuthRefreshRepository;
+	private final TokenBlacklistRepository tokenBlacklistRepository;
 
 	@Override
 	public String generateAccessToken(JwtUserClaims jwtUserClaims) {
@@ -46,6 +49,9 @@ public class TokenServiceImpl implements TokenService {
 	 */
 	@Override
 	public ResponseRefreshTokenDTO reissueOAuthToken(String refreshToken) {
+		if(isRefreshTokenBlacklisted(refreshToken)) {
+			return null;
+		}
 		if (jwtTokenProvider.validateToken(refreshToken)) {
 			Claims claims = jwtTokenProvider.getClaims(refreshToken);
 			String email = claims.get("email", String.class);
@@ -68,11 +74,29 @@ public class TokenServiceImpl implements TokenService {
 				OAuthRefreshToken newRt = new OAuthRefreshToken(email, newRefreshToken);
 				// jwtTokenProvider.getRefreshTokenExpiration());
 				oAuthRefreshRepository.save(newRt);
-				log.info("end");
 				return new ResponseRefreshTokenDTO(newAccessToken, newRefreshToken);
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void blacklistRefreshToken(String refreshToken) {
+		tokenBlacklistRepository.save(new TokenBlacklist(refreshToken));
+	}
+
+	@Override
+	public boolean isRefreshTokenBlacklisted(String refreshToken) {
+		return tokenBlacklistRepository.existsById(refreshToken);
+	}
+
+	@Override
+	public void invalidateAllUserTokens(String email) {
+		List<RefreshToken> userTokens = refreshTokenRepository.findAllByUserEmail(email);
+		for (RefreshToken token : userTokens) {
+			blacklistRefreshToken(token.getToken());
+			refreshTokenRepository.delete(token);
+		}
 	}
 
 	private void saveRefreshToken(JwtUserClaims jwtUserClaims, String refreshToken) {
