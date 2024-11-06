@@ -6,24 +6,25 @@ interface FallingLetterProps {
     onRemove: () => void;
 }
 
-export default function FallingLetter({ letter, left, onRemove }:FallingLetterProps) {
+export default function FallingLetter({ letter, left, onRemove }: FallingLetterProps) {
     const [top, setTop] = useState(0);
-    const gameHeight = window.innerHeight * 0.7; // 게임 영역의 높이를 80vh 기준으로 설정
+    const gameHeight = window.innerHeight * 0.7;
 
     useEffect(() => {
         const fallInterval = setInterval(() => {
             setTop((prevTop) => {
-                if (prevTop >= gameHeight) { // 바닥에 닿으면
-                    onRemove(); // 부모에서 라이프 감소 처리
-                    clearInterval(fallInterval);
+                if (prevTop >= gameHeight) { 
+                    // 바닥에 닿으면 한 번만 onRemove 호출
+                    clearInterval(fallInterval); // 인터벌 해제
+                    onRemove(); // 한 번만 호출
                     return prevTop;
                 }
-                return prevTop; // 5px씩 아래로 이동
+                return prevTop + 2.5;
             });
-        }, 50); // 50ms마다 위치 업데이트
+        }, 50);
 
-        return () => clearInterval(fallInterval);
-    }, [onRemove, gameHeight]);
+        return () => clearInterval(fallInterval); // 컴포넌트가 사라질 때 인터벌 해제
+    }, []); 
 
     return (
         <div
