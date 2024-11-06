@@ -24,6 +24,10 @@ public class AnnouncerController {
 
 	private final AnnouncerService announcerService;
 
+	/**
+	 * 아나운서 음성 데이터 전체 조회
+	 * @return announcerResponseDtos
+	 */
 	@GetMapping
 	public ApiResponse<?> getAllAnnouncerData() {
 		try {
@@ -34,6 +38,11 @@ public class AnnouncerController {
 		}
 	}
 
+	/**
+	 * 사용자가 녹음한 아나운서 음성 분석 결과 단일 조회
+	 * @param id 상세 조회 id
+	 * @return userAnnouncerVoiceComparisonResult - 음성 분석 비교 결과
+	 */
 	@GetMapping("compare/{id}")
 	public ApiResponse<?> getOneUserToAnnouncerVoiceComparison(@PathVariable Long id) {
 		UserAnnouncerVoiceComparisonResultDto userAnnouncerVoiceComparisonResultDto = announcerService.getOneUserToAnnouncerVoiceComparison(id);
