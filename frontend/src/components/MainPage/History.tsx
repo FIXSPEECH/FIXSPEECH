@@ -50,7 +50,7 @@ function History() {
         startDate={new Date(new Date().setMonth(new Date().getMonth() - 4))}
         endDate={new Date(new Date().setMonth(new Date().getMonth()))}
         values={grassValues}
-        classForValue={(value) => {
+        classForValue={(value: GrassData) => {
           if (!value) {
             return "color-empty";
           }
