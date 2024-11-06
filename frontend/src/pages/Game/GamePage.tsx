@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import FallingLetter from "../components/Game/FallingLetter";
+import FallingLetter from "../../components/Game/FallingLetter";
 import { Button } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { getGameList, getGameWords, postGameResult } from "../services/Game/GameApi";
+import { getGameList, getGameWords, postGameResult } from "../../services/Game/GameApi";
+import { useNavigate } from "react-router-dom";
 
 export default function Game() {
   const [letters, setLetters] = useState<{ id: number; letter: string; left: number }[]>([]);
@@ -18,6 +19,7 @@ export default function Game() {
   const [words, setWords] = useState<string[]>([]);
   const [startTime, setStartTime] = useState<number | null>(null); // 게임 시작 시각을 저장
   const recognitionRef = useRef<any>(null);
+  const navigate = useNavigate();
   const judgmentLineHeight = window.innerHeight * 0.58;
 
   // stageList 가져오기
@@ -60,13 +62,13 @@ export default function Game() {
     setIsGameOver(true);
     setIsGameRunning(false);
     stopRecording();
-    setLetters([])
+    setLetters([]);
 
     // 게임 시간 (초 단위로 계산)
     const playtime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
 
     // API 호출
-    postGameResult({ level: stage, playtime, correctNumber: score });    
+    postGameResult({ level: stage, playtime, correctNumber: score });
     // console.log({ level: stage, playtime, correctNumber: score });
   };
 
@@ -221,6 +223,9 @@ export default function Game() {
                 </Button>
                 <Button variant="text" color="error" onClick={startGame}>
                   <p className="text-colorFE6250 font-bold">다시하기</p>
+                </Button>
+                <Button variant="text" color="error" onClick={()=>navigate("/game/ranking")}>
+                  <p className="text-colorFE6250 font-bold">랭킹보기</p>
                 </Button>
               </div>
             </div>
