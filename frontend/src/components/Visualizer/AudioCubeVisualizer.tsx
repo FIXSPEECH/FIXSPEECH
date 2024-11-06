@@ -130,7 +130,7 @@ const AudioCubeVisualizer = () => {
   }, []);
 
   // 애니메이션 프레임 업데이트
-  useFrame((state) => {
+  useFrame(() => {
     if (!groupRef.current || !meshRef.current) return;
 
     // 전체 그룹 회전
