@@ -1,7 +1,8 @@
 import Avatar from "@mui/material/Avatar";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
-// import axios from "axios";
+import { Canvas } from "@react-three/fiber";
+import AudioCubeVisualizer from "../Visualizer/AudioCubeVisualizer";
 
 function UserInfo() {
   const navigate = useNavigate();
@@ -39,6 +40,11 @@ function UserInfo() {
         >
           로그아웃
         </div>
+      </div>
+      <div className="flex flex-col items-center">
+        <Canvas camera={{ position: [7, 7, 7], fov: 70 }}>
+          <AudioCubeVisualizer />
+        </Canvas>
       </div>
     </div>
   );
