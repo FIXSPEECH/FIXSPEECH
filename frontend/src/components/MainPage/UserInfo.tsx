@@ -28,23 +28,20 @@ function UserInfo() {
         <span className="text-white text-lg font-medium mb-2">
           반가워요, {userProfile.name || "사용자"}님!
         </span>
-        <div
-          className="flex justify-center items-center text-white bg-white bg-opacity-25 rounded-md w-48 h-9 cursor-pointer"
-          onClick={() => navigate("/record")}
-        >
-          내 목소리 분석하기
+        <div className="flex items-center gap-2">
+          <div
+            className="flex justify-center items-center text-white bg-white bg-opacity-25 rounded-md w-48 h-9 cursor-pointer"
+            onClick={() => navigate("/record")}
+          >
+            내 목소리 분석하기
+          </div>
+          <div
+            className="flex justify-center items-center text-white bg-white bg-opacity-25 rounded-md w-48 h-9 cursor-pointer"
+            onClick={handleLogout}
+          >
+            로그아웃
+          </div>
         </div>
-        <div
-          className="flex justify-center items-center text-white bg-white bg-opacity-25 rounded-md w-48 h-9 cursor-pointer"
-          onClick={handleLogout}
-        >
-          로그아웃
-        </div>
-      </div>
-      <div className="flex flex-col items-center">
-        <Canvas camera={{ position: [7, 7, 7], fov: 70 }}>
-          <AudioCubeVisualizer />
-        </Canvas>
       </div>
     </div>
   );
