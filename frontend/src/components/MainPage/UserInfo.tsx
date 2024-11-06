@@ -1,7 +1,6 @@
 import Avatar from "@mui/material/Avatar";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
-// import axios from "axios";
 
 function UserInfo() {
   const navigate = useNavigate();
@@ -27,17 +26,19 @@ function UserInfo() {
         <span className="text-white text-lg font-medium mb-2">
           반가워요, {userProfile.name || "사용자"}님!
         </span>
-        <div
-          className="flex justify-center items-center text-white bg-white bg-opacity-25 rounded-md w-48 h-9 cursor-pointer"
-          onClick={() => navigate("/record")}
-        >
-          내 목소리 분석하기
-        </div>
-        <div
-          className="flex justify-center items-center text-white bg-white bg-opacity-25 rounded-md w-48 h-9 cursor-pointer"
-          onClick={handleLogout}
-        >
-          로그아웃
+        <div className="flex items-center gap-2">
+          <div
+            className="flex justify-center items-center text-white bg-white bg-opacity-25 rounded-md w-48 h-9 cursor-pointer"
+            onClick={() => navigate("/record")}
+          >
+            내 목소리 분석하기
+          </div>
+          <div
+            className="flex justify-center items-center text-white bg-white bg-opacity-25 rounded-md w-24 h-9 cursor-pointer"
+            onClick={handleLogout}
+          >
+            로그아웃
+          </div>
         </div>
       </div>
     </div>

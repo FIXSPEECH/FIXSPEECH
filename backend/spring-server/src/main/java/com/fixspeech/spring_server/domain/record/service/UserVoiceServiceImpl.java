@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
 import com.fixspeech.spring_server.domain.record.model.AnalyzeResult;
@@ -72,6 +73,17 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 	public UserVoiceListResponseDto getUserRecordDetail(Long resultId) {
 
 		return convertTouserVoiceDto(resultId);
+	}
+
+	/**
+	 * 사용자가 가장 최근에 녹음한 음성 결과를 조회
+	 * @param userId 사용자 PK
+	 * @return AnalyzeResultResponseDto
+	 */
+	@Override
+	public AnalyzeResultResponseDto getUserOneAnalyzeResult(Long userId) {
+		AnalyzeResult analyzeResult = analyzeResultRepository.findTopByUserIdOrderByCreatedAtDesc(userId);
+		return AnalyzeResultResponseDto.from(analyzeResult);
 	}
 
 	private UserVoiceListResponseDto convertTouserVoiceDto(Long resultId) {

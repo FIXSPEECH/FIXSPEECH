@@ -74,7 +74,6 @@ public class JwtTokenProvider {
 	}
 
 	/**
-	 * @implSpec
 	 * 토큰 유효성 검사
 	 * @param token Token 정보
 	 * @return 논리 값
@@ -134,7 +133,6 @@ public class JwtTokenProvider {
 
 	/**
 	 * 이전 토큰이 존재하는 경우 수행
-	 * @implSpec
 	 * @param token refreshToken
 	 * @param expiration 만료 시간
 	 * @return Jwts

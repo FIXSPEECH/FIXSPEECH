@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.config.s3;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,6 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,5 +91,21 @@ public class S3Service {
 			fos.write(file.getBytes());
 		}
 		return Optional.of(convertFile);
+	}
+
+	// S3에서 파일을 다운로드하여 byte[]로 반환
+	public byte[] downloadFile(String fileUrl) throws IOException {
+		String key = fileUrl.replace(amazonS3.getUrl(bucket, "").toString(), "");
+
+		try (S3Object s3Object = amazonS3.getObject(bucket, key);
+			 S3ObjectInputStream inputStream = s3Object.getObjectContent();
+			 ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
+			IOUtils.copy(inputStream, outputStream);
+			return outputStream.toByteArray();
+		} catch (IOException e) {
+			log.error("Failed to download file from S3: {}", fileUrl, e);
+			throw e;
+		}
 	}
 }

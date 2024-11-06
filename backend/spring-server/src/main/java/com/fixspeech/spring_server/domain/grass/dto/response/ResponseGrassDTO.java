@@ -15,11 +15,11 @@ import lombok.Setter;
 @Builder
 public class ResponseGrassDTO {
 	private int count;
-	private LocalDate createdAt;
+	private LocalDate date;
 
 	public static ResponseGrassDTO fromEntity(Grass grass) {
 		return ResponseGrassDTO.builder()
-			.createdAt(grass.getCreatedAt())
+			.date(grass.getCreatedAt())
 			.count(grass.getCount())
 			.build();
 	}
