@@ -27,8 +27,8 @@ public class AnnouncerVoiceSample extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "sample_name", nullable = false)
-	private String sampleName;
+	@Column(name = "sample_address", nullable = false)
+	private String sampleAddress;
 
 	@Column(name = "clarity", nullable = false)
 	private float clarity;

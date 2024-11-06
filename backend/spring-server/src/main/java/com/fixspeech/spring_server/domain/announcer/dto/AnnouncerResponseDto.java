@@ -17,8 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnnouncerResponseDto {
-	private Long id;
-	private String sampleName;
+	private String sampleAddress;
 	private float clarity;
 	private float intonationPatternConsistency;
 	private float melodyIndex;
@@ -31,8 +30,7 @@ public class AnnouncerResponseDto {
 
 	public static AnnouncerResponseDto from(AnnouncerVoiceSample announcer) {
 		return AnnouncerResponseDto.builder()
-			.id(announcer.getId())
-			.sampleName(announcer.getSampleName())
+			.sampleAddress(announcer.getSampleAddress())
 			.clarity(announcer.getClarity())
 			.intonationPatternConsistency(announcer.getIntonationPatternConsistency())
 			.melodyIndex(announcer.getMelodyIndex())
