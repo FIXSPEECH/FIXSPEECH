@@ -11,11 +11,53 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 function RegistScript() {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [accent, setAccent] = useState("power"); // 기본 값 "힘있게 말하기"
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
   const navigate = useNavigate();
 
   const handlePracticeClick = () => {
+    const data = {
+      title,
+      content,
+      accent,
+      time: `${minutes}분 ${seconds}초`,
+    };
+
+    console.log(data)
     navigate("/situation/practice");
   };
+
+
+
+
+  // 타이틀 저장
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+  };
+  
+  // 내용 저장
+  const handleContentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setContent(event.target.value);
+  };
+  
+  // 악센트 선택 저장
+  const handleAccentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAccent(event.target.value);
+  };
+
+    // 분 선택 핸들러
+    const handleMinutesChange = (event: SelectChangeEvent) => {
+      setMinutes(Number(event.target.value));
+    };
+  
+    // 초 선택 핸들러
+    const handleSecondsChange = (event: SelectChangeEvent) => {
+      setSeconds(Number(event.target.value));
+    };
+  
 
   // textfield 공용 css
   const CustomTextFieldStyle = {
@@ -51,18 +93,6 @@ function RegistScript() {
     },
   };
 
-  const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(0);
-
-  // 분 선택 핸들러
-  const handleMinutesChange = (event: SelectChangeEvent) => {
-    setMinutes(Number(event.target.value));
-  };
-
-  // 초 선택 핸들러
-  const handleSecondsChange = (event: SelectChangeEvent) => {
-    setSeconds(Number(event.target.value));
-  };
 
   return (
     <>
@@ -73,6 +103,7 @@ function RegistScript() {
       <TextField
           id="outlined-multiline-flexible"
           label="제목을 입력해주세요."
+          onChange={handleTitleChange}
           sx={CustomTextFieldStyle}
         />
 
@@ -83,6 +114,7 @@ function RegistScript() {
       label="대본을 입력해주세요."
       multiline
       rows={4}
+      onChange={handleContentChange}
       variant="outlined" // outlined 속성 추가
       sx={CustomTextFieldStyle}
     />
@@ -94,6 +126,7 @@ function RegistScript() {
         row
         aria-labelledby="demo-row-radio-buttons-group-label"
         name="row-radio-buttons-group"
+        onChange={handleAccentChange}
         sx={{
           // 라디오 버튼 색상 설정
           '& .MuiRadio-root': {
@@ -230,6 +263,8 @@ function RegistScript() {
         연습 시작하기
       </Button>
     </div>
+
+
       {/*  /situation/practice (SituationPractice.tsx) */}
 
       </>
