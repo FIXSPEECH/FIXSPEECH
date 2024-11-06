@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import FallingLetter from "../components/Game/FallingLetter";
 import { Button } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { getGameList, getGameWords } from "../services/Game/GameApi";
+import { getGameList, getGameWords, postGameResult } from "../services/Game/GameApi";
 
 export default function Game() {
   const [letters, setLetters] = useState<{ id: number; letter: string; left: number }[]>([]);
@@ -10,12 +10,13 @@ export default function Game() {
   const [lives, setLives] = useState(5);
   const [isGameOver, setIsGameOver] = useState(false);
   const [recognizedText, setRecognizedText] = useState("");
-  const [beforeText, setBeforeText] = useState(""); // 발음된 텍스트 저장
+  const [beforeText, setBeforeText] = useState("");
   const [isGameRunning, setIsGameRunning] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [stageList, setStageList] = useState<number[]>([]);
   const [stage, setStage] = useState<number>(1);
   const [words, setWords] = useState<string[]>([]);
+  const [startTime, setStartTime] = useState<number | null>(null); // 게임 시작 시각을 저장
   const recognitionRef = useRef<any>(null);
   const judgmentLineHeight = window.innerHeight * 0.58;
 
@@ -59,6 +60,14 @@ export default function Game() {
     setIsGameOver(true);
     setIsGameRunning(false);
     stopRecording();
+    setLetters([])
+
+    // 게임 시간 (초 단위로 계산)
+    const playtime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+
+    // API 호출
+    postGameResult({ level: stage, playtime, correctNumber: score });    
+    // console.log({ level: stage, playtime, correctNumber: score });
   };
 
   const initializeRecognition = () => {
@@ -73,15 +82,18 @@ export default function Game() {
 
     recognition.onresult = (event: any) => {
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript.trim().toLowerCase();
+        let transcript = event.results[i][0].transcript.trim().toLowerCase();
+        transcript = transcript.replace(/\s+/g, ""); // 공백 제거
+
         if (event.results[i].isFinal) {
           setRecognizedText(transcript);
-          setBeforeText(transcript); // 정답 처리 전 발음 텍스트 저장
+          setBeforeText(transcript);
+        } else {
+          // interimResult를 일부 처리하고 싶다면 여기에 추가 가능
+          console.log("Interim result:", transcript);
         }
       }
     };
-
-    recognition.onerror = (event: any) => console.error("음성 인식 오류:", event.error);
 
     recognition.onend = () => {
       if (isRecording) recognition.start();
@@ -127,6 +139,7 @@ export default function Game() {
     setLetters([]);
     setIsGameOver(false);
     setIsGameRunning(true);
+    setStartTime(Date.now()); // 게임 시작 시각을 기록
     startRecording();
   };
 
@@ -145,7 +158,7 @@ export default function Game() {
               <FavoriteIcon key={index} style={{ color: "red", margin: "0 5px" }} />
             ))}
           </div>
-          <div className="text-white mt-2">Score: {score}</div>
+          <div className="text-colorFE6250 font-bold mt-2">Score: {score}</div>
         </div>
 
         <div className="flex-1 relative w-full overflow-hidden">
