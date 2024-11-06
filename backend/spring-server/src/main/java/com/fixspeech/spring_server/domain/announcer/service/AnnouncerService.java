@@ -10,7 +10,7 @@ public interface AnnouncerService {
 	// 아나운서 음성 데이터 전체 조회
 	List<AnnouncerResponseDto> getAllAnnouncerData();
 
-	// 사용자가 녹음한 아나운서 음성 분석 결과 전체 조히
+	// 사용자가 녹음한 아나운서 음성 분석 결과 전체 조회
 
 	// 사용자가 녹음한 아나운서 음성 분석 결과 단일 조회
 	UserAnnouncerVoiceComparisonResultDto getOneUserToAnnouncerVoiceComparison(Long id);

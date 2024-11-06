@@ -10,8 +10,6 @@ import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
 import com.fixspeech.spring_server.domain.announcer.model.UserAnnouncerVoiceComparisonResult;
 import com.fixspeech.spring_server.domain.announcer.repository.AnnouncerRepository;
 import com.fixspeech.spring_server.domain.announcer.repository.UserAnnouncerVoiceComparisonRepository;
-import com.fixspeech.spring_server.global.exception.CustomException;
-import com.fixspeech.spring_server.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +39,11 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	 */
 	@Override
 	public UserAnnouncerVoiceComparisonResultDto getOneUserToAnnouncerVoiceComparison(Long id) {
-		UserAnnouncerVoiceComparisonResult userAnnouncerVoiceComparisonResult = userAnnouncerVoiceComparisonRepository.findById(id)
-			.orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST_ERROR));
+		UserAnnouncerVoiceComparisonResult userAnnouncerVoiceComparisonResult = userAnnouncerVoiceComparisonRepository.findById(id).orElse(null);
 		log.info("사용자와 아나운서 음성 비교 상세 조회= {}", userAnnouncerVoiceComparisonResult);
+		if (userAnnouncerVoiceComparisonResult == null) {
+			return null;
+		}
 		return UserAnnouncerVoiceComparisonResultDto.from(userAnnouncerVoiceComparisonResult);
 	}
 }
