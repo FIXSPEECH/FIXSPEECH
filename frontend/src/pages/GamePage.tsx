@@ -10,12 +10,14 @@ export default function Game() {
   const [lives, setLives] = useState(5);
   const [isGameOver, setIsGameOver] = useState(false);
   const [recognizedText, setRecognizedText] = useState("");
+  const [beforeText, setBeforeText] = useState(""); // 발음된 텍스트 저장
   const [isGameRunning, setIsGameRunning] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [stageList, setStageList] = useState<number[]>([]);
   const [stage, setStage] = useState<number>(1);
   const [words, setWords] = useState<string[]>([]);
   const recognitionRef = useRef<any>(null);
+  const judgmentLineHeight = window.innerHeight * 0.58;
 
   // stageList 가져오기
   useEffect(() => {
@@ -72,7 +74,10 @@ export default function Game() {
     recognition.onresult = (event: any) => {
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript.trim().toLowerCase();
-        if (event.results[i].isFinal) setRecognizedText(transcript);
+        if (event.results[i].isFinal) {
+          setRecognizedText(transcript);
+          setBeforeText(transcript); // 정답 처리 전 발음 텍스트 저장
+        }
       }
     };
 
@@ -144,6 +149,17 @@ export default function Game() {
         </div>
 
         <div className="flex-1 relative w-full overflow-hidden">
+          {/* 판정선을 시각적으로 표시 */}
+          <div
+            style={{
+              position: "absolute",
+              top: `${judgmentLineHeight}px`,
+              width: "100%",
+              height: "2px",
+              backgroundColor: "#FF5733",
+            }}
+          />
+
           {letters.map((letter) => (
             <FallingLetter
               key={letter.id}
@@ -159,15 +175,14 @@ export default function Game() {
               style={{ pointerEvents: "none" }}
             >
               <h1
-                className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4" // mb-4로 간격 조정
+                className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4"
                 style={{ pointerEvents: "auto" }}
                 onClick={startGame}
               >
                 START
               </h1>
 
-              {/* Stage Selection Buttons */}
-              <div className="flex gap-2" style={{ pointerEvents: "auto" }}>
+              <div className="flex gap-2 mt-4" style={{ pointerEvents: "auto" }}>
                 {stageList.map((stageId) => (
                   <Button
                     key={stageId}
@@ -184,25 +199,29 @@ export default function Game() {
           )}
 
           {isGameOver && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <h1 className="text-8xl font-bold text-colorFE6250">GAME OVER</h1>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <h1 className="text-8xl font-bold text-colorFE6250 mb-4">GAME OVER</h1>
+
+              <div className="flex gap-4 mt-4 text-white">
+                <Button variant="text" onClick={() => (window.location.href = "/")}>
+                  <p className="text-colorFE6250 font-bold">나가기</p>
+                </Button>
+                <Button variant="text" color="error" onClick={startGame}>
+                  <p className="text-colorFE6250 font-bold">다시하기</p>
+                </Button>
+              </div>
             </div>
           )}
         </div>
       </div>
-      {isGameOver && (
-          <div className="flex justify-center gap-4 mt-4 text-white">
-          <Button variant="text" color="error" onClick={() => (window.location.href = "/")}>
-            나가기
-          </Button>
-          <Button variant="text" color="error" onClick={startGame}>
-            다시 도전하기
-          </Button>
-        </div>
-      )}
+
+      {/* 음성 인식 결과와 발음된 텍스트 출력 */}
       {isGameRunning && (
-        <div className="flex justify-center p-4 min-h-[10vh]">
-          <h2 className="text-white">Recognized: {recognizedText}</h2>
+        <div
+          className="flex flex-col items-center justify-center min-h-[10vh]"
+          style={{ backgroundColor: "transparent" }} // 투명도 있는 배경
+        >
+          <h2 className="text-white bg-opacity-0 p-2 rounded-md">{beforeText}</h2>
         </div>
       )}
     </div>

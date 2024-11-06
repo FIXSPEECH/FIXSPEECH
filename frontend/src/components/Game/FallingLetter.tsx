@@ -8,7 +8,7 @@ interface FallingLetterProps {
 
 export default function FallingLetter({ letter, left, onRemove }: FallingLetterProps) {
     const [top, setTop] = useState(0);
-    const gameHeight = window.innerHeight * 0.7;
+    const gameHeight = window.innerHeight * 0.58;
 
     useEffect(() => {
         const fallInterval = setInterval(() => {
