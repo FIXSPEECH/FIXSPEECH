@@ -7,7 +7,7 @@ const ParticleBackground = () => {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Scene 설정
+    // Three.js 설정
     const scene = new THREE.Scene();
 
     // Renderer 설정
@@ -122,24 +122,6 @@ const ParticleBackground = () => {
       }
     };
 
-    // iOS 권한 요청 핸들러
-    const requestPermission = () => {
-      if (typeof DeviceOrientationEvent.requestPermission === "function") {
-        DeviceOrientationEvent.requestPermission()
-          .then((permissionState) => {
-            if (permissionState === "granted") {
-              window.addEventListener(
-                "deviceorientation",
-                handleDeviceOrientation
-              );
-            }
-          })
-          .catch(console.error);
-      } else {
-        window.addEventListener("deviceorientation", handleDeviceOrientation);
-      }
-    };
-
     // 애니메이션 루프
     const animate = () => {
       requestAnimationFrame(animate);
@@ -190,7 +172,7 @@ const ParticleBackground = () => {
 
     // 이벤트 리스너 등록
     window.addEventListener("resize", handleResize);
-    requestPermission();
+    window.addEventListener("deviceorientation", handleDeviceOrientation);
     animate();
 
     // 클린업
