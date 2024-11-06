@@ -30,7 +30,6 @@ public class GrassController {
 	private final GrassService grassService;
 
 	/**
-	 * @implSpec
 	 * 특정 사용자의 잔디 기록을 불러오는 메서드
 	 * @param userDetails 사용자 정보
 	 * @return 잔디 기록이 포함된 Optional 리스트
