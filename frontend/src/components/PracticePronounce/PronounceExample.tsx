@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useVoiceStore from "../../store/voiceStore";
 import VolumeDownIcon from '@mui/icons-material/VolumeDown';
 import { ExampleGet } from "../../services/PronouncePractice/PronouncePracticeGet";
 import ArrowRight from '../../Icons/ArrowRightIcon'
+import usePronounceScoreStore from "../../store/pronounceScoreStore";
+import FinishModal from './FinishModal'
 
 interface PronounceExampleProps {
     color: string; // color prop의 타입 정의
@@ -13,10 +16,13 @@ interface PronounceExampleProps {
 
 function PronounceExample({color, trainingId, size}:PronounceExampleProps){
     const {audioURL, isRecording} = useVoiceStore();
+    const {isNumber, setIsNumber, setIsCorrect, setIsNumberZero} = usePronounceScoreStore();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
     const [example, setExample] = useState<string>("")
+    const [showModal, setShowModal] = useState<boolean>(false)
 
+    const navigate = useNavigate();
 
     const handlePlayAudio = () => {
         if (audioRef.current) {
@@ -41,14 +47,30 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
         } catch(e) {
             console.log(e)
         }
+
+        setIsNumber();
     }
 
 
     // 페이지 로딩 시 연습문제 가져오기
     useEffect(() => {
+        setIsNumberZero();
         getExample();
     },[])
-     
+
+    // isNumber가 11이 되면 모달을 표시하도록 설정
+    useEffect(() => {
+        if (isNumber === 11) {
+            setShowModal(true); // 11이 되면 모달을 띄움
+        }
+    }, [isNumber]); // isNumber가 변경될 때마다 실행
+    
+
+  const closeModal = () => {
+    setShowModal(false); // 모달 닫기
+    setIsNumberZero();
+    navigate('/training')
+  }
     
 
     return (
@@ -74,10 +96,14 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
             </div>
             </div>
 
-            {/* ArrowRight 컴포넌트를 수직 중앙에 정렬하고 오른쪽에 붙이기 */}
+            {/* ArrowRight 컴포넌트 */}
             <div className="ml-auto mr-10 flex">
             <ArrowRight  onClick={getExample}/>
             </div>     
+
+            {/* isNumber가 11일 때 FinishModal이 자동으로 표시 */}
+            <FinishModal isOpen={showModal} onClose={closeModal} />
+            
         </>
         
     )
