@@ -19,7 +19,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
-import com.fixspeech.spring_server.domain.record.dto.VoiceAnalysisMessage;
+import com.fixspeech.spring_server.domain.script.dto.VoiceAnalysisMessage;
 
 @Configuration
 @EnableKafka
