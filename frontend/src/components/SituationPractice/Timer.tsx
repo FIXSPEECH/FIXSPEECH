@@ -5,7 +5,7 @@ import useVoiceStore from "../../store/voiceStore";
 
 function Timer() {
   const {setIsRecording} = useVoiceStore();
-  const [timeLeft, setTimeLeft] = useState(5); // 초기 시간 5:00 (300초)
+  const [timeLeft, setTimeLeft] = useState(200); // 초기 시간 5:00 (300초)
   const [progress, setProgress] = useState(100); // 원형 테두리의 진행 상태 (초기 100%)
   const [showModal, setShowModal] = useState<boolean>(false)
   const navigate = useNavigate();
@@ -48,10 +48,10 @@ function Timer() {
     <>
     <div className="relative flex justify-center items-center">
       <svg
-        width="200" // 크기를 키우기 위해 width 증가
-        height="200" // 크기를 키우기 위해 height 증가
+        // width="200" // 크기를 키우기 위해 width 증가
+        // height="200" // 크기를 키우기 위해 height 증가
         viewBox="0 0 120 120"
-        className="transform rotate-180"
+        className="sm:w-40 sm:h-40 md:w-50 md:h-50 lg:w-60 lg:h-60 xl:w-70 xl:h-70 transform rotate-180"
       >
         {/* 전체 원형 테두리 (배경) */}
         <circle
