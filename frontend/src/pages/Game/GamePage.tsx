@@ -69,7 +69,6 @@ export default function Game() {
 
     // API 호출
     postGameResult({ level: stage, playtime, correctNumber: score });
-    // console.log({ level: stage, playtime, correctNumber: score });
   };
 
   const initializeRecognition = () => {
@@ -206,7 +205,7 @@ export default function Game() {
                     onClick={() => handleStageSelection(stageId)}
                     disabled={stage === stageId}
                   >
-                    Stage {stageId}
+                    {stageId === 1 ? "Easy" : stageId === 2 ? "Normal" : "Hard"}
                   </Button>
                 ))}
               </div>
