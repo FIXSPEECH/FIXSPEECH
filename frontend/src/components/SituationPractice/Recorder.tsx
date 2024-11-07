@@ -1,8 +1,10 @@
 import { useState, useRef} from "react";
+import { useNavigate } from "react-router-dom";
 import MicNoneIcon from "@mui/icons-material/MicNone";
 import MicIcon from "@mui/icons-material/Mic";
 import useVoiceStore from "../../store/voiceStore";
 import { LiveAudioVisualizer } from "react-audio-visualize";
+import RegistModal from './RegistModal'
 
 
 declare global {
@@ -21,8 +23,9 @@ function Recorder(){
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
       null
     );
-
+    const [showModal, setShowModal] = useState<boolean>(false)
     const recognitionRef = useRef<any>(null);
+    const navigate = useNavigate();
     
     const startRecording = async () => {
 
@@ -76,9 +79,24 @@ function Recorder(){
         } else {
           recognitionRef.current?.stop();
           stopRecording();
+          setShowModal(true)
           console.log("[System] 음성 인식이 중지되었습니다.");
         }
       };
+
+
+      const closeModal = () => {
+        setShowModal(false); // 모달 닫기
+        setAudioURL(null)
+        navigate('/')
+      }
+        
+      const resetModal = () => {
+        setShowModal(false); // 모달 닫기
+        setAudioURL(null)
+        navigate('/situation/practice')
+      }
+        
 
     return(
         <div className="text-center mt-20">
@@ -149,6 +167,8 @@ function Recorder(){
           Your browser does not support the audio element.
         </audio>
       )}
+
+      <RegistModal isOpen={showModal} onClose={closeModal} onReset={resetModal}/>
 
     </div>
   

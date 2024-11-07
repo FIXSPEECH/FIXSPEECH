@@ -1,11 +1,31 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import RegistModal from './RegistModal'
+import useVoiceStore from "../../store/voiceStore";
 
 function Timer() {
-  const [timeLeft, setTimeLeft] = useState(200); // 초기 시간 5:00 (300초)
+  const {setIsRecording} = useVoiceStore();
+  const [timeLeft, setTimeLeft] = useState(5); // 초기 시간 5:00 (300초)
   const [progress, setProgress] = useState(100); // 원형 테두리의 진행 상태 (초기 100%)
-  
+  const [showModal, setShowModal] = useState<boolean>(false)
+  const navigate = useNavigate();
+
+  const closeModal = () => {
+    setShowModal(false); // 모달 닫기
+    navigate('/')
+  }
+
+  const ResetModal = () => {
+    setShowModal(false); // 모달 닫기
+    navigate('/situation/practice')
+  }
+
   useEffect(() => {
-    if (timeLeft === 0) return; // 타이머가 끝나면 종료
+    if (timeLeft === 0) {
+        setShowModal(true)
+        setIsRecording(false)
+        return; // 타이머가 끝나면 종료
+    }
 
     const interval = setInterval(() => {
       setTimeLeft((prevTime) => prevTime - 1); // 매 초마다 타이머 감소
@@ -25,6 +45,7 @@ function Timer() {
   const offset = circumference - (circumference * progress) / 100; // dashoffset 값 계산
 
   return (
+    <>
     <div className="relative flex justify-center items-center">
       <svg
         width="200" // 크기를 키우기 위해 width 증가
@@ -63,6 +84,10 @@ function Timer() {
         {`${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? "0" : ""}${timeLeft % 60}`}
       </div>
     </div>
+
+
+    <RegistModal isOpen={showModal} onClose={closeModal} onReset={ResetModal}/>
+    </>
   );
 }
 
