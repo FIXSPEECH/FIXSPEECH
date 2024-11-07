@@ -22,6 +22,10 @@ public class ApiResponse<T> implements Serializable {
 		return new ApiResponse<>(SUCCESS_STATUS, data, message);
 	}
 
+	public static <T> ApiResponse<T> success(String message) {
+		return new ApiResponse<>(SUCCESS_STATUS, message);
+	}
+
 	public static ApiResponse<?> createError(ErrorCode errorCode) {
 		return new ApiResponse<>(errorCode.getCode(), null, errorCode.getMessage());
 	}
@@ -29,6 +33,11 @@ public class ApiResponse<T> implements Serializable {
 	private ApiResponse(String status, T data, String message) {
 		this.status = status;
 		this.data = data;
+		this.message = message;
+	}
+
+	private ApiResponse(String status, String message) {
+		this.status = status;
 		this.message = message;
 	}
 }

@@ -10,7 +10,23 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class UserVoiceRequestDto {
-	Long userId;
-	String userVoiceTitle;
-	String userVoiceAddress;
+	String recordTitle;
+
+	float clarity;
+
+	float intonationPatternConsistency;
+
+	float melodyIndex;
+
+	float speechRhythm;
+
+	float pauseTiming;
+
+	float rateVariability;
+
+	float jitter;
+
+	float amr;
+
+	float utteranceEnergy;
 }

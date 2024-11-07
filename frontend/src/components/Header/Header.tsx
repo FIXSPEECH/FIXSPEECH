@@ -1,13 +1,16 @@
-import { useNavigate } from 'react-router-dom';
-import '../../styles/Header/Header.css'
+import { useNavigate } from "react-router-dom";
+import "../../styles/Header/Header.css";
 
-function Header(){
+function Header() {
+  const navigate = useNavigate();
 
-    const navigate= useNavigate()
-
-    return (
-        <div className='logo-header' onClick={() => navigate('/') }>FIXSPEECH</div>
-    )
+  return (
+    <div className="logo-header">
+      <span onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+        FIXSPEECH
+      </span>
+    </div>
+  );
 }
 
 export default Header;
