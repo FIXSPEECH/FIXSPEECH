@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.fixspeech.spring_server.domain.record.dto.AnalyzeResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
@@ -31,42 +32,55 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 
 	@Transactional
 	@Override
-	public Long saveImage(UserVoiceRequestDto userVoiceRequestDto) {
+	public Long saveImage(UserVoiceRequestDto userVoiceRequestDto, String fileUrl, Long userId) {
 		System.out.println("service: " + userVoiceRequestDto);
 		UserVoiceFile userVoiceFile = UserVoiceFile.builder()
-			.userId(userVoiceRequestDto.getUserId())
-			.recordTitle(userVoiceRequestDto.getUserVoiceTitle())
-			.recordAddress(userVoiceRequestDto.getUserVoiceAddress())
+			.userId(userId)
+			.recordTitle(userVoiceRequestDto.getRecordTitle())
+			.recordAddress(fileUrl)
 			.build();
 		System.out.println("file: " + userVoiceFile);
 		userVoiceRepository.save(userVoiceFile);
-		UserVoiceFile newUserVoiceFile = userVoiceRepository.findTopByUserIdOrderByCreatedAtDesc(
-			userVoiceRequestDto.getUserId());
+		UserVoiceFile newUserVoiceFile = userVoiceRepository.findTopByUserIdOrderByCreatedAtDesc(userId);
 		return newUserVoiceFile.getId();
 	}
 
 	@Override
-	public void saveResult(Map<String, Object> responseData, Long userId, Long recordId) {
+	public void saveResult(UserVoiceRequestDto userVoiceRequestDto, Long userId, Long recordId) {
+		AnalyzeResult analyzeResult = AnalyzeResult.builder()
+			.userId(userId)
+			.recordId(recordId)
+			.clarity(userVoiceRequestDto.getClarity())
+			.intonationPatternConsistency(userVoiceRequestDto.getIntonationPatternConsistency())
+			.melodyIndex(userVoiceRequestDto.getMelodyIndex())
+			.speechRhythm(userVoiceRequestDto.getSpeechRhythm())
+			.rateVariability(userVoiceRequestDto.getRateVariability())
+			.pauseTiming(userVoiceRequestDto.getPauseTiming())
+			.jitter(userVoiceRequestDto.getJitter())
+			.amr(userVoiceRequestDto.getAmr())
+			.utteranceEnergy(userVoiceRequestDto.getUtteranceEnergy())
+			.build();
+		analyzeResultRepository.save(analyzeResult);
+	}
+
+	@Override
+	public AnalyzeResponseDto preProcessing(Map<String, Object> responseData) {
 
 		Map<String, Object> metricsData = (Map<String, Object>)((Map<String, Object>)responseData.get("data")).get(
 			"metrics");
 		// AnalyzeResult 엔티티 생성
-		AnalyzeResult analyzeResult = AnalyzeResult.builder()
-			.userId(userId)
-			.recordId(recordId)
-			.clarity((float)Double.parseDouble(metricsData.get("명료도(Clarity)").toString()))
-			.intonationPatternConsistency(
-				(float)Double.parseDouble(metricsData.get("억양 패턴 일관성 (Intonation Pattern Consistency)").toString()))
-			.melodyIndex((float)Double.parseDouble(metricsData.get("멜로디 지수(Melody Index)").toString()))
-			.speechRhythm((float)Double.parseDouble(metricsData.get("말의 리듬(Speech Rhythm)").toString()))
-			.pauseTiming((float)Double.parseDouble(metricsData.get("휴지 타이밍(Pause Timing)").toString()))
-			.rateVariability((float)Double.parseDouble(metricsData.get("속도 변동성(Rate Variability)").toString()))
-			.jitter((float)Double.parseDouble(metricsData.get("성대 떨림(Jitter)").toString()))
-			.amr((float)Double.parseDouble(metricsData.get("강도 변동성(AMR)").toString()))
-			.utteranceEnergy((float)Double.parseDouble(metricsData.get("발화의 에너지(Utterance Energy)").toString()))
-			.build();
-
-		analyzeResultRepository.save(analyzeResult);
+		AnalyzeResponseDto analyzeResponseDto = new AnalyzeResponseDto(
+			(float)Double.parseDouble(metricsData.get("명료도(Clarity)").toString()),
+			(float)Double.parseDouble(metricsData.get("억양 패턴 일관성 (Intonation Pattern Consistency)").toString()),
+			(float)Double.parseDouble(metricsData.get("멜로디 지수(Melody Index)").toString()),
+			(float)Double.parseDouble(metricsData.get("말의 리듬(Speech Rhythm)").toString()),
+			(float)Double.parseDouble(metricsData.get("휴지 타이밍(Pause Timing)").toString()),
+			(float)Double.parseDouble(metricsData.get("속도 변동성(Rate Variability)").toString()),
+			(float)Double.parseDouble(metricsData.get("성대 떨림(Jitter)").toString()),
+			(float)Double.parseDouble(metricsData.get("강도 변동성(AMR)").toString()),
+			(float)Double.parseDouble(metricsData.get("발화의 에너지(Utterance Energy)").toString())
+		);
+		return analyzeResponseDto;
 	}
 
 	@Override
