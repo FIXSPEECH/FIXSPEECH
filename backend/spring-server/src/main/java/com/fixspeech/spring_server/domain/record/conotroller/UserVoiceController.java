@@ -40,13 +40,13 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/record")
-public class UserVoiceController {
+public class UserVoiceController implements UserVoiceApi {
 	private final S3Service s3Service;
 	private final UserVoiceService userVoiceService;
 	private final UserService userService;
 
 	@PostMapping
-	ApiResponse<?> analyze(
+	public ApiResponse<?> analyze(
 		@RequestPart(value = "record", required = false) MultipartFile file
 	) {
 		try {
@@ -98,7 +98,7 @@ public class UserVoiceController {
 
 	//리스트 목록
 	@GetMapping
-	private ApiResponse<?> getUserRecordList(
+	public ApiResponse<?> getUserRecordList(
 		@AuthenticationPrincipal UserDetails userDetails,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
@@ -115,7 +115,7 @@ public class UserVoiceController {
 
 	//음성 분석 단일 조회
 	@GetMapping("{resultId}")
-	private ApiResponse<?> getUserRecordDetail(
+	public ApiResponse<?> getUserRecordDetail(
 		@PathVariable Long resultId
 	) {
 		try {
@@ -127,7 +127,7 @@ public class UserVoiceController {
 	}
 
 	// MultipartFile의 InputStream을 처리하기 위한 헬퍼 클래스
-	private static class MultipartInputStreamFileResource extends InputStreamResource {
+	public static class MultipartInputStreamFileResource extends InputStreamResource {
 		private final String filename;
 
 		public MultipartInputStreamFileResource(InputStream inputStream, String filename) {
