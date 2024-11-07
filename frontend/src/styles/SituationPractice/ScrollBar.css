@@ -1,0 +1,16 @@
+
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    background-color: transparent; /* 스크롤바 트랙 배경색 */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #EFCC87; /* 스크롤바 색 */
+    border-radius: 4px; /* 스크롤바 둥글게 */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #D4A96F; /* 스크롤바 hover 색 */
+  }
+  
