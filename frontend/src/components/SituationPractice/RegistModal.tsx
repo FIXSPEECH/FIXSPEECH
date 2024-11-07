@@ -13,13 +13,18 @@ interface FinishModalProps {
   }
 
   export default function AlertDialog({isOpen, onClose, onReset}: FinishModalProps) {
-  
+    const handleClose = (_: React.SyntheticEvent, reason: string) => {
+        if (reason !== 'backdropClick') {
+          onClose();
+        }
+      };
+
     return (
       <React.Fragment>
      
         <Dialog
           open={isOpen}
-          onClose={onClose} 
+          onClose={handleClose} 
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           sx={{
