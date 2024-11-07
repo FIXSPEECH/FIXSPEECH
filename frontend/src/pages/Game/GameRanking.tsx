@@ -1,6 +1,6 @@
 import { Avatar } from "@mui/material";
 import { getGameRanking } from "../../services/Game/GameApi";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 interface Ranking {
   nickname: string;
@@ -15,41 +15,43 @@ interface Ranking {
 export default function GameRanking() {
   const [rankTable, setRankTable] = useState<Ranking[]>([]);
   const [difficulty, setDifficulty] = useState(1); // 1: Easy, 2: Medium, 3: Hard
+  const [rankingsCache, setRankingsCache] = useState<{ [key: number]: Ranking[] }>({});
+
+  const fetchRankingData = useCallback(async (difficultyLevel: number) => {
+    if (rankingsCache[difficultyLevel]) {
+      setRankTable(rankingsCache[difficultyLevel]);
+    } else {
+      const response = await getGameRanking(difficultyLevel);
+      const newRankings = response.data.content;
+      setRankTable(newRankings);
+      setRankingsCache((prevCache) => ({ ...prevCache, [difficultyLevel]: newRankings }));
+    }
+  }, [rankingsCache]);
 
   useEffect(() => {
-    getGameRanking(difficulty).then((res) => {
-      setRankTable(res.data.content); // Assuming data is already sorted in descending order
-    });
-  }, [difficulty]);
+    fetchRankingData(difficulty);
+  }, [difficulty, fetchRankingData]);
 
   const handleDifficultyChange = (level: number) => {
     setDifficulty(level);
   };
 
+  const DifficultyButton = ({ level, label }: { level: number; label: string }) => (
+    <button
+      onClick={() => handleDifficultyChange(level)}
+      className={`${difficulty === level ? "font-bold" : ""} text-[#FE6250] text-2xl`}
+    >
+      {label}
+    </button>
+  );
+
   return (
     <div className="flex flex-col items-center min-h-[70vh]">
-      <div className="flex flex-col items-center justify-center">
-        <div className="text-5xl font-bold text-[#FFAB01] mb-4">랭킹</div>
-        <div className="flex space-x-4 mb-8">
-          <button
-            onClick={() => handleDifficultyChange(1)}
-            className={`${difficulty === 1 ? "font-bold" : ""} text-[#FE6250] text-2xl`}
-          >
-            Easy
-          </button>
-          <button
-            onClick={() => handleDifficultyChange(2)}
-            className={`${difficulty === 2 ? "font-bold" : ""} text-[#FE6250] text-2xl`}
-          >
-            Normal
-          </button>
-          <button
-            onClick={() => handleDifficultyChange(3)}
-            className={`${difficulty === 3 ? "font-bold" : ""} text-[#FE6250] text-2xl`}
-          >
-            Hard
-          </button>
-        </div>
+      <div className="text-5xl font-bold text-[#FFAB01] mb-4">랭킹</div>
+      <div className="flex space-x-4 mb-8">
+        <DifficultyButton level={1} label="Easy" />
+        <DifficultyButton level={2} label="Normal" />
+        <DifficultyButton level={3} label="Hard" />
       </div>
 
       {/* Header Row for Column Labels */}
@@ -67,14 +69,10 @@ export default function GameRanking() {
             key={index}
             className="grid grid-cols-4 gap-4 items-center border border-gray-300 rounded-md p-4 mb-4 shadow-sm"
           >
-            <div className="text-2xl font-bold text-white text-center">
-              {index + 1}
-            </div>
+            <div className="text-2xl font-bold text-white text-center">{index + 1}</div>
             <div className="flex items-center justify-center">
               <Avatar src={rank.image} alt={rank.nickname} />
-              <span className="ml-2 font-bold text-lg text-white">
-                {rank.nickname}
-              </span>
+              <span className="ml-2 font-bold text-lg text-white">{rank.nickname}</span>
             </div>
             <div className="text-center text-white">{rank.playtime} seconds</div>
             <div className="text-center text-white">{rank.correctNumber}</div>
