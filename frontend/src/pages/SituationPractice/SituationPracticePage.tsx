@@ -7,7 +7,7 @@ function SituationPractice() {
   return (
     <div className="flex min-h-[80vh] items-center">
     <Script />
-    <div className="flex-col justify-center align-middle">
+    <div className="flex-col  w-2/5 justify-center align-middle">
       <Timer />
       <Recorder />
     </div>

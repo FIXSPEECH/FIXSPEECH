@@ -27,8 +27,8 @@ function Timer() {
   return (
     <div className="relative flex justify-center items-center">
       <svg
-        width="160" // 크기를 키우기 위해 width 증가
-        height="160" // 크기를 키우기 위해 height 증가
+        width="200" // 크기를 키우기 위해 width 증가
+        height="200" // 크기를 키우기 위해 height 증가
         viewBox="0 0 120 120"
         className="transform rotate-180"
       >
