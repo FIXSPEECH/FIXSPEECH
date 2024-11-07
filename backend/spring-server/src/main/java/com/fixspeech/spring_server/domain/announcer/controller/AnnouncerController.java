@@ -1,7 +1,6 @@
 package com.fixspeech.spring_server.domain.announcer.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fixspeech.spring_server.domain.announcer.dto.AnnouncerResponseDto;
 import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResultDto;
+import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
 import com.fixspeech.spring_server.domain.announcer.service.AnnouncerService;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
@@ -36,9 +35,10 @@ public class AnnouncerController {
 	 * @return announcerResponseDtos
 	 */
 	@GetMapping
-	public ApiResponse<?> getAllAnnouncerData() {
+	public ApiResponse<?> getAllAnnouncerData(@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+		@RequestParam(required = false, defaultValue = "createdAt", value = "criteria") String criteria) {
 		try {
-			List<AnnouncerResponseDto> announcerResponseDtos = announcerService.getAllAnnouncerData();
+			Page<AnnouncerVoiceSample> announcerResponseDtos = announcerService.getAllAnnouncerData(pageNo, criteria);
 			return ApiResponse.createSuccess(announcerResponseDtos, "모든 아나운서 데이터 출력");
 		} catch (Exception e) {
 			return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);

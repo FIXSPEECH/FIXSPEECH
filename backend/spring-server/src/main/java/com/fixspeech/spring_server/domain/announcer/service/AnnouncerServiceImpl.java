@@ -1,14 +1,11 @@
 package com.fixspeech.spring_server.domain.announcer.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.fixspeech.spring_server.domain.announcer.dto.AnnouncerResponseDto;
 import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResultDto;
 import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
 import com.fixspeech.spring_server.domain.announcer.model.UserAnnouncerVoiceComparisonResult;
@@ -27,13 +24,12 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	private final UserAnnouncerVoiceComparisonRepository userAnnouncerVoiceComparisonRepository;
 	/**
 	 * 모든 아나운서 샘플 조회
-	 * @return List<AnnouncerResponseDto>
+	 * @return Page<AnnouncerVoiceSample>
 	 */
 	@Override
-	public List<AnnouncerResponseDto> getAllAnnouncerData() {
-		List<AnnouncerVoiceSample> announcers = announcerRepository.findAll();
-		log.info("모든 아나운서 정보 길이= {}", announcers.size());
-		return AnnouncerResponseDto.from(announcers);
+	public Page<AnnouncerVoiceSample> getAllAnnouncerData(int pageNo, String criteria) {
+		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
+		return announcerRepository.findAll(pageable);
 	}
 
 	/**
@@ -61,7 +57,6 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	@Override
 	public Page<UserAnnouncerVoiceComparisonResult> getAllUserToAnnouncerVoiceComparison(int pageNo, String criteria, Long userId) {
 		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
-		Page<UserAnnouncerVoiceComparisonResult> page = userAnnouncerVoiceComparisonRepository.findByUserId(pageable, userId);
-		return page;
+		return userAnnouncerVoiceComparisonRepository.findByUserId(pageable, userId);
 	}
 }
