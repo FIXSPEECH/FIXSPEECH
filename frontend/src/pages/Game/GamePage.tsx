@@ -25,7 +25,7 @@ export default function Game() {
   // stageList 가져오기
   useEffect(() => {
     getGameList().then((res) => {
-      const idList = res.data.map((item: any) => item?.id).filter((id) => id !== undefined);
+      const idList = res.data.map((item: any) => item?.id).filter((id: number) => id !== undefined);
       setStageList(idList);
     });
     handleStageSelection(stage);
