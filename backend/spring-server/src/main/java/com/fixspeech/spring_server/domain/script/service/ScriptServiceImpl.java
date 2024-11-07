@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.fixspeech.spring_server.domain.script.dto.ScriptListDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptRequestDto;
+import com.fixspeech.spring_server.domain.script.dto.ScriptResponseDto;
 import com.fixspeech.spring_server.domain.script.model.Script;
 import com.fixspeech.spring_server.domain.script.repository.ScriptAnalyzeResultRepository;
 import com.fixspeech.spring_server.domain.script.repository.ScriptRepository;
@@ -52,5 +53,20 @@ public class ScriptServiceImpl implements ScriptService {
 				)
 			).toList();
 		return new PageImpl<>(scriptList, pageable, scriptPages.getTotalElements());
+	}
+
+	@Override
+	public ScriptResponseDto getScript(Long scriptId, Users users) {
+		Script script = scriptRepository.findById(scriptId)
+			.orElseThrow(null);
+		ScriptResponseDto scriptResponseDto = new ScriptResponseDto(
+			script.getTitle(),
+			script.getContent(),
+			script.getAccent(),
+			script.getMinute(),
+			script.getSecond(),
+			script.getCreatedAt()
+		);
+		return scriptResponseDto;
 	}
 }

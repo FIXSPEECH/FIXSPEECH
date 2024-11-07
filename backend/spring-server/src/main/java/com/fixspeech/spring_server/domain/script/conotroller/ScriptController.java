@@ -6,6 +6,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fixspeech.spring_server.config.s3.S3Service;
 import com.fixspeech.spring_server.domain.script.dto.ScriptListDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptRequestDto;
+import com.fixspeech.spring_server.domain.script.dto.ScriptResponseDto;
 import com.fixspeech.spring_server.domain.script.service.ScriptService;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
@@ -56,6 +58,18 @@ public class ScriptController {
 			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
 		Page<ScriptListDto> result = scriptService.getScriptList(users, page, size);
 		return ApiResponse.createSuccess(result, "대본 리슽 조회 성공");
+	}
+
+	//단일 대본 불러오기
+	@GetMapping("{scriptId}")
+	public ApiResponse<?> getScript(
+		@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable Long scriptId
+	) {
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+		ScriptResponseDto script = scriptService.getScript(scriptId, users);
+		return ApiResponse.createSuccess(script, "단일 대본 조회 성공");
 	}
 
 }
