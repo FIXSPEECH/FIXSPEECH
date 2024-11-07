@@ -1,7 +1,7 @@
 import "../../styles/user/Login.css";
-import Kakao from "/kakao.png";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
+import AudioVertexVisualizer from "../../components/Visualizer/AudioVertexVisualizer";
 
 function Login() {
   const setToken = useAuthStore((state) => state.setToken);
@@ -21,21 +21,21 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      <img src={Kakao} alt="kakao login" onClick={handleLogin} />
-      <button
-        onClick={handleTestLogin}
-        style={{
-          marginTop: "10px",
-          padding: "10px 20px",
-          backgroundColor: "#f0f0f0",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        테스트 로그인
-      </button>
+    <div className="flex flex-col items-center justify-center">
+      <div className="w-[300px] h-[300px]">
+        <AudioVertexVisualizer size="large" />
+      </div>
+      <div className="flex flex-col items-center gap-5 mt-10">
+        <button onClick={handleLogin} className="neon-kakao-button">
+          카카오 로그인
+        </button>
+        <button
+          onClick={handleTestLogin}
+          className="px-5 py-2.5 bg-gray-100 rounded cursor-pointer border-none"
+        >
+          테스트 로그인
+        </button>
+      </div>
     </div>
   );
 }

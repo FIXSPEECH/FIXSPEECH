@@ -15,8 +15,8 @@ interface PronounceExampleProps {
 
 
 function PronounceExample({color, trainingId, size}:PronounceExampleProps){
-    const {audioURL, isRecording} = useVoiceStore();
-    const {isNumber, setIsNumber,  setIsNumberZero} = usePronounceScoreStore();
+    const {audioURL, isRecording, setIsRecording, setAudioURL} = useVoiceStore();
+    const {isNumber, setIsNumber,  setIsNumberZero, setIsNumberMinus} = usePronounceScoreStore();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
     const [example, setExample] = useState<string>("")
@@ -49,6 +49,8 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
         }
 
         setIsNumber();
+        setIsRecording(false);
+        setAudioURL(null);
     }
 
 
@@ -61,6 +63,7 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
     // isNumber가 11이 되면 모달을 표시하도록 설정
     useEffect(() => {
         if (isNumber === 11) {
+            setIsNumberMinus()
             setShowModal(true); // 11이 되면 모달을 띄움
         }
     }, [isNumber]); // isNumber가 변경될 때마다 실행

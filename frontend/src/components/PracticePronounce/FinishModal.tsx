@@ -25,6 +25,12 @@ export default function AlertDialog({isOpen, onClose}: FinishModalProps) {
         onClose={onClose} 
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        sx={{
+          "& .MuiPaper-root": {  // Dialog의 기본 Paper에 대한 스타일링
+            backgroundColor: "#F3F3F3", // 원하는 색상으로 변경
+            color: "#333", // 텍스트 색상도 필요시 변경
+          }
+        }}
       >
         <DialogTitle id="alert-dialog-title">{"연습이 완료되었습니다!"}</DialogTitle>
         <DialogContent>

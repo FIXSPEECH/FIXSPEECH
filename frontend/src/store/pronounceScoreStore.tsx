@@ -8,13 +8,15 @@ interface PronounceScoreState {
     setIsNumber: () => void
     setIsCorrect: (isCorrect: number) => void
     setIsNumberZero: () => void;
-}
+    setIsNumberMinus: () => void;
+ }
 
 const usePronounceScoreStore = create<PronounceScoreState>() (
     devtools((set) => ({
         isNumber: 0,
         isCorrect: 0,
         setIsNumber: () => set((state) => ({isNumber: state.isNumber + 1})),
+        setIsNumberMinus:  () => set((state) => ({isNumber: state.isNumber - 1})),
         setIsCorrect: () => set((state) =>({isCorrect: state.isCorrect + 1}) ),
         setIsNumberZero: () => set(() => ({ isNumber: 0 })),
 })))
