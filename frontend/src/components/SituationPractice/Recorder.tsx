@@ -11,6 +11,7 @@ declare global {
     interface Window {
       SpeechRecognition: any;
       webkitSpeechRecognition: any;
+      webkitAudioContext: typeof AudioContext;
     }
   }
 
@@ -36,6 +37,17 @@ function Recorder(){
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     
+          // 오디오 파일 형식 변환
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          const source = audioContext.createMediaStreamSource(stream);
+      
+          // stereo -> mono 변환
+          const gainNode = audioContext.createGain();
+          gainNode.channelCount = 1; // mono로 설정
+          gainNode.channelCountMode = 'explicit';
+          source.connect(gainNode);
+
+          
           const mediaRecorder = new MediaRecorder(stream);
           setMediaRecorder(mediaRecorder);
           mediaRecorderRef.current = mediaRecorder;
@@ -51,6 +63,7 @@ function Recorder(){
             const audioBlob = new Blob(audioChunksRef.current, {
               type: "audio/wav",
             });
+
             const audioUrl = URL.createObjectURL(audioBlob);
             setAudioURL(audioUrl);
           };
