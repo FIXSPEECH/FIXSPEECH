@@ -3,7 +3,7 @@ import '../../styles/SituationPractice/ScrollBar.css'
 
 function Script(){
     return (
-    <Box className='pt-8 text-[#EFCC87] w-3/5' style={{marginLeft: '3%'}}>
+    <Box className='text-[#EFCC87] w-3/5' style={{marginLeft: '3%'}}>
       <div
         className='sm:text-lg md:text-lg lg:text-xl xl:text-xl max-h-[70vh] pr-4 overflow-y-auto custom-scrollbar'
         >

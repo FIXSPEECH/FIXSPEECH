@@ -5,9 +5,9 @@ import Recorder from "../../components/SituationPractice/Recorder";
 function SituationPractice() {
 
   return (
-    <div style={{ display: "flex" }}>
+    <div className="flex min-h-[80vh] items-center">
     <Script />
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div className="flex-col justify-center align-middle">
       <Timer />
       <Recorder />
     </div>
