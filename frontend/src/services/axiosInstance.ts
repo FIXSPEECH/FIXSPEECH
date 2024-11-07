@@ -18,7 +18,7 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
       // 토큰 확인을 위한 콘솔 로그
-      console.log("토큰 전송", token);
+      // console.log("토큰 전송", token);
     }
     return config;
   },
@@ -42,8 +42,8 @@ axiosInstance.interceptors.response.use(
 
         if (token && error.config) {
           // 토큰 재발급 확인을 위한 콘솔 로그
-          console.log("새 엑세스 토큰 발급", error.config);
-          error.config.headers.Authorization = `Bearer ${token}`;
+          // console.log("새 엑세스 토큰 발급", error.config);
+          // error.config.headers.Authorization = `Bearer ${token}`;
           return axiosInstance(error.config);
         }
       } catch (refreshError) {
