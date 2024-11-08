@@ -1,11 +1,18 @@
-import { useState, useRef} from "react";
+import { useState, useRef, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import MicNoneIcon from "@mui/icons-material/MicNone";
 import MicIcon from "@mui/icons-material/Mic";
-import useVoiceStore from "../../store/voiceStore";
+import useVoiceStore from "../store/voiceStore";
 import { LiveAudioVisualizer } from "react-audio-visualize";
-import RegistModal from './RegistModal'
+import RegistModal from './SituationPractice/RegistModal'
 
+interface RecorderProps{
+  color: string;
+  barColor: string
+  width: number;
+  height: number;
+  visualizeWidth: string;
+}
 
 declare global {
     interface Window {
@@ -16,7 +23,7 @@ declare global {
   }
 
 
-function Recorder(){
+function Recorder({color, barColor, width, height, visualizeWidth}: RecorderProps){
     const { isRecording, audioURL, setIsRecording, setAudioURL } = useVoiceStore();
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -27,6 +34,10 @@ function Recorder(){
     const [showModal, setShowModal] = useState<boolean>(false)
     const recognitionRef = useRef<any>(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+      setIsRecording(false)
+    }, [])
     
     const startRecording = async () => {
 
@@ -60,6 +71,7 @@ function Recorder(){
           };
     
           mediaRecorder.onstop = () => {
+            // 녹음 된 음성 파일
             const audioBlob = new Blob(audioChunksRef.current, {
               type: "audio/wav",
             });
@@ -110,6 +122,7 @@ function Recorder(){
         navigate('/situation/practice')
       }
         
+      console.log('barcolor', barColor)
 
     return(
         <div className="text-center mt-20">
@@ -117,16 +130,16 @@ function Recorder(){
           {isRecording ? (
             <>
               <div
-                style={{ position: "relative", width: "200px", height: "75px" }}
+                style={{ position: "relative", width: visualizeWidth, height: "75px" }}
               >
                 {mediaRecorder && (
                   <>
                     {/* 파형 시각화 컴포넌트 */}
                     <LiveAudioVisualizer
                       mediaRecorder={mediaRecorder}
-                      width={200}
-                      height={60}
-                      barColor="rgb(239,204,135)"
+                      width={width}
+                      height={height}
+                      barColor={barColor}
                       gap={3}
                       barWidth={5}
                     />
@@ -151,7 +164,7 @@ function Recorder(){
                     top: "50%", // 가운데 정렬
                     left: "50%", // 가운데 정렬
                     transform: "translate(-50%, -50%)", // 아이콘을 정확히 가운데에 배치
-                    color: '#FFAB01',
+                    color,
                     fontSize: `5rem`,
                     zIndex: 3, // 아이콘을 마스킹 레이어 위에 올리기 위해 z-index 사용                  
                   }}
@@ -162,7 +175,7 @@ function Recorder(){
             </>
           ) : (
             <MicNoneIcon
-              style={{ color: '#FFAB01', fontSize: `5rem` }}
+              style={{ color, fontSize: `5rem` }}
               className="cursor-pointer"
               onClick={handleStartStop}
             />

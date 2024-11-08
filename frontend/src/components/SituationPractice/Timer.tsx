@@ -5,7 +5,7 @@ import useVoiceStore from "../../store/voiceStore";
 
 function Timer() {
   const {setIsRecording} = useVoiceStore();
-  const [timeLeft, setTimeLeft] = useState(200); // 초기 시간 5:00 (300초)
+  const [timeLeft, setTimeLeft] = useState(180); // 초기 시간 5:00 (300초)
   const [progress, setProgress] = useState(100); // 원형 테두리의 진행 상태 (초기 100%)
   const [showModal, setShowModal] = useState<boolean>(false)
   const navigate = useNavigate();

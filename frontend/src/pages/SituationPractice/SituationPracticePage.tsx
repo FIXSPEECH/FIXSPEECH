@@ -1,6 +1,6 @@
 import Script from "../../components/SituationPractice/Script";
 import Timer from "../../components/SituationPractice/Timer";
-import Recorder from "../../components/SituationPractice/Recorder";
+import Recorder from "../../components/Recorder";
 
 function SituationPractice() {
 
@@ -9,7 +9,7 @@ function SituationPractice() {
     <Script />
     <div className="flex-col  w-2/5 justify-center align-middle">
       <Timer />
-      <Recorder />
+      <Recorder color={"#FFAB01"} barColor={"rgb(239,204,135)"} width={200} height={60} visualizeWidth="200px"/>
     </div>
   </div>
   );
