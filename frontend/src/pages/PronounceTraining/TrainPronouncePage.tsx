@@ -21,6 +21,7 @@ function TrainPronounce() {
   const handleClick = () => {
     setShowModal(true)
   }
+
     
 
   return (
@@ -44,7 +45,7 @@ function TrainPronounce() {
         <PronounceExample
           color={"#FF8C82"}
           size={3}
-          trainingId={options === "practice" ? 1 : 2}
+          trainingId={options === "sentence" ? 1 : 2}
         />
         <Microphone color={"#FF8C82"} size={5} />
       </div>
