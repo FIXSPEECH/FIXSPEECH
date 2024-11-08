@@ -39,10 +39,7 @@ public class Script extends BaseTimeEntity {
 
 	@Column(name = "accent")
 	private String accent;
-
-	@Column(name = "minute")
-	private int minute;
-
+	
 	@Column(name = "second")
 	private int second;
 }

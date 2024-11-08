@@ -32,8 +32,7 @@ public class ScriptServiceImpl implements ScriptService {
 			.title(scriptRequestDto.title())
 			.content(scriptRequestDto.content())
 			.accent(scriptRequestDto.accent())
-			.minute(scriptRequestDto.minute())
-			.second(scriptRequestDto.second())
+			.second(scriptRequestDto.minute() * 60 + scriptRequestDto.second())
 			.build();
 		scriptRepository.save(script);
 		return scriptRepository.findTopByUserIdOrderByCreatedAtDesc(users.getId()).getId();
@@ -47,7 +46,6 @@ public class ScriptServiceImpl implements ScriptService {
 			.map(script ->
 				new ScriptListDto(
 					script.getTitle(),
-					script.getMinute(),
 					script.getSecond(),
 					script.getCreatedAt()
 				)
@@ -63,7 +61,7 @@ public class ScriptServiceImpl implements ScriptService {
 			script.getTitle(),
 			script.getContent(),
 			script.getAccent(),
-			script.getMinute() * 60 + script.getSecond(),
+			script.getSecond(),
 			script.getCreatedAt()
 		);
 		return scriptResponseDto;
