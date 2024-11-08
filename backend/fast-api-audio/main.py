@@ -1,10 +1,11 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from analyze_wav_file import analyze_audio
+from analyze_wav_file import analyze_audio, calculate_metrics_simple
 import logging
 from dotenv import load_dotenv
 import os
+import tempfile
 
 # .env 파일 로드
 load_dotenv()
@@ -462,3 +463,36 @@ async def practice_script(file: UploadFile = File(..., description="분석할 WA
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# 단순 음성 분석 엔드포인트
+@app.post("/analyze/simple",
+    summary="단순 음성 분석",
+    description="메트릭 값만 반환하는 단순 음성 분석을 수행합니다.",
+    response_description="단순 분석 결과 JSON"
+)
+async def analyze_simple(file: UploadFile = File(..., description="분석할 WAV 파일")):
+    validate_wav_file(file)
+    try:
+        contents = await file.read()
+        
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
+            temp_file.write(contents)
+            temp_file.flush()
+            temp_path = temp_file.name
+
+        try:
+            metrics = calculate_metrics_simple(temp_path)
+            return {
+                "status": "success",
+                "data": {
+                    "metrics": metrics
+                }
+            }
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await file.close()

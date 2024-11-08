@@ -440,6 +440,42 @@ def calculate_metrics(file):
         "recommendations": recommendations
     }
 
+def calculate_metrics_simple(file):
+    """
+    음성 파일의 메트릭 값만 계산
+    """
+    y, sr = load_audio(file)
+    sound = load_sound(file)
+
+    # 각종 음성 특징 추출
+    times_f0, f0, voiced_flag = getFundamentalFrequency(y, sr)
+    times_formant, f1_values, f2_values, f3_values = getFormants(sound)
+    times_hnr, hnr_values, mean_hnr = getHNR(sound)
+    times_spectral_slope, spectral_slope = getSpectralSlope(y, sr, voiced_flag)
+    times_amr, amr = getAMR(y, sr)
+    jitter = getJitter(sound)
+    times_mel, mel_spectrogram_db, mfcc = getMel(y, sr, voiced_flag)
+
+    # 변동성 및 에너지 계산
+    rate_variability = calculate_combined_rate_variability(times_f0, voiced_flag, f0, spectral_slope)
+    rms = librosa.feature.rms(y=y)[0]
+    mean_rms = np.mean(rms)
+    mean_mel_energy = np.mean(mel_spectrogram_db)
+    utterance_energy = mean_rms * 0.6 + mean_mel_energy * 0.4
+
+    # 단순 메트릭 값만 반환
+    return {
+        "명료도(Clarity)": round(float(mean_hnr), 2),
+        "억양 패턴 일관성 (Intonation Pattern Consistency)": round(float(np.std(f0)), 2),
+        "멜로디 지수(Melody Index)": round(float(np.mean(mfcc)), 2),
+        "말의 리듬(Speech Rhythm)": round(float(np.mean(np.diff(times_f0[voiced_flag[:len(times_f0)]]))), 3),
+        "휴지 타이밍(Pause Timing)": round(float(np.mean(np.diff(times_f0[~voiced_flag[:len(times_f0)]]))), 3),
+        "속도 변동성(Rate Variability)": round(float(rate_variability), 2),
+        "성대 떨림(Jitter)": round(float(jitter), 3),
+        "강도 변동성(AMR)": round(float(np.std(amr)), 3),
+        "발화의 에너지(Utterance Energy)": round(float(utterance_energy), 2)
+    }
+
 def convert_np_to_python(obj):
     """
     NumPy 타입을 Python 기본 타입으로 변환
