@@ -9,7 +9,7 @@ function VoiceRecord() {
     <div
       style={{
         position: "relative",
-        height: "calc(100vh - 5vh)",
+        height: "calc(100vh - 14vh)",
         width: "100vw",
         overflow: "hidden",
         display: "flex",
@@ -38,7 +38,7 @@ function VoiceRecord() {
         임시 페이지입니다. 코드 보존 없이 수정하면 됩니다.
       </div>
 
-      <div style={{ position: "absolute", top: "20px", right: "20px" }}>
+      <div style={{ position: "absolute", top: "20px", right: "40px" }}>
         <button
           onClick={() => navigate("/")}
           style={{ color: "#B9E5E8", background: "none", border: "none" }}
@@ -53,8 +53,8 @@ function VoiceRecord() {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "300px",
-          height: "300px",
+          width: "250px",
+          height: "250px",
         }}
       >
         <Canvas camera={{ position: [7, 7, 7], fov: 70 }}>
@@ -66,7 +66,9 @@ function VoiceRecord() {
         style={{
           position: "absolute",
           bottom: "calc(20px + 2rem)",
-          right: "20px",
+          right: "40px",
+          display: "flex",
+          gap: "20px",
         }}
       >
         <button
@@ -75,6 +77,12 @@ function VoiceRecord() {
           style={{ color: "#B9E5E8", background: "none", border: "none" }}
         >
           완료
+        </button>
+        <button
+          onClick={() => navigate("/fastapi")}
+          style={{ color: "#B9E5E8", background: "none", border: "none" }}
+        >
+          [분석 결과 test]
         </button>
       </div>
     </div>
