@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -63,4 +65,8 @@ public class UserAnnouncerVoiceComparisonResult extends BaseTimeEntity {
 
 	@Column(name = "utterance_energy", nullable = false)
 	private float utteranceEnergy;
+
+	@ManyToOne
+	@JoinColumn(name = "announcer_id", insertable = false, updatable = false)
+	private AnnouncerVoiceSample announcerVoiceSample;
 }

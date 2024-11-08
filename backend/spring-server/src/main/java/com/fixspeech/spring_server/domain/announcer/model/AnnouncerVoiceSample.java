@@ -4,12 +4,9 @@ import com.fixspeech.spring_server.global.common.BaseTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -65,9 +62,9 @@ public class AnnouncerVoiceSample extends BaseTimeEntity {
 	// @JoinColumn(name = "script_id", referencedColumnName = "id") // script_id는 외래 키 컬럼명
 	// private AnnouncerVoiceSampleScript script;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "script_detail_id") // 필요에 따라 조정
-	private AnnouncerVoiceSampleScriptDetail announcerVoiceSampleScriptDetail;
+	// @OneToOne(fetch = FetchType.LAZY)
+	// @JoinColumn(name = "script_detail_id") // 필요에 따라 조정
+	// private AnnouncerVoiceSampleScriptDetail announcerVoiceSampleScriptDetail;
 	/*@Column(name = "speaker_id", insertable = false, updatable = false)
 	private Long speakerId;
 

@@ -39,7 +39,8 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	@Override
 	public Page<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria) {
 		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
-		return announcerVoiceSampleRepository.findAllWithJoin(pageable);
+		// return announcerVoiceSampleRepository.findAllWithJoin(pageable);
+		return null;
 	}
 
 
