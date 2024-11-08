@@ -78,6 +78,10 @@ function Buttons() {
               position: "relative",
               overflow: "hidden",
               cursor: "pointer",
+              transition: "transform 0.3s ease", // 부드러운 애니메이션 
+              "&:hover": {
+                transform: "translateY(-10px)", // 호버 시 위로 팝업
+              },
             }}
             onClick={() => navigate(item.url)}
           >
