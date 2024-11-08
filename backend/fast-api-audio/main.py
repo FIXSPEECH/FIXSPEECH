@@ -86,16 +86,76 @@ async def general_exception_handler(request, exc):
                         "status": "success",
                         "data": {
                             "metrics": {
-                                "명료도(Clarity)": 20.27,
-                                "억양 패턴 일관성 (Intonation Pattern Consistency)": 59.98,
-                                "멜로디 지수(Melody Index)": -48.29,
-                                "말의 리듬(Speech Rhythm)": 0.044,
-                                "휴지 타이밍(Pause Timing)": 0.118,
-                                "속도 변동성(Rate Variability)": 88.30,
-                                "성대 떨림(Jitter)": 0.020,
-                                "강도 변동성(AMR)": 0.005,
-                                "발화의 에너지(Utterance Energy)": -23.55
+                                "명료도(Clarity)": {
+                                    "value": 20.27,
+                                    "grade": "excellent",
+                                    "unit": "dB",
+                                    "reference": "20dB 이상이 최적",
+                                    "interpretation": "매우 명료한 음성입니다"
+                                },
+                                "억양 패턴 일관성 (Intonation Pattern Consistency)": {
+                                    "value": 59.98,
+                                    "grade": "excellent",
+                                    "unit": "Hz",
+                                    "reference": "40-60Hz가 최적",
+                                    "interpretation": "자연스러운 억양 변화를 보입니다"
+                                },
+                                "멜로디 지수(Melody Index)": {
+                                    "value": -48.29,
+                                    "grade": "excellent",
+                                    "unit": "MFCC",
+                                    "reference": "-50 ~ -30이 최적",
+                                    "interpretation": "최적의 음성 멜로디를 보입니다"
+                                },
+                                "말의 리듬(Speech Rhythm)": {
+                                    "value": 0.044,
+                                    "grade": "excellent",
+                                    "unit": "초",
+                                    "reference": "0.03-0.06초가 최적",
+                                    "interpretation": "적절한 발화 리듬을 보입니다"
+                                },
+                                "휴지 타이밍(Pause Timing)": {
+                                    "value": 0.118,
+                                    "grade": "excellent",
+                                    "unit": "초",
+                                    "reference": "0.1-0.15초가 최적",
+                                    "interpretation": "자연스러운 휴지를 보입니다"
+                                },
+                                "속도 변동성(Rate Variability)": {
+                                    "value": 88.30,
+                                    "grade": "excellent",
+                                    "unit": "지수",
+                                    "reference": "80-90이 최적",
+                                    "interpretation": "적절한 속도 변화를 보입니다"
+                                },
+                                "성대 떨림(Jitter)": {
+                                    "value": 0.020,
+                                    "grade": "excellent",
+                                    "unit": "비율",
+                                    "reference": "0.01-0.03이 최적",
+                                    "interpretation": "안정적인 성대 진동을 보입니다"
+                                },
+                                "강도 변동성(AMR)": {
+                                    "value": 0.005,
+                                    "grade": "excellent",
+                                    "unit": "비율",
+                                    "reference": "0.003-0.007이 최적",
+                                    "interpretation": "적절한 강도 변화를 보입니다"
+                                },
+                                "발화의 에너지(Utterance Energy)": {
+                                    "value": -23.55,
+                                    "grade": "excellent",
+                                    "unit": "dB",
+                                    "reference": "-25 ~ -20dB이 최적",
+                                    "interpretation": "적절한 발화 에너지를 보입니다"
+                                }
                             },
+                            "overall_score": 95,
+                            "recommendations": [
+                                "발음을 더 정확하게 하고 목소리를 선명하게 내보세요",
+                                "자연스러운 억양으로 말해보세요",
+                                "문장 사이의 쉼을 적절하게 가져가보세요"
+                            ],
                             "processing_time_seconds": 3.45
                         }
                     }
@@ -129,14 +189,11 @@ async def general_exception_handler(request, exc):
     }
 )
 async def analyze_full(file: UploadFile = File(..., description="분석할 WAV 파일")):
-    # WAV 파일 유효성 검사
     validate_wav_file(file)
     try:
-        # 음성 분석 수행
         results = await analyze_audio(file)
         return JSONResponse(content=results)
     except Exception as e:
-        # 에러 로깅 및 예외 처리
         logger.error(f"Error analyzing file: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
@@ -162,18 +219,103 @@ async def analyze_full(file: UploadFile = File(..., description="분석할 WAV �
                         "status": "success",
                         "data": {
                             "metrics": {
-                                "명료도(Clarity)": 20.27,
-                                "억양 패턴 일관성 (Intonation Pattern Consistency)": 59.98,
-                                "멜로디 지수(Melody Index)": -48.29,
-                                "말의 리듬(Speech Rhythm)": 0.044,
-                                "휴지 타이밍(Pause Timing)": 0.118,
-                                "속도 변동성(Rate Variability)": 88.30,
-                                "성대 떨림(Jitter)": 0.020,
-                                "강도 변동성(AMR)": 0.005,
-                                "발화의 에너지(Utterance Energy)": -23.55
+                                "명료도(Clarity)": {
+                                    "value": 20.27,
+                                    "grade": "excellent",
+                                    "unit": "dB",
+                                    "reference": "20dB 이상이 최적",
+                                    "interpretation": "매우 명료한 음성입니다"
+                                },
+                                "억양 패턴 일관성 (Intonation Pattern Consistency)": {
+                                    "value": 59.98,
+                                    "grade": "excellent",
+                                    "unit": "Hz",
+                                    "reference": "40-60Hz가 최적",
+                                    "interpretation": "자연스러운 억양 변화를 보입니다"
+                                },
+                                "멜로디 지수(Melody Index)": {
+                                    "value": -48.29,
+                                    "grade": "excellent",
+                                    "unit": "MFCC",
+                                    "reference": "-50 ~ -30이 최적",
+                                    "interpretation": "최적의 음성 멜로디를 보입니다"
+                                },
+                                "말의 리듬(Speech Rhythm)": {
+                                    "value": 0.044,
+                                    "grade": "excellent",
+                                    "unit": "초",
+                                    "reference": "0.03-0.06초가 최적",
+                                    "interpretation": "적절한 발화 리듬을 보입니다"
+                                },
+                                "휴지 타이밍(Pause Timing)": {
+                                    "value": 0.118,
+                                    "grade": "excellent",
+                                    "unit": "초",
+                                    "reference": "0.1-0.15초가 최적",
+                                    "interpretation": "자연스러운 휴지를 보입니다"
+                                },
+                                "속도 변동성(Rate Variability)": {
+                                    "value": 88.30,
+                                    "grade": "excellent",
+                                    "unit": "지수",
+                                    "reference": "80-90이 최적",
+                                    "interpretation": "적절한 속도 변화를 보입니다"
+                                },
+                                "성대 떨림(Jitter)": {
+                                    "value": 0.020,
+                                    "grade": "excellent",
+                                    "unit": "비율",
+                                    "reference": "0.01-0.03이 최적",
+                                    "interpretation": "안정적인 성대 진동을 보입니다"
+                                },
+                                "강도 변동성(AMR)": {
+                                    "value": 0.005,
+                                    "grade": "excellent",
+                                    "unit": "비율",
+                                    "reference": "0.003-0.007이 최적",
+                                    "interpretation": "적절한 강도 변화를 보입니다"
+                                },
+                                "발화의 에너지(Utterance Energy)": {
+                                    "value": -23.55,
+                                    "grade": "excellent",
+                                    "unit": "dB",
+                                    "reference": "-25 ~ -20dB이 최적",
+                                    "interpretation": "적절한 발화 에너지를 보입니다"
+                                }
                             },
+                            "overall_score": 85,
+                            "recommendations": [
+                                "발음을 더 정확하게 하고 목소리를 선명하게 내보세요",
+                                "자연스러운 억양으로 말해보세요",
+                                "문장 사이의 쉼을 적절하게 가져가보세요"
+                            ],
+                            "similarity_score": 78.5,  # 아나운서 음성과의 유사도
                             "processing_time_seconds": 3.45
                         }
+                    }
+                }
+            }
+        },
+        400: {
+            "description": "잘못된 요청",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "error",
+                        "message": "Invalid file type",
+                        "code": "INVALID_FILE_TYPE"
+                    }
+                }
+            }
+        },
+        500: {
+            "description": "서버 에러",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "error",
+                        "message": "Internal server error occurred",
+                        "code": "INTERNAL_SERVER_ERROR"
                     }
                 }
             }
@@ -186,6 +328,8 @@ async def mimic_announcer(file: UploadFile = File(..., description="분석할 WA
     try:
         # 음성 분석 수행
         results = await analyze_audio(file)
+        # TODO: 아나운서 음성과의 유사도 분석 로직 추가
+        results["data"]["similarity_score"] = 78.5  # 예시 값
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -204,18 +348,103 @@ async def mimic_announcer(file: UploadFile = File(..., description="분석할 WA
                         "status": "success",
                         "data": {
                             "metrics": {
-                                "명료도(Clarity)": 20.27,
-                                "억양 패턴 일관성 (Intonation Pattern Consistency)": 59.98,
-                                "멜로디 지수(Melody Index)": -48.29,
-                                "말의 리듬(Speech Rhythm)": 0.044,
-                                "휴지 타이밍(Pause Timing)": 0.118,
-                                "속도 변동성(Rate Variability)": 88.30,
-                                "성대 떨림(Jitter)": 0.020,
-                                "강도 변동성(AMR)": 0.005,
-                                "발화의 에너지(Utterance Energy)": -23.55
+                                "명료도(Clarity)": {
+                                    "value": 20.27,
+                                    "grade": "excellent",
+                                    "unit": "dB",
+                                    "reference": "20dB 이상이 최적",
+                                    "interpretation": "매우 명료한 음성입니다"
+                                },
+                                "억양 패턴 일관성 (Intonation Pattern Consistency)": {
+                                    "value": 59.98,
+                                    "grade": "excellent",
+                                    "unit": "Hz",
+                                    "reference": "40-60Hz가 최적",
+                                    "interpretation": "자연스러운 억양 변화를 보입니다"
+                                },
+                                "멜로디 지수(Melody Index)": {
+                                    "value": -48.29,
+                                    "grade": "excellent",
+                                    "unit": "MFCC",
+                                    "reference": "-50 ~ -30이 최적",
+                                    "interpretation": "최적의 음성 멜로디를 보입니다"
+                                },
+                                "말의 리듬(Speech Rhythm)": {
+                                    "value": 0.044,
+                                    "grade": "excellent",
+                                    "unit": "초",
+                                    "reference": "0.03-0.06초가 최적",
+                                    "interpretation": "적절한 발화 리듬을 보입니다"
+                                },
+                                "휴지 타이밍(Pause Timing)": {
+                                    "value": 0.118,
+                                    "grade": "excellent",
+                                    "unit": "초",
+                                    "reference": "0.1-0.15초가 최적",
+                                    "interpretation": "자연스러운 휴지를 보입니다"
+                                },
+                                "속도 변동성(Rate Variability)": {
+                                    "value": 88.30,
+                                    "grade": "excellent",
+                                    "unit": "지수",
+                                    "reference": "80-90이 최적",
+                                    "interpretation": "적절한 속도 변화를 보입니다"
+                                },
+                                "성대 떨림(Jitter)": {
+                                    "value": 0.020,
+                                    "grade": "excellent",
+                                    "unit": "비율",
+                                    "reference": "0.01-0.03이 최적",
+                                    "interpretation": "안정적인 성대 진동을 보입니다"
+                                },
+                                "강도 변동성(AMR)": {
+                                    "value": 0.005,
+                                    "grade": "excellent",
+                                    "unit": "비율",
+                                    "reference": "0.003-0.007이 최적",
+                                    "interpretation": "적절한 강도 변화를 보입니다"
+                                },
+                                "발화의 에너지(Utterance Energy)": {
+                                    "value": -23.55,
+                                    "grade": "excellent",
+                                    "unit": "dB",
+                                    "reference": "-25 ~ -20dB이 최적",
+                                    "interpretation": "적절한 발화 에너지를 보입니다"
+                                }
                             },
+                            "overall_score": 85,
+                            "recommendations": [
+                                "발음을 더 정확하게 하고 목소리를 선명하게 내보세요",
+                                "자연스러운 억양으로 말해보세요",
+                                "문장 사이의 쉼을 적절하게 가져가보세요"
+                            ],
+                            "script_accuracy": 92.5,  # 스크립트 정확도
                             "processing_time_seconds": 3.45
                         }
+                    }
+                }
+            }
+        },
+        400: {
+            "description": "잘못된 요청",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "error",
+                        "message": "Invalid file type",
+                        "code": "INVALID_FILE_TYPE"
+                    }
+                }
+            }
+        },
+        500: {
+            "description": "서버 에러",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "error",
+                        "message": "Internal server error occurred",
+                        "code": "INTERNAL_SERVER_ERROR"
                     }
                 }
             }
@@ -228,6 +457,8 @@ async def practice_script(file: UploadFile = File(..., description="분석할 WA
     try:
         # 음성 분석 수행
         results = await analyze_audio(file)
+        # TODO: 스크립트 정확도 분석 로직 추가
+        results["data"]["script_accuracy"] = 92.5  # 예시 값
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
