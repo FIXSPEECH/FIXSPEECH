@@ -17,9 +17,10 @@ import RegistScript from "./pages/SituationPractice/RegistScriptPage";
 import SelectScript from "./pages/SituationPractice/SelectScriptPage";
 import SituationPractice from "./pages/SituationPractice/SituationPracticePage";
 import AnnouncerPractice from "./pages/AnnouncerPracticePage";
-import Game from "./pages/GamePage";
+import Game from "./pages/Game/GamePage";
 import MyVoice from "./pages/MyVoicePage";
 import ErrorPage from "./pages/ErrorPage";
+import GameRanking from "./pages/Game/GameRanking";
 
 // 레이아웃 컴포넌트 생성
 const Layout = () => {
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
           {
             path: "/game",
             element: <Game />,
+          },
+          {
+            path: "/game/ranking",
+            element: <GameRanking />,
           },
           {
             path: "/myvoice",
