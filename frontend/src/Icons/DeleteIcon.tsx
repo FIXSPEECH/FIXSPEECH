@@ -22,12 +22,19 @@ interface DeleteIconProps {
 const DeleteIcon = ({onClick}: DeleteIconProps) => {
   const controls = useAnimation();
 
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 부모의 onClick을 막음
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
     <div
       className="cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center"
       onMouseEnter={() => controls.start('animate')}
       onMouseLeave={() => controls.start('normal')}
-      onClick={onClick}
+      onClick={handleDeleteClick}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
