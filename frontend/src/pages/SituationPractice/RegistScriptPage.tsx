@@ -17,7 +17,6 @@ function RegistScript() {
   const [accent, setAccent] = useState("power"); // 기본 값 "힘있게 말하기"
   const [minute, setMinutes] = useState(0);
   const [second, setSeconds] = useState(0);
-  const [Id, setId] = useState<number | null >(null)
   const navigate = useNavigate();
 
   const handlePracticeClick = () => {
@@ -33,22 +32,19 @@ function RegistScript() {
       try{
         const response = await ScriptPost(payload);
         console.log(response.status)
-        setId(response.data)
+        const Id = response.data
+
+        if (Id) {
+          navigate(`/situation/practice/${Id}`);
+        } else {
+          alert('스크립트 요청이 제대로 전달되지 않았습니다.')
+        }
       } catch (e) {
         console.log(e)
       } 
     }
 
-    Script();
-
-    if (Id != null) {
-      navigate(`/situation/practice/${Id}`);
-    } else {
-      alert('스크립트 요청이 제대로 전달되지 않았습니다.')
-    }
-
-   
-    
+    Script();    
   };
 
 
