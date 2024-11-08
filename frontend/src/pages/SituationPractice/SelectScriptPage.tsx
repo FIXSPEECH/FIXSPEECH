@@ -1,4 +1,9 @@
+import { useEffect, useState } from "react";
+import { ScriptListGet } from "../../services/SituationPractice/SituationPracticeGet";
+
 function SelectScript() {
+  const [script, setScirpts] = useState<any>([]);
+
   const scripts = [
     {
       id: 1,
@@ -16,6 +21,24 @@ function SelectScript() {
       date: "2024-01-13",
     },
   ];
+
+
+  useEffect(() => {
+    const getScript = async() => {
+      try{
+        const response = await ScriptListGet();
+        console.log(response)
+        // setScirpts(response)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+    getScript();
+
+  }, [])
+
+  
 
   return (
     <div className="h-screen p-8">

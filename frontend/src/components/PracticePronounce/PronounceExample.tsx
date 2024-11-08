@@ -44,6 +44,7 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
             const response = await ExampleGet(trainingId);
             setExample(response.data)
             console.log('연습 데이터', example)
+            console.log('trainingId', trainingId)
         } catch(e) {
             console.log(e)
         }
