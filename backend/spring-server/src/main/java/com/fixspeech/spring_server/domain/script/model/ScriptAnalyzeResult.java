@@ -1,6 +1,5 @@
 package com.fixspeech.spring_server.domain.script.model;
 
-import com.fixspeech.spring_server.domain.record.model.UserVoiceFile;
 import com.fixspeech.spring_server.global.common.BaseTimeEntity;
 
 import jakarta.persistence.Column;
@@ -10,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,9 +30,8 @@ public class ScriptAnalyzeResult extends BaseTimeEntity {
 	@JoinColumn(name = "script_id")
 	private Script script;
 
-	@OneToOne
-	@JoinColumn(name = "record_id")
-	private UserVoiceFile userVoiceFile;
+	@Column(name = "file_address")
+	private String fileAddress;
 
 	@Column(name = "clarity")
 	private float clarity;

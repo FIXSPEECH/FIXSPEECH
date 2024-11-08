@@ -47,7 +47,8 @@ public class ScriptServiceImpl implements ScriptService {
 				new ScriptListDto(
 					script.getTitle(),
 					script.getSecond(),
-					script.getCreatedAt()
+					script.getId(),
+					script.getCreatedAt().toLocalDate()
 				)
 			).toList();
 		return new PageImpl<>(scriptList, pageable, scriptPages.getTotalElements());
