@@ -1,8 +1,23 @@
+import { useEffect } from "react";
 import Script from "../../components/SituationPractice/Script";
 import Timer from "../../components/SituationPractice/Timer";
 import Recorder from "../../components/Recorder";
+import { ScriptGet } from "../../services/SituationPractice/SituationPracticeGet";
 
 function SituationPractice() {
+
+  // useEffect(() => {
+  //   const PracticeContent = async() => {
+  //     try{
+  //       const response = await ScriptGet(scriptId)
+  //       console.log(response)
+  //     } catch(e) {
+  //       console.log(e)
+  //     }
+  //   }
+
+  //   PracticeContent();
+  // }, [])
 
   return (
     <div className="flex min-h-[80vh] items-center">

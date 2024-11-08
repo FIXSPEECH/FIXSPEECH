@@ -9,25 +9,46 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { ScriptPost } from "../../services/SituationPractice/SituationPracticePost";
 
 function RegistScript() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [accent, setAccent] = useState("power"); // 기본 값 "힘있게 말하기"
-  const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(0);
+  const [minute, setMinutes] = useState(0);
+  const [second, setSeconds] = useState(0);
+  const [Id, setId] = useState<number | null >(null)
   const navigate = useNavigate();
 
   const handlePracticeClick = () => {
-    const data = {
+    const payload = {
       title,
       content,
       accent,
-      time: `${minutes}분 ${seconds}초`,
+      minute,
+      second
     };
 
-    console.log(data)
-    navigate("/situation/practice");
+    const Script = async () => {
+      try{
+        const response = await ScriptPost(payload);
+        console.log(response.status)
+        setId(response.data)
+      } catch (e) {
+        console.log(e)
+      } 
+    }
+
+    Script();
+
+    if (Id != null) {
+      navigate(`/situation/practice/${Id}`);
+    } else {
+      alert('스크립트 요청이 제대로 전달되지 않았습니다.')
+    }
+
+   
+    
   };
 
 
@@ -186,7 +207,7 @@ function RegistScript() {
         labelId="demo-select-small-label"
         id="demo-select-small"
         label="0 분"
-        value={minutes.toString()}
+        value={minute.toString()}
         onChange={handleMinutesChange}
       >
         <MenuItem value={0}>0 분</MenuItem>
@@ -228,7 +249,7 @@ function RegistScript() {
       <Select
         labelId="demo-select-small-label"
         id="demo-select-small"
-        value={seconds.toString()}
+        value={second.toString()}
         label="Age"
         onChange={handleSecondsChange}
       >

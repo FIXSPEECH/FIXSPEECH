@@ -93,7 +93,7 @@ const router = createBrowserRouter([
             element: <SelectScript />,
           },
           {
-            path: "/situation/practice/",
+            path: "/situation/practice/:Id",
             element: <SituationPractice />,
           },
           {
