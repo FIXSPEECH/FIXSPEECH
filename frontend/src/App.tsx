@@ -21,7 +21,7 @@ import Game from "./pages/Game/GamePage";
 import MyVoice from "./pages/MyVoicePage";
 import ErrorPage from "./pages/ErrorPage";
 import GameRanking from "./pages/Game/GameRanking";
-
+import FastApiTestPage from "./pages/FastApiTestPage";
 // 레이아웃 컴포넌트 생성
 const Layout = () => {
   return (
@@ -111,6 +111,10 @@ const router = createBrowserRouter([
           {
             path: "/myvoice",
             element: <MyVoice />,
+          },
+          {
+            path: "/fastapi",
+            element: <FastApiTestPage />,
           },
         ],
       },
