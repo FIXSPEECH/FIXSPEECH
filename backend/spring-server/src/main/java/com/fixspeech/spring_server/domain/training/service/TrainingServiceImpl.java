@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.fixspeech.spring_server.domain.training.dto.TrainingResponseDto;
 import com.fixspeech.spring_server.domain.training.model.TrainingSentence;
 import com.fixspeech.spring_server.domain.training.repository.TrainingSentenceRepository;
+import com.fixspeech.spring_server.domain.user.model.Users;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,11 +20,11 @@ public class TrainingServiceImpl implements TrainingService {
 	private final RedisTemplate<String, String> redisTemplate;
 
 	@Override
-	public String getSentence(Long trainingId) {
+	public String getSentence(Users users, Long trainingId) {
 		Long firstIdx = trainingSentenceRepository.findTopByTrainingIdOrderByIdAsc(trainingId).getId();
 		Long lastIdx = trainingSentenceRepository.findTopByTrainingIdOrderByIdDesc(trainingId).getId();
 		Long sentenceId = (long)(Math.random() * (lastIdx - firstIdx + 1) + firstIdx);
-		String redisKey = "training_sentence:" + trainingId;
+		String redisKey = "training_sentence:" + users.getId();
 		if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
 			System.out.println(redisTemplate.opsForValue().get(redisKey));
 			redisTemplate.delete(redisKey);
@@ -41,9 +42,9 @@ public class TrainingServiceImpl implements TrainingService {
 	}
 
 	@Override
-	public TrainingResponseDto checkClarity(String s) {
+	public TrainingResponseDto checkClarity(Users users, String s) {
 		String newString = s.replaceAll(" ", "");
-		String originalString = redisTemplate.opsForValue().get("training_sentence:1");
+		String originalString = redisTemplate.opsForValue().get("training_sentence:" + users.getId());
 		System.out.println(newString + " " + originalString);
 		List<Integer> list = new ArrayList<>();
 		int length = originalString.length();

@@ -1,5 +1,7 @@
 package com.fixspeech.spring_server.domain.training.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fixspeech.spring_server.domain.training.dto.TrainingRequestDto;
 import com.fixspeech.spring_server.domain.training.dto.TrainingResponseDto;
 import com.fixspeech.spring_server.domain.training.service.TrainingService;
+import com.fixspeech.spring_server.domain.user.model.Users;
+import com.fixspeech.spring_server.domain.user.service.UserService;
 import com.fixspeech.spring_server.global.common.ApiResponse;
 import com.fixspeech.spring_server.global.exception.CustomException;
 import com.fixspeech.spring_server.global.exception.ErrorCode;
@@ -27,11 +31,16 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/training")
 public class TrainingController implements TrainingApi {
 	private final TrainingService trainingService;
+	private final UserService userService;
 
 	@GetMapping("/{trainingId}/start")
-	public ApiResponse<?> start(@PathVariable Long trainingId) {
+	public ApiResponse<?> start(
+		@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable Long trainingId) {
 		try {
-			String s = trainingService.getSentence(trainingId);
+			Users users = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+			String s = trainingService.getSentence(users, trainingId);
 			return ApiResponse.createSuccess(s, "연습 문장 불러오기 성공");
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
@@ -40,10 +49,14 @@ public class TrainingController implements TrainingApi {
 
 	@PostMapping("/answer")
 	public ApiResponse<?> answer(
+		@AuthenticationPrincipal UserDetails userDetails,
 		@RequestBody TrainingRequestDto trainingRequestDto
 	) {
 		try {
-			TrainingResponseDto trainingResponseDto = trainingService.checkClarity(trainingRequestDto.userRecord());
+			Users users = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+			TrainingResponseDto trainingResponseDto = trainingService.checkClarity(users,
+				trainingRequestDto.userRecord());
 			return ApiResponse.createSuccess(trainingResponseDto, "채점 성공");
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
