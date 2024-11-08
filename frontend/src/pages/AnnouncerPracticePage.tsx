@@ -1,23 +1,21 @@
 import Example from "../components/AnnouncerPractice/Example";
-// import PronounceExample from "../../components/PracticePronounce/PronounceExample";
-// import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Button from '@mui/material/Button';
 import Recorder from "../components/Recorder";
-// import usePronounceScoreStore from "../../store/pronounceScoreStore";
-// import FinishModal from '../../components/PracticePronounce/FinishModal'
+import usePronounceScoreStore from "../store/pronounceScoreStore";
+import FinishModal from '../components/PracticePronounce/FinishModal'
 
 function AnnouncerPractice() {
-  // const { options } = useParams();
   const [showModal, setShowModal] = useState<boolean>(false)
-  // const {setIsNumberZero} = usePronounceScoreStore();
-  // const navigate = useNavigate();
+  const {setIsNumberZero} = usePronounceScoreStore();
+  const navigate = useNavigate();
 
-  // const closeModal = () => {
-  //   setShowModal(false); // 모달 닫기
-  //   setIsNumberZero();
-  //   navigate('/training')
-  // }
+  const closeModal = () => {
+    setShowModal(false); // 모달 닫기
+    setIsNumberZero();
+    navigate('/')
+  }
 
   const handleClick = () => {
     setShowModal(true)
@@ -46,7 +44,7 @@ function AnnouncerPractice() {
     </div>
     </div>
 
-    {/* <FinishModal isOpen={showModal} onClose={closeModal} /> */}
+    <FinishModal isOpen={showModal} onClose={closeModal} />
   </>
   );
 }

@@ -204,9 +204,7 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
         </audio>
       )}
 
-      {/* <RegistModal isOpen={showModal} onClose={closeModal} onReset={resetModal}/> */}
-
-
+  
       {modalType === "regist" ? (
         <RegistModal isOpen={showModal} onClose={closeModal} onReset={resetModal} />
       ) : (
