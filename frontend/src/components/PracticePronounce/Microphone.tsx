@@ -13,7 +13,6 @@ declare global {
   interface Window {
     SpeechRecognition: any;
     webkitSpeechRecognition: any;
-    webkitAudioContext: typeof AudioContext;
   }
 }
 
@@ -73,16 +72,24 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      // 오디오 파일 형식 변환
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const source = audioContext.createMediaStreamSource(stream);
-  
-      // stereo -> mono 변환
-      const gainNode = audioContext.createGain();
-      gainNode.channelCount = 1; // mono로 설정
-      gainNode.channelCountMode = 'explicit';
-      source.connect(gainNode);
+        // 오디오 컨텍스트 생성
+      // const audioContext = new AudioContext();
+      // const source = audioContext.createMediaStreamSource(stream);
 
+      // // 채널 스플리터와 게인 노드로 한 채널만 유지
+      // const splitter = audioContext.createChannelSplitter(2);
+      // const merger = audioContext.createChannelMerger(1);
+      // // const gainNode = audioContext.createGain();
+      // const destination = audioContext.createMediaStreamDestination();
+  
+      // // 왼쪽 채널만 연결하여 모노 스트림으로 만듦
+      // source.connect(splitter);
+      // // splitter.connect(gainNode, 0); // 왼쪽 채널만 연결
+      // splitter.connect(merger, 0, 0); // 게인 노드를 통해 모노로 병합
+      // merger.connect(destination);
+
+      // // 모노 스트림으로 변환된 오디오 스트림 가져오기
+      // const monoStream = destination.stream;
 
       const mediaRecorder = new MediaRecorder(stream);
       setMediaRecorder(mediaRecorder);
@@ -95,12 +102,38 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
         }
       };
 
-      mediaRecorder.onstop = () => {
+
+
+      // const verifyMonoAudio = async (audioBlob: Blob) => {
+      //   const arrayBuffer = await audioBlob.arrayBuffer();
+      //   const dataView = new DataView(arrayBuffer);
+      
+      //   // WAV 파일의 채널 수는 22~23번째 바이트에 저장되어 있습니다.
+      //   const channelCount = dataView.getUint16(22, true);
+      //   return channelCount === 1;
+      // };
+      
+
+      
+      
+      mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, {
           type: "audio/wav",
         });
         const audioUrl = URL.createObjectURL(audioBlob);
         setAudioURL(audioUrl);
+
+              // 모노 확인 후 백엔드로 전송
+      // const isMono = await verifyMonoAudio(audioBlob);
+      // if (isMono) {
+      //   console.log("녹음 파일이 모노입니다. 백엔드로 전송 가능합니다.");
+      //   // 백엔드로 파일 전송하는 로직 추가
+      // } else {
+      //   console.warn("녹음 파일이 스테레오입니다. 모노 파일을 생성해주세요.");
+      //   // 모노 파일을 요구하는 안내 추가
+      // }
+
+
       };
 
       mediaRecorder.start();
