@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ScriptListGet } from "../../services/SituationPractice/SituationPracticeGet";
+import  {DeleteIcon}  from "../../Icons/DeleteIcon";
 
 function SelectScript() {
   const [scripts, setScirpts] = useState<any>([]);
@@ -24,6 +25,10 @@ function SelectScript() {
   const handleClick =() =>{
     navigate('/situation/practice')
   }
+
+  const handleDelete = () => {
+    
+  }
   
 
   return (
@@ -40,8 +45,12 @@ function SelectScript() {
           >
             <div className="flex justify-between items-center">
               <div className="text-white text-xl">{script.title}</div>
-              <div className="text-[#FFAB01] text-sm">등록일: {script.createdAt}</div>
+              <div className="flex items-center">
+                <div className="text-[#FFAB01] text-sm mr-2">등록일: {script.cratedAt}</div>
+                <DeleteIcon onClick={handleDelete}/>
+              </div>
             </div>
+
           </div>
         ))}
       </div>
