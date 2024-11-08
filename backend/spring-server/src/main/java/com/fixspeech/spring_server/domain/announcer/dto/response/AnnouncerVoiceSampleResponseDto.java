@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnnouncerVoiceSampleResponseDto {
+	private String id;
 	private String sampleAddress;
 	private String text;
 }
