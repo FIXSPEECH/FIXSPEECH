@@ -13,4 +13,8 @@ public interface ScriptService {
 	Page<ScriptListDto> getScriptList(Users users, int page, int size);
 
 	ScriptResponseDto getScript(Long scriptId, Users users);
+
+	Long getScriptWriter(Long scriptId);
+
+	void deleteScript(Long scriptId);
 }

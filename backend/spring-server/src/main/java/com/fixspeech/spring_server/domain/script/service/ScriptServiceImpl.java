@@ -63,10 +63,21 @@ public class ScriptServiceImpl implements ScriptService {
 			script.getTitle(),
 			script.getContent(),
 			script.getAccent(),
-			script.getMinute(),
-			script.getSecond(),
+			script.getMinute() * 60 + script.getSecond(),
 			script.getCreatedAt()
 		);
 		return scriptResponseDto;
+	}
+
+	@Override
+	public Long getScriptWriter(Long scriptId) {
+		Script script = scriptRepository.findById(scriptId)
+			.orElseThrow(null);
+		return script.getUser().getId();
+	}
+
+	@Override
+	public void deleteScript(Long scriptId) {
+		scriptRepository.deleteById(scriptId);
 	}
 }

@@ -6,7 +6,6 @@ public record ScriptResponseDto(
 	String title,
 	String content,
 	String accent,
-	int minute,
 	int second,
 	LocalDateTime createdAt
 ) {
