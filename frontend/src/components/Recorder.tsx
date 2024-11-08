@@ -5,6 +5,7 @@ import MicIcon from "@mui/icons-material/Mic";
 import useVoiceStore from "../store/voiceStore";
 import { LiveAudioVisualizer } from "react-audio-visualize";
 import RegistModal from './SituationPractice/RegistModal'
+import RecordModal from './AnnouncerPractice/RecordModal'
 
 interface RecorderProps{
   color: string;
@@ -12,6 +13,7 @@ interface RecorderProps{
   width: number;
   height: number;
   visualizeWidth: string;
+  modalType: 'record' | 'regist';
 }
 
 declare global {
@@ -23,7 +25,7 @@ declare global {
   }
 
 
-function Recorder({color, barColor, width, height, visualizeWidth}: RecorderProps){
+function Recorder({color, barColor, width, height, visualizeWidth, modalType}: RecorderProps){
     const { isRecording, audioURL, setIsRecording, setAudioURL } = useVoiceStore();
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -113,13 +115,21 @@ function Recorder({color, barColor, width, height, visualizeWidth}: RecorderProp
       const closeModal = () => {
         setShowModal(false); // 모달 닫기
         setAudioURL(null)
-        navigate('/')
+        if (modalType === "record") {
+          navigate('/announcer'); // FinalModal의 경우 홈 화면으로 이동
+        } else if (modalType === "regist") {
+          navigate('/'); // RegistModal의 경우 다른 경로로 이동
+        }
       }
         
       const resetModal = () => {
         setShowModal(false); // 모달 닫기
         setAudioURL(null)
-        navigate('/situation/practice')
+        if (modalType === "record") {
+          navigate('/announcer'); // FinalModal의 경우 홈 화면으로 이동
+        } else if (modalType === "regist") {
+          navigate('/situation/practice')
+        }
       }
         
       console.log('barcolor', barColor)
@@ -187,14 +197,22 @@ function Recorder({color, barColor, width, height, visualizeWidth}: RecorderProp
             *아이콘을 누르고 대본을 읽어주세요.
         </div>
 
-              {/* 녹음된 오디오를 재생할 수 있는 오디오 플레이어 */}
+      {/* 녹음된 오디오를 재생할 수 있는 오디오 플레이어 */}
       {audioURL && (
         <audio controls src={audioURL} className="mt-4">
           Your browser does not support the audio element.
         </audio>
       )}
 
-      <RegistModal isOpen={showModal} onClose={closeModal} onReset={resetModal}/>
+      {/* <RegistModal isOpen={showModal} onClose={closeModal} onReset={resetModal}/> */}
+
+
+      {modalType === "regist" ? (
+        <RegistModal isOpen={showModal} onClose={closeModal} onReset={resetModal} />
+      ) : (
+        <RecordModal isOpen={showModal} onClose={closeModal} onReset={resetModal} />
+      )}
+
 
     </div>
   
