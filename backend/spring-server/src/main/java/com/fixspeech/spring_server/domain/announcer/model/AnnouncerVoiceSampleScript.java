@@ -40,15 +40,6 @@ public class AnnouncerVoiceSampleScript {
 	@Column(name = "press_date", nullable = false)
 	private Date pressDate; // 20180309
 
-	@Column(name = "index", nullable = false)
-	private int index; // 1, 2... (첫 번째 발언, 두 번째 발언, ...)
-
-	@Column(name = "text", nullable = false, length = 100)
-	private String text; // 수조 원의 공적자금이 들어간 중견 조선사인 성동조선해양이 결국 법정관리에 들어갔습니다.
-
-	@Column(name = "sentence_type", nullable = false, length = 20)
-	private String sentenceType; // 작문형, 요약형, 완전직접인용형
-
 	@Column(name = "keyword", nullable = false, length = 30)
 	private String keyword; // 법정관리
 }

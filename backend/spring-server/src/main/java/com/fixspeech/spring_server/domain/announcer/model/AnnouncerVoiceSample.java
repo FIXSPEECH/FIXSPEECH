@@ -9,7 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,13 +61,19 @@ public class AnnouncerVoiceSample extends BaseTimeEntity {
 	private float utteranceEnergy;
 
 	// 파일 스크립트와 1:1 관계 설정
-	// @OneToOne(fetch = FetchType.LAZY)
+	// @ManyToOne(fetch = FetchType.LAZY)
 	// @JoinColumn(name = "script_id", referencedColumnName = "id") // script_id는 외래 키 컬럼명
 	// private AnnouncerVoiceSampleScript script;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "script_detail_id") // 필요에 따라 조정
+	private AnnouncerVoiceSampleScriptDetail announcerVoiceSampleScriptDetail;
+	/*@Column(name = "speaker_id", insertable = false, updatable = false)
+	private Long speakerId;
 
 	// 다:1 관계 설정 (여러 음성 샘플이 하나의 스피커에 연결)
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "speaker_id", referencedColumnName = "id")
-	private AnnouncerVoiceSampleSpeaker speaker;
+	private AnnouncerVoiceSampleSpeaker speaker;*/
 
 }

@@ -1,15 +1,18 @@
 package com.fixspeech.spring_server.domain.announcer.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
 import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResultDto;
 import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
 import com.fixspeech.spring_server.domain.announcer.model.UserAnnouncerVoiceComparisonResult;
-import com.fixspeech.spring_server.domain.announcer.repository.AnnouncerRepository;
+import com.fixspeech.spring_server.domain.announcer.repository.AnnouncerVoiceSampleRepository;
 import com.fixspeech.spring_server.domain.announcer.repository.UserAnnouncerVoiceComparisonRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,17 +23,25 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AnnouncerServiceImpl implements AnnouncerService {
 
-	private final AnnouncerRepository announcerRepository;
+
+	private final AnnouncerVoiceSampleRepository announcerVoiceSampleRepository;
 	private final UserAnnouncerVoiceComparisonRepository userAnnouncerVoiceComparisonRepository;
+
+	@Override
+	public List<AnnouncerVoiceSample> getAllAnnouncerData() {
+		return announcerVoiceSampleRepository.findAll();
+	}
+
 	/**
 	 * 모든 아나운서 샘플 조회
 	 * @return Page<AnnouncerVoiceSample>
 	 */
 	@Override
-	public Page<AnnouncerVoiceSample> getAllAnnouncerData(int pageNo, String criteria) {
+	public Page<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria) {
 		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
-		return announcerRepository.findAll(pageable);
+		return announcerVoiceSampleRepository.findAllWithJoin(pageable);
 	}
+
 
 	/**
 	 * 사용자가 녹음한 아나운서 음성 분석 결과 단일 조회
