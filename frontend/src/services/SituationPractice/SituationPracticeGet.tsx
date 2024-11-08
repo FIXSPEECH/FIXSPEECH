@@ -1,7 +1,7 @@
 import axiosInstance from "../axiosInstance";
 
 // 개별 스크립트 항목에 대한 타입
-interface Script {
+interface Scripts {
     title: string;
     minute: number;
     second: number;
@@ -10,7 +10,7 @@ interface Script {
 
 export async function ScriptListGet(page = 0, size = 10) {
     try {
-        let results: Script[] = [];
+        let results: Scripts[] = [];
         let hasMoreData = true;
 
         while (hasMoreData) {
@@ -30,4 +30,17 @@ export async function ScriptListGet(page = 0, size = 10) {
     } catch (error) {
         return Promise.reject(error);
     }
+}
+
+
+
+export async function ScriptGet (scriptId: number) {
+    return axiosInstance
+        .get(`/script/${scriptId}`)
+        .then((response) => {
+            return Promise.resolve(response.data)
+        })
+        .catch((error) => {
+            return Promise.reject(error)
+        })
 }
