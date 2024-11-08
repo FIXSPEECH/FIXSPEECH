@@ -11,16 +11,6 @@ import time
 from pydub import AudioSegment
 import io
 
-### ffmpeg 설치 방법
-# # Ubuntu/Debian
-# sudo apt-get install ffmpeg
-
-# # MacOS
-# brew install ffmpeg
-
-# # Windows
-# winget install ffmpeg
-
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
