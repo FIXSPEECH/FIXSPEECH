@@ -57,4 +57,12 @@ public class RedisConfig {
 
 		return redisTemplate;
 	}
+
+	@Bean
+	public RedisTemplate<String, byte[]> redisByteTemplate(RedisConnectionFactory connectionFactory) {
+		RedisTemplate<String, byte[]> template = new RedisTemplate<>();
+		template.setConnectionFactory(connectionFactory);
+		return template;
+	}
+
 }

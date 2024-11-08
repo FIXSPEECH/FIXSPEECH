@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.config.s3;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -32,6 +34,26 @@ public class S3Service {
 	private String bucket;
 
 	private final String DIR_NAME = "record";
+
+	public String uploadBytes(byte[] bytes, String fileName, String contentType) {
+		String newFileName = buildFileName(fileName, "");
+
+		try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes)) {
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentLength(bytes.length);
+			metadata.setContentType(contentType);
+
+			amazonS3.putObject(new PutObjectRequest(bucket, newFileName, inputStream, metadata)
+				.withCannedAcl(CannedAccessControlList.PublicRead));
+
+			log.info("File uploaded successfully to S3: {}", newFileName);
+			return amazonS3.getUrl(bucket, newFileName).toString();
+
+		} catch (IOException e) {
+			log.error("Failed to upload file to S3: {}", fileName, e);
+			throw new RuntimeException("Failed to upload file to S3", e);
+		}
+	}
 
 	// 먼저 MultipartFile을 File로 변환 (이 과정에서 실패 시 예외 발생).
 	// 이후 upload(String fileName, File uploadFile, String extend) 메서드를 호출해 실제 업로드를 진행
