@@ -1,7 +1,10 @@
 package com.fixspeech.spring_server.domain.script.service;
 
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 
+import com.fixspeech.spring_server.domain.script.dto.ScriptAnalyzeResponseDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptListDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptRequestDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptResponseDto;
@@ -17,4 +20,8 @@ public interface ScriptService {
 	Long getScriptWriter(Long scriptId);
 
 	void deleteScript(Long scriptId);
+
+	void save(String s3Url, Long scriptId, Map<String, Object> responseBody);
+
+	ScriptAnalyzeResponseDto getResult(Long resultId, Users users);
 }

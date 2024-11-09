@@ -1,14 +1,24 @@
 package com.fixspeech.spring_server.domain.script.conotroller;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.config.s3.S3Service;
+import com.fixspeech.spring_server.domain.script.dto.ScriptAnalyzeResponseDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptListDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptRequestDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptResponseDto;
@@ -115,6 +126,7 @@ public class ScriptController {
 
 			VoiceAnalysisMessage voiceAnalysisMessage = new VoiceAnalysisMessage(
 				redisKey,
+				scriptId,
 				file.getOriginalFilename(),
 				users.getId()
 			);
@@ -131,44 +143,60 @@ public class ScriptController {
 			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
 		}
 	}
-	//
-	// @KafkaListener(topics = "voice-analysis-topic", groupId = "voice-analysis-group", concurrency = "5")
-	// public ApiResponse<?> processVoiceAnalysis(VoiceAnalysisMessage message) {
-	// 	try {
-	// 		byte[] fileData = redisTemplate.opsForValue().get(message.redisKey());
-	// 		if (fileData == null) {
-	// 			throw new CustomException(ErrorCode.FAIL_TO_LOAD_WORD);
-	// 		}
-	// 		String s3Url = s3Service.uploadBytes(fileData, message.originalFilename(), "audio/wav");
-	// 		// FastAPI 요청 준비
-	// 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-	// 		ByteArrayResource fileResource = new ByteArrayResource(fileData) {
-	// 			@Override
-	// 			public String getFilename() {
-	// 				return message.originalFilename();
-	// 			}
-	// 		};
-	// 		body.add("file", fileResource);
-	// 		body.add("s3_url", s3Url);
-	//
-	// 		HttpHeaders headers = new HttpHeaders();
-	// 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-	//
-	// 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-	//
-	// 		// FastAPI 호출
-	// 		ResponseEntity<Map> response = restTemplate.exchange(
-	// 			"http://k11d206.p.ssafy.io:8000/analyze/full",
-	// 			HttpMethod.POST,
-	// 			requestEntity,
-	// 			Map.class
-	// 		);
-	// 		System.out.println(response.getBody());
-	// 		return ApiResponse.createSuccess(response.getBody(), "분석 완료");
-	// 	} catch (Exception e) {
-	// 		throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
-	// 		// 여기에 실패 처리 로직 구현 (예: 재시도 큐에 넣기, 알림 보내기 등)
-	// 	}
-	// }
+
+	@KafkaListener(topics = "voice-analysis-topic", groupId = "voice-analysis-group", concurrency = "5")
+	public void processVoiceAnalysis(VoiceAnalysisMessage message) {
+		try {
+			byte[] fileData = redisTemplate.opsForValue().get(message.redisKey());
+			if (fileData == null) {
+				throw new CustomException(ErrorCode.FAIL_TO_LOAD_WORD);
+			}
+			String s3Url = s3Service.uploadBytes(fileData, message.originalFilename(), "audio/wav");
+			// FastAPI 요청 준비
+			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+			ByteArrayResource fileResource = new ByteArrayResource(fileData) {
+				@Override
+				public String getFilename() {
+					return message.originalFilename();
+				}
+			};
+			body.add("file", fileResource);
+			body.add("s3_url", s3Url);
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+			// FastAPI 호출
+			ResponseEntity<Map> response = restTemplate.exchange(
+				"http://k11d206.p.ssafy.io:8000/analyze/full",
+				HttpMethod.POST,
+				requestEntity,
+				Map.class
+			);
+
+			// ScriptJson 엔티티 생성 및 저장
+			Map<String, Object> responseBody = response.getBody();
+
+			scriptService.save(s3Url, message.scriptId(), responseBody);
+
+			System.out.println(response.getBody());
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
+			// 여기에 실패 처리 로직 구현 (예: 재시도 큐에 넣기, 알림 보내기 등)
+		}
+	}
+
+	@GetMapping("/result/{resultId}")
+	public ApiResponse<?> getResultDetail(
+		@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable Long resultId
+	) {
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+		ScriptAnalyzeResponseDto scriptAnalyzeResponseDto = scriptService.getResult(resultId, users);
+		return ApiResponse.createSuccess(scriptAnalyzeResponseDto, "대본 연습 결과 상세 조회");
+	}
 
 }
