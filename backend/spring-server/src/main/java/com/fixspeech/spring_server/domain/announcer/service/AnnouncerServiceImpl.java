@@ -40,7 +40,7 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	/**
 	 * 모든 아나운서 샘플 조회
 	 *
-	 * @return Page<AnnouncerVoiceSample>
+	 * @return Page<AnnouncerVoiceSampleResponseDto>
 	 */
 	@Override
 	public Page<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria) {
