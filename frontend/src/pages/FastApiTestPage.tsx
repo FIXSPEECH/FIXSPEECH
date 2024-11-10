@@ -1,6 +1,7 @@
 import { useState } from "react";
 import VoiceMetricCard from "../components/VoiceQuality/VoiceMetricCard";
 import MetricsVisualizer from "../components/VoiceQuality/MetricsVisualizer";
+import useAuthStore from "../store/authStore";
 
 // 음성 분석 메트릭 데이터 타입 정의
 interface MetricData {
@@ -14,31 +15,29 @@ interface MetricData {
 // API 응답 데이터 타입 정의
 interface AnalysisResponse {
   status: string;
-  data: {
+  message?: string;
+  data?: {
     metrics: {
-      metrics: Record<string, MetricData>; // 각 메트릭별 상세 데이터
-      overall_score: number; // 전체 점수
-      recommendations: string[]; // 개선 추천사항 목록
+      [key: string]: MetricData;
     };
-    processing_time_seconds: number; // 처리 소요 시간
+    overall_score: number;
+    recommendations: string[];
+    processing_time_seconds: number;
   };
 }
 
 // 점수 구간별 시각화 스타일 정의
+// 점수에 따라 색상과 그림자 효과를 반환하는 함수
 const getScoreColor = (score: number) => {
-  // 90점 이상: 우수 (초록색)
-  if (score >= 90) {
-    return { color: "#00FF88", shadow: "0 0 20px rgba(0, 255, 136, 0.5)" };
-  }
-  // 70~89점: 양호 (노란색)
-  if (score >= 70) {
-    return { color: "#FFD700", shadow: "0 0 20px rgba(255, 215, 0, 0.5)" };
-  }
-  // 70점 미만: 개선필요 (빨간색)
-  return { color: "#FF4D4D", shadow: "0 0 20px rgba(255, 77, 77, 0.5)" };
+  if (score >= 90)
+    return { color: "#00FF88", shadow: "0 0 20px rgba(0, 255, 136, 0.5)" }; // 90점 이상: 초록색
+  if (score >= 70)
+    return { color: "#FFD700", shadow: "0 0 20px rgba(255, 215, 0, 0.5)" }; // 70-89점: 금색
+  return { color: "#FF4D4D", shadow: "0 0 20px rgba(255, 77, 77, 0.5)" }; // 70점 미만: 빨간색
 };
 
-// 메트릭 평가 기준 정의
+// 각 메트릭별 평가 기준 정의
+// 각 메트릭의 excellent/good/poor 기준값과 설명을 포함
 const METRIC_CRITERIA = {
   "명료도(Clarity)": {
     excellent: "20dB 이상",
@@ -96,110 +95,131 @@ const METRIC_CRITERIA = {
   },
 };
 
-// 분석 모드 타입 정의
-type AnalysisMode = "full" | "mimic" | "practice";
-
+// FastApiTestPage 컴포넌트 정의
 const FastApiTestPage = () => {
-  const [response, setResponse] = useState<AnalysisResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<AnalysisMode>("full");
+  // 상태 관리를 위한 useState 훅 사용
+  const [response, setResponse] = useState<AnalysisResponse | null>(null); // API 응답 데이터
+  const [loading, setLoading] = useState(false); // 로딩 상태
+  const [error, setError] = useState<string | null>(null); // 에러 메시지
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // 선택된 파일
+  const userGender = useAuthStore((state) => state.userProfile?.gender); // 사용자 성별 정보
 
-  // 음성 파일 업로드 및 분석 요청 처리
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  // 파일 선택 핸들러
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (file) {
+      setSelectedFile(file);
+      setError(null);
+      setResponse(null);
+    }
+  };
+
+  // 파일 제출 및 분석 요청 핸들러
+  const handleSubmit = async () => {
+    if (!selectedFile || !userGender) return;
 
     setLoading(true);
+    setError(null);
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", selectedFile);
+    formData.append("gender", userGender);
+
+    const isLocalhost = window.location.hostname === "localhost";
+    const apiUrl = `${import.meta.env.VITE_FASTAPI_URL}/analyze/full`;
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_FASTAPI_URL}/analyze/${mode}`,
-        {
+      // 로컬 개발 환경에서 디버깅을 위한 로그
+      if (isLocalhost) {
+        console.log("Request:", {
+          url: apiUrl,
           method: "POST",
-          body: formData,
-        }
-      );
-      const data = await res.json();
+          formData: {
+            file: selectedFile.name,
+            gender: userGender,
+          },
+        });
+      }
+
+      // API 요청 전송
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        body: formData,
+      });
+      const data: AnalysisResponse = await res.json();
+
+      // 응답 데이터 로깅 (로컬 환경에서만)
+      if (isLocalhost) {
+        console.log("Response:", data);
+      }
+
+      // 에러 처리
+      if (data.status === "error") {
+        throw new Error(data.message || "분석 중 오류가 발생했습니다.");
+      }
       setResponse(data);
     } catch (error) {
       console.error("Error uploading file:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "알 수 없는 오류가 발생했습니다."
+      );
+      setResponse(null);
     } finally {
       setLoading(false);
     }
   };
 
+  // UI 렌더링
   return (
     <div className="min-h-screen bg-transparent text-white p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">음성 분석 테스트</h1>
+        <h1 className="text-3xl font-bold mb-8">음성 분석</h1>
 
-        {/* 분석 모드 선택 */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">분석 모드 선택</h2>
-          <div className="flex gap-4">
-            <button
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                mode === "full"
-                  ? "bg-cyan-500 text-white"
-                  : "bg-gray-800/30 hover:bg-gray-700/30"
-              }`}
-              onClick={() => setMode("full")}
-            >
-              전체 분석
-            </button>
-            <button
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                mode === "mimic"
-                  ? "bg-cyan-500 text-white"
-                  : "bg-gray-800/30 hover:bg-gray-700/30"
-              }`}
-              onClick={() => setMode("mimic")}
-            >
-              아나운서 음성 모방
-            </button>
-            <button
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                mode === "practice"
-                  ? "bg-cyan-500 text-white"
-                  : "bg-gray-800/30 hover:bg-gray-700/30"
-              }`}
-              onClick={() => setMode("practice")}
-            >
-              스크립트 연습
-            </button>
+        {/* 파일 입력과 제출 버튼 섹션 */}
+        <div className="mb-8 space-y-4">
+          <div>
+            <input
+              type="file"
+              accept=".wav"
+              onChange={handleFileSelect}
+              className="bg-gray-800/30 p-2 rounded"
+              disabled={!userGender}
+            />
+            {selectedFile && (
+              <p className="mt-2 text-gray-300">
+                선택된 파일: {selectedFile.name}
+              </p>
+            )}
+            {!userGender && (
+              <p className="text-red-400 mt-2">
+                성별 정보가 필요합니다. 프로필을 설정해주세요.
+              </p>
+            )}
           </div>
+
+          <button
+            onClick={handleSubmit}
+            disabled={!selectedFile || !userGender || loading}
+            className={`px-6 py-2 rounded-lg transition-colors ${
+              !selectedFile || !userGender || loading
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-cyan-500 hover:bg-cyan-600"
+            }`}
+          >
+            분석 시작
+          </button>
         </div>
 
-        {/* 파일 입력 */}
-        <div className="mb-8">
-          <input
-            type="file"
-            accept=".wav"
-            onChange={handleFileUpload}
-            className="bg-gray-800/30 p-2 rounded"
-          />
-        </div>
+        {/* 에러 메시지 표시 섹션 */}
+        {error && (
+          <div className="mb-8 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300">
+            <p className="font-semibold">오류 발생</p>
+            <p>{error}</p>
+          </div>
+        )}
 
-        {/* 분석 모드별 설명 */}
-        <div className="mb-8 p-4 bg-gray-800/30 rounded-lg">
-          {mode === "full" && (
-            <p>전체적인 음성 품질을 분석하여 상세한 피드백을 제공합니다.</p>
-          )}
-          {mode === "mimic" && (
-            <p>
-              아나운서의 음성과 비교하여 유사도를 분석하고 개선점을 제시합니다.
-            </p>
-          )}
-          {mode === "practice" && (
-            <p>스크립트 연습에 대한 정확도와 음성 품질을 분석합니다.</p>
-          )}
-        </div>
-
-        {/* 기존 분석 결과 표시 부분 */}
+        {/* 로딩 인디케이터 */}
         {loading && (
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mx-auto"></div>
@@ -207,7 +227,7 @@ const FastApiTestPage = () => {
           </div>
         )}
 
-        {/* 분석 결과 표시 */}
+        {/* 분석 결과 표시 섹션 */}
         {response?.data && (
           <div className="flex flex-col lg:flex-row gap-6">
             {/* 메트릭 시각화 영역 */}
@@ -215,37 +235,36 @@ const FastApiTestPage = () => {
               <div className="sticky top-8">
                 <div className="aspect-square w-full bg-gray-800/30 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-gray-700/50">
                   <h2 className="text-lg font-bold mb-4">메트릭 시각화</h2>
-                  <MetricsVisualizer metrics={response.data.metrics.metrics} />
+                  <MetricsVisualizer metrics={response.data.metrics} />
                 </div>
               </div>
             </div>
 
             {/* 상세 분석 결과 영역 */}
             <div className="lg:w-2/3">
+              {/* 전체 점수와 추천사항 그리드 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                {/* 전체 점수 표시 */}
+                {/* 전체 점수 카드 */}
                 <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50">
                   <h2 className="text-lg font-bold mb-4">전체 점수</h2>
                   <div
                     className="text-6xl font-bold text-center"
                     style={{
-                      color: getScoreColor(response.data.metrics.overall_score)
-                        .color,
-                      textShadow: getScoreColor(
-                        response.data.metrics.overall_score
-                      ).shadow,
+                      color: getScoreColor(response.data.overall_score).color,
+                      textShadow: getScoreColor(response.data.overall_score)
+                        .shadow,
                     }}
                   >
-                    {response.data.metrics.overall_score}
+                    {response.data.overall_score}
                   </div>
                 </div>
 
-                {/* 추천사항 표시 */}
+                {/* 추천사항 카드 */}
                 <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50">
                   <h2 className="text-lg font-bold mb-4">추천사항</h2>
-                  {response.data.metrics.recommendations?.length > 0 ? (
+                  {response.data.recommendations?.length > 0 ? (
                     <ul className="list-disc pl-5 space-y-2">
-                      {response.data.metrics.recommendations.map((rec, idx) => (
+                      {response.data.recommendations.map((rec, idx) => (
                         <li
                           key={idx}
                           className="text-gray-300 p-2 rounded bg-gray-700/30 border border-gray-600/50"
@@ -276,20 +295,18 @@ const FastApiTestPage = () => {
                 </div>
               </div>
 
-              {/* 개별 메트릭 카드 목록 */}
+              {/* 개별 메트릭 카드 그리드 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(response.data.metrics.metrics).map(
-                  ([name, data]) => (
-                    <VoiceMetricCard
-                      key={name}
-                      name={name}
-                      data={data}
-                      criteria={
-                        METRIC_CRITERIA[name as keyof typeof METRIC_CRITERIA]
-                      }
-                    />
-                  )
-                )}
+                {Object.entries(response.data.metrics).map(([name, data]) => (
+                  <VoiceMetricCard
+                    key={name}
+                    name={name}
+                    data={data}
+                    criteria={
+                      METRIC_CRITERIA[name as keyof typeof METRIC_CRITERIA]
+                    }
+                  />
+                ))}
               </div>
 
               {/* 처리 시간 표시 */}
