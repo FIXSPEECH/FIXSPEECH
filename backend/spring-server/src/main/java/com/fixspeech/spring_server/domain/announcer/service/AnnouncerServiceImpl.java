@@ -3,6 +3,7 @@ package com.fixspeech.spring_server.domain.announcer.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
 import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class AnnouncerServiceImpl implements AnnouncerService {
-
 
 	private final AnnouncerVoiceSampleRepository announcerVoiceSampleRepository;
 	private final UserAnnouncerVoiceComparisonRepository userAnnouncerVoiceComparisonRepository;
@@ -85,5 +85,12 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	public Page<UserAnnouncerVoiceComparisonResult> getAllUserToAnnouncerVoiceComparison(int pageNo, String criteria, Long userId) {
 		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
 		return userAnnouncerVoiceComparisonRepository.findByUserId(pageable, userId);
+	}
+
+	@Override
+	public void saveComparisonResult(CompareResultRequestDto compareResultRequestDto, String recordAddress, Long userId) {
+		log.info("CompareResultRequestDto.toEntity(compareResultRequestDto, userId, recordAddress) = {}", CompareResultRequestDto.toEntity(compareResultRequestDto, userId, recordAddress));
+		userAnnouncerVoiceComparisonRepository.save(CompareResultRequestDto.toEntity(compareResultRequestDto, userId, recordAddress));
+//		log.info("save = {}", save);
 	}
 }

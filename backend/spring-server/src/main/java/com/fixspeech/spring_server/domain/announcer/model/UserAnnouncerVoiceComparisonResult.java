@@ -1,20 +1,13 @@
 package com.fixspeech.spring_server.domain.announcer.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fixspeech.spring_server.global.common.BaseTimeEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+import org.redisson.api.JsonType;
 
 @Entity
 @Table(name = "user_announcer_voice_comparison_result")
@@ -23,6 +16,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class UserAnnouncerVoiceComparisonResult extends BaseTimeEntity {
 
 	@Id
@@ -40,33 +34,39 @@ public class UserAnnouncerVoiceComparisonResult extends BaseTimeEntity {
 	private String recordAddress;
 
 	@Column(name = "clarity", nullable = false)
-	private float clarity;
+	private Metrics clarity;
 
 	@Column(name = "intonation_pattern_consistency", nullable = false)
-	private float intonationPatternConsistency;
+	private Metrics intonationPatternConsistency;
 
 	@Column(name = "melody_index", nullable = false)
-	private float melodyIndex;
+	private Metrics melodyIndex;
 
 	@Column(name = "speech_rhythm", nullable = false)
-	private float speechRhythm;
+	private Metrics speechRhythm;
 
 	@Column(name = "pause_timing", nullable = false)
-	private float pauseTiming;
+	private Metrics pauseTiming;
 
 	@Column(name = "rate_variability", nullable = false)
-	private float rateVariability;
+	private Metrics rateVariability;
 
 	@Column(name = "jitter", nullable = false)
-	private float jitter;
+	private Metrics jitter;
 
 	@Column(name = "amr", nullable = false)
-	private float amr;
+	private Metrics amr;
 
 	@Column(name = "utterance_energy", nullable = false)
-	private float utteranceEnergy;
+	private Metrics utteranceEnergy;
 
-	@ManyToOne
-	@JoinColumn(name = "announcer_id", insertable = false, updatable = false)
-	private AnnouncerVoiceSample announcerVoiceSample;
+	@Column(name = "overall_score", nullable = false)
+	private Integer overallScore;
+
+	@Column(name = "recommendations", nullable = false)
+	private String recommendations;
+
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "announcer_id", insertable = false, updatable = false)
+//	private AnnouncerVoiceSample announcerVoiceSample;
 }

@@ -1,15 +1,13 @@
 package com.fixspeech.spring_server.domain.announcer.controller;
 
+import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
 import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
+import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
 import lombok.ToString;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
 import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResultDto;
@@ -22,6 +20,7 @@ import com.fixspeech.spring_server.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -53,6 +52,24 @@ public class AnnouncerController {
 		} catch (Exception e) {
 			return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
 		}
+	}
+
+	@PostMapping("compare/record")
+	public ApiResponse<?> saveComparisonResult(@AuthenticationPrincipal UserDetails userDetails,
+											   @RequestPart(value = "record", required = false) MultipartFile file,
+											   @RequestPart(value = "data") CompareResultRequestDto compareResultRequestDto) {
+			try {
+				Users users = userService.findByEmail(userDetails.getUsername())
+						.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+//				String fileUrl = s3Service.upload(file);
+//				Long recordId = userVoiceService.saveImage(userVoiceRequestDto, fileUrl, users.getId());
+				String recordAddress = "test";
+				announcerService.saveComparisonResult(compareResultRequestDto, recordAddress, users.getId());
+//				userVoiceService.saveResult(userVoiceRequestDto, users.getId(), recordId);
+				return ApiResponse.success("비교 결과 저장 완료");
+			} catch (Exception e) {
+				throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
+			}
 	}
 
 	/**

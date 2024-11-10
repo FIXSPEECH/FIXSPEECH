@@ -2,11 +2,11 @@ package com.fixspeech.spring_server.domain.announcer.service;
 
 import java.util.List;
 
+import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
 import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
 import org.springframework.data.domain.Page;
 
 import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResultDto;
-import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
 import com.fixspeech.spring_server.domain.announcer.model.UserAnnouncerVoiceComparisonResult;
 
 public interface AnnouncerService {
@@ -23,6 +23,7 @@ public interface AnnouncerService {
 	UserAnnouncerVoiceComparisonResultDto getOneUserToAnnouncerVoiceComparison(Long id);
 
 	// 유저 음성 녹음
+	void saveComparisonResult(CompareResultRequestDto compareResultRequestDto, String recordAddress, Long userId);
 	
 	// 사용자 음성와 아나운서 음성 분석 결과 저장
 }
