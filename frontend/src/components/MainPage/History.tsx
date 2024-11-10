@@ -6,7 +6,7 @@ import axiosInstance from "../../services/axiosInstance";
 import { Tooltip } from "react-tooltip";
 
 interface GrassData {
-  date: string;
+  date: string | Date;
   count: number;
 }
 
@@ -51,14 +51,14 @@ function History() {
         startDate={new Date(new Date().setMonth(new Date().getMonth() - 4))}
         endDate={new Date(new Date().setMonth(new Date().getMonth()))}
         values={grassValues}
-        classForValue={(value) => {
+        classForValue={(value: GrassData) => {
           if (!value || !value.count) {
             return "color-empty";
           }
           const color = "green";
           return `color-scale-${color}-${value.count}`;
         }}
-        tooltipDataAttrs={(value) => {
+        tooltipDataAttrs={(value: GrassData) => {
           if (!value || !value.count) {
             return {
               "data-tooltip-id": "grass-tooltip",
