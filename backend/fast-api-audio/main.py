@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from analyze_wav_file import analyze_audio, calculate_metrics_simple
-from accouncer_mimic import analyze_announcer, announcer_mimic
+from accouncer_mimic import analyze_announcer_alone, announcer_mimic
 import logging
 from dotenv import load_dotenv
 import os
@@ -340,8 +340,7 @@ async def mimic_announcer(accouncer_info: list, file: UploadFile = File(..., des
         # 음성 분석 수행
         results = await announcer_mimic(file, accouncer_info)
         # TODO: 아나운서 음성과의 유사도 분석 로직 추가
-        results["data"]["similarity_score"] = 78.5  # 예시 값
-        return results
+        return JSONResponse(content=results)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
@@ -460,7 +459,7 @@ async def analyze_simple(file: UploadFile = File(..., description="분석할 WAV
                           "example": {
                               "status": "success",
                               "data": {
-                                  "announcer_f0_data":[{"time":0.232,"F0":232},{"time":0.464,"F0":232},...],
+                                  "announcer_f0_data":[{"time":0.232,"F0":232},{"time":0.464,"F0":232},],
                                   "metrics": {
                                       "명료도(Clarity)": 20.27,
                                       "억양 패턴 일관성 (Intonation Pattern Consistency)": 59.98,
@@ -514,7 +513,8 @@ async def analyze_announcer(file: UploadFile = File(..., description="분석할 
             temp_path = temp_file.name
 
         try:
-            metrics = calculate_metrics_simple(temp_path)
+            # `temp_path` 파일 경로를 넘겨주도록 수정
+            metrics = await analyze_announcer_alone(temp_path)
             # 여기서 metrics를 사용하여 DB에 저장하는 로직을 구현해야 합니다.
             return {
                 "status": "success",

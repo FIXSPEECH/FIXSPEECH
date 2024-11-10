@@ -19,78 +19,53 @@ def get_f0_data(y, sr):
     times = librosa.times_like(f0, sr=sr)
     return times, f0
 
-async def analyze_announcer(file:UploadFile):
+def extract_f0_and_prepare_data(y, sr):
+    times, f0 = get_f0_data(y, sr)
+    f0_data = [{"time": t, "frequency": f if not np.isnan(f) else None} for t, f in zip(times, f0)]
+    return f0_data
+
+async def process_uploaded_audio(file: UploadFile):
+    contents = await file.read()
+    wav_contents = analyze_wav_file.convert_to_wav(contents, file.filename)
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
+        temp_file.write(wav_contents)
+        temp_file.flush()
+        return temp_file.name
+
+async def analyze_announcer_alone(file_path: str):
     """
-    아나운서의 F0 데이터를 추출하여 반환
+    아나운서 음성 분석 함수 - 파일 경로를 입력받아 처리
     """
     try:
-        # 사용자 파일 읽기
-        contents = await file.read()
+        # 경로로 로드된 파일에서 음성 데이터를 처리
+        announcer_y, announcer_sr = librosa.load(file_path, sr=None)
+        announcer_f0_data = extract_f0_and_prepare_data(announcer_y, announcer_sr)
 
-        # WAV 변환
-        wav_contents = analyze_wav_file.convert_to_wav(contents, file.filename)
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
-            temp_file.write(wav_contents)
-            temp_file.flush()
-            announcer_file_path = temp_file.name
-
-        # 사용자 음성에서 F0 데이터 추출
-        announcer_y, announcer_sr = librosa.load(announcer_file_path, sr=None)
-        announcer_times, announcer_f0 = get_f0_data(announcer_y, announcer_sr)
-
-        # JSON 형식으로 F0 데이터 정리
-        announcer_f0_data = [{"time": t, "frequency": f if not np.isnan(f) else None} for t, f in zip(announcer_times, announcer_f0)]
-
-        # 결과 반환
         return {
             "status": "success",
             "data": {
                 "announcer_f0_data": announcer_f0_data,
             }
         }
-
     except Exception as e:
-        # 에러 처리
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
-
-# async def announcer_mimic(file: UploadFile, announcer_f0_data: list):
 async def announcer_mimic(file: UploadFile, announcer_f0_data: list):
-    """
-    사용자 음성을 분석하고 아나운서와의 F0 유사도, 메트릭 평가, 추천사항 등을 반환
-    """
     start_time = time.time()
     try:
-        # 사용자 파일 읽기
-        contents = await file.read()
-
-        # WAV 변환
-        wav_contents = analyze_wav_file.convert_to_wav(contents, file.filename)
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
-            temp_file.write(wav_contents)
-            temp_file.flush()
-            user_file_path = temp_file.name
-
-        # 사용자 음성에서 F0 데이터 추출
+        user_file_path = await process_uploaded_audio(file)
         user_y, user_sr = librosa.load(user_file_path, sr=None)
-        user_times, user_f0 = get_f0_data(user_y, user_sr)
+        user_f0_data = extract_f0_and_prepare_data(user_y, user_sr)
 
-        # 아나운서의 F0 데이터 (JSON 데이터로부터)
-        announcer_times = [data["time"] for data in announcer_f0_data]
-        announcer_f0 = [data["frequency"] for data in announcer_f0_data]
+        announcer_f0_clean = np.array([val for val in announcer_f0_data if val["frequency"] is not None])
+        user_f0_clean = np.array([val["frequency"] for val in user_f0_data if val["frequency"] is not None])
 
-        # F0 유사도 계산 (fastdtw 사용)
-        user_f0_clean = np.array([val for val in user_f0 if not np.isnan(val)])
-        announcer_f0_clean = np.array([val for val in announcer_f0 if val is not None])
         distance, path = fastdtw(user_f0_clean, announcer_f0_clean, dist=euclidean)
-
-        # JSON 형식으로 F0 데이터 정리
-        user_f0_data = [{"time": t, "frequency": f if not np.isnan(f) else None} for t, f in zip(user_times, user_f0)]
-
-        # 메트릭 계산 및 평가 수행
         metrics = analyze_wav_file.calculate_metrics_simple(user_file_path)
 
-        # 결과 반환
         return {
             "status": "success",
             "data": {
@@ -99,20 +74,9 @@ async def announcer_mimic(file: UploadFile, announcer_f0_data: list):
                 "metrics": metrics
             }
         }
-
     except Exception as e:
-        # 에러 처리
-        raise HTTPException(
-            status_code=500,
-            detail={
-                "status": "error",
-                "message": "Error processing audio file",
-                "detail": str(e),
-                "code": "PROCESSING_ERROR"
-            }
-        )
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        # 임시 파일 삭제
         if os.path.exists(user_file_path):
             os.remove(user_file_path)
         await file.close()
