@@ -41,11 +41,7 @@ function SituationPractice() {
 
   return (
     <div className="flex min-h-[80vh] items-center">
-    {/* <Script content={data.content} />
-    <div className="flex-col  w-2/5 justify-center align-middle">
-      <Timer seconds={data.seconds}/>
-      <Recorder color={"#FFAB01"} barColor={"rgb(239,204,135)"} width={200} height={60} visualizeWidth="200px" modalType="regist"/>
-    </div> */}
+
       {data ? (
       <>
         <Script content={data.content} />
