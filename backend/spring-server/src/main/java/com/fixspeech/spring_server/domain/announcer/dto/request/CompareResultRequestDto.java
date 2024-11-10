@@ -2,8 +2,12 @@ package com.fixspeech.spring_server.domain.announcer.dto.request;
 
 import com.fixspeech.spring_server.domain.announcer.model.Metrics;
 import com.fixspeech.spring_server.domain.announcer.model.UserAnnouncerVoiceComparisonResult;
-import lombok.*;
-import org.checkerframework.checker.units.qual.A;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -29,15 +33,15 @@ public class CompareResultRequestDto {
                 .userId(userId)
                 .announcerId(compareResultRequestDto.getAnnouncerId())
                 .recordAddress(recordAddress)
-                .clarity(Metrics.of(compareResultRequestDto.getClarity()))
-                .intonationPatternConsistency(Metrics.of(compareResultRequestDto.getIntonationPatternConsistency()))
-                .melodyIndex(Metrics.of(compareResultRequestDto.getMelodyIndex()))
-                .speechRhythm(Metrics.of(compareResultRequestDto.getSpeechRhythm()))
-                .pauseTiming(Metrics.of(compareResultRequestDto.getPauseTiming()))
-                .rateVariability(Metrics.of(compareResultRequestDto.getRateVariability()))
-                .jitter(Metrics.of(compareResultRequestDto.getJitter()))
-                .amr(Metrics.of(compareResultRequestDto.getAmr()))
-                .utteranceEnergy(Metrics.of(compareResultRequestDto.getUtteranceEnergy()))
+                .clarity(compareResultRequestDto.getClarity())
+                .intonationPatternConsistency(compareResultRequestDto.getIntonationPatternConsistency())
+                .melodyIndex(compareResultRequestDto.getMelodyIndex())
+                .speechRhythm(compareResultRequestDto.getSpeechRhythm())
+                .pauseTiming(compareResultRequestDto.getPauseTiming())
+                .rateVariability(compareResultRequestDto.getRateVariability())
+                .jitter(compareResultRequestDto.getJitter())
+                .amr(compareResultRequestDto.getAmr())
+                .utteranceEnergy(compareResultRequestDto.getUtteranceEnergy())
                 .overallScore(compareResultRequestDto.getOverallScore())
                 .recommendations(compareResultRequestDto.getRecommendations())
                 .build();
