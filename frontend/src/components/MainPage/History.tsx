@@ -3,6 +3,7 @@ import CalendarHeatmap from "react-calendar-heatmap";
 import "../../styles/MainPage/History.css";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../services/axiosInstance";
+import { Tooltip } from "react-tooltip";
 
 interface GrassData {
   date: string;
@@ -50,17 +51,31 @@ function History() {
         startDate={new Date(new Date().setMonth(new Date().getMonth() - 4))}
         endDate={new Date(new Date().setMonth(new Date().getMonth()))}
         values={grassValues}
-        classForValue={(value: GrassData) => {
-          if (!value) {
+        classForValue={(value) => {
+          if (!value || !value.count) {
             return "color-empty";
           }
           const color = "green";
           return `color-scale-${color}-${value.count}`;
         }}
-        onClick={(value: any) =>
-          alert(`Clicked on value with count: ${value.count}`)
-        }
+        tooltipDataAttrs={(value) => {
+          if (!value || !value.count) {
+            return {
+              "data-tooltip-id": "grass-tooltip",
+              "data-tooltip-content": "기록 없음",
+            };
+          }
+          const date =
+            typeof value.date === "string"
+              ? value.date
+              : value.date.toISOString().split("T")[0];
+          return {
+            "data-tooltip-id": "grass-tooltip",
+            "data-tooltip-content": `${date}: ${value.count}회`,
+          };
+        }}
       />
+      <Tooltip id="grass-tooltip" />
     </div>
   );
 }
