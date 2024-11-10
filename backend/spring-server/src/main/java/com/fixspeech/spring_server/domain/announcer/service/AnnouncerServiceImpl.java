@@ -43,12 +43,19 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	 * @return Page<AnnouncerVoiceSample>
 	 */
 	@Override
-	public Page<AnnouncerVoiceSample> getAllAnnouncerData(int pageNo, String criteria) {
+	public Page<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria) {
 		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
-		Page<AnnouncerVoiceSample> announcerServiceSamples = announcerVoiceSampleRepository.findAll(pageable);
-		if (announcerServiceSamples.isEmpty()) log.info("없음");
+		Page<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findAll(pageable);
+
+		// AnnouncerVoiceSample -> AnnouncerVoiceSampleResponseDto로 변환하여 Page로 반환
+		Page<AnnouncerVoiceSampleResponseDto> announcerVoiceSampleResponseDtos = announcerVoiceSamples.map(AnnouncerVoiceSampleResponseDto::from);
+
+		if (announcerVoiceSampleResponseDtos.isEmpty()) {
+			log.info("없음");
+		}
 		log.info("pageEnd");
-		return announcerServiceSamples;
+
+		return announcerVoiceSampleResponseDtos;
 	}
 
 

@@ -47,9 +47,7 @@ public class AnnouncerController {
 	public ApiResponse<?> getAllAnnouncerData(@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
 		@RequestParam(required = false, defaultValue = "createdAt", value = "criteria") String criteria) {
 		try {
-			log.info("test");
-//			Page<AnnouncerVoiceSample> announcerResponse = announcerService.getAllAnnouncerData(pageNo, criteria);
-			List<AnnouncerVoiceSampleResponseDto> announcerResponse = announcerService.getAllAnnouncerData();
+			Page<AnnouncerVoiceSampleResponseDto> announcerResponse = announcerService.getAllAnnouncerData(pageNo, criteria);
 			log.info("announcerResponseDtos: {}",announcerResponse);
 			return ApiResponse.createSuccess(announcerResponse, "모든 아나운서 데이터 출력");
 		} catch (Exception e) {

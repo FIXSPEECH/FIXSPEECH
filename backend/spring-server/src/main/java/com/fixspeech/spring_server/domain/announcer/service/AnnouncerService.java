@@ -14,7 +14,7 @@ public interface AnnouncerService {
 	List<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData();
 
 	// 아나운서 음성 데이터 전체 조회
-	Page<AnnouncerVoiceSample> getAllAnnouncerData(int pageNo, String criteria);
+	Page<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria);
 
 	// 사용자가 녹음한 아나운서 음성 분석 결과 전체 조회
 	Page<UserAnnouncerVoiceComparisonResult> getAllUserToAnnouncerVoiceComparison(int pageNo, String criteria, Long userId);
