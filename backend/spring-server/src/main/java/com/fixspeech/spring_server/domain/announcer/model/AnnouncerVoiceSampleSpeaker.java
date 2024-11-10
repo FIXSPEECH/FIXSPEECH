@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.domain.announcer.model;
 
+import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleSpeakerResponseDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -24,11 +25,20 @@ public class AnnouncerVoiceSampleSpeaker {
 	private String id; // SPK001, SPK002...
 
 	@Column(name = "age", nullable = false)
-	private short age; // 20대, 30대, 40대, 50대, 60대
+	private String age; // 20대, 30대, 40대, 50대, 60대
 
 	@Column(name = "gender", nullable = false, length = 10)
 	private String gender; // male, female
 
 	@Column(name = "job", nullable = false, length = 20)
 	private String job; // 아나운서, 아나운서준비생, 전직아나운서
+
+	public static AnnouncerVoiceSampleSpeakerResponseDto from(AnnouncerVoiceSampleSpeaker speaker) {
+		return AnnouncerVoiceSampleSpeakerResponseDto.builder()
+				.id(speaker.getId())
+				.age(speaker.getAge())
+				.gender(speaker.getGender())
+				.job(speaker.getJob())
+				.build();
+	}
 }

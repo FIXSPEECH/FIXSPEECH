@@ -1,9 +1,6 @@
 package com.fixspeech.spring_server.domain.announcer.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
-import com.fixspeech.spring_server.domain.announcer.model.Metrics;
+import com.fixspeech.spring_server.domain.announcer.model.*;
 import lombok.*;
 
 @Builder
@@ -23,6 +20,9 @@ public class AnnouncerVoiceSampleResponseDto {
 	private Metrics jitter;
 	private Metrics amr;
 	private Metrics utteranceEnergy;
+	private AnnouncerVoiceSampleScriptResponseDto script;
+	private AnnouncerVoiceSampleScriptDetailResponseDto scriptDetail;
+	private AnnouncerVoiceSampleSpeakerResponseDto speaker;
 
 	public static AnnouncerVoiceSampleResponseDto from(AnnouncerVoiceSample announcerVoiceSample) {
 		// AnnouncerVoiceSample 객체에서 Object로 저장된 JSON 값을 Metrics 객체로 변환
@@ -37,6 +37,9 @@ public class AnnouncerVoiceSampleResponseDto {
 				.jitter(Metrics.of(announcerVoiceSample.getJitter()))  // jitter 변환
 				.amr(Metrics.of(announcerVoiceSample.getAmr()))  // amr 변환
 				.utteranceEnergy(Metrics.of(announcerVoiceSample.getUtteranceEnergy()))  // utteranceEnergy 변환
+				.script(AnnouncerVoiceSampleScriptResponseDto.from(announcerVoiceSample.getScript()))
+				.scriptDetail(AnnouncerVoiceSampleScriptDetailResponseDto.from(announcerVoiceSample.getScriptDetail()))
+				.speaker(AnnouncerVoiceSampleSpeaker.from(announcerVoiceSample.getSpeaker()))
 				.build();  // 빌드하여 반환
 	}
 }
