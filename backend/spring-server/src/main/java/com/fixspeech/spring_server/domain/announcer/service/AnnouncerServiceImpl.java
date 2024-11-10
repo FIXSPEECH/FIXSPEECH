@@ -1,14 +1,15 @@
 package com.fixspeech.spring_server.domain.announcer.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
 import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResultDto;
 import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
 import com.fixspeech.spring_server.domain.announcer.model.UserAnnouncerVoiceComparisonResult;
@@ -28,19 +29,26 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	private final UserAnnouncerVoiceComparisonRepository userAnnouncerVoiceComparisonRepository;
 
 	@Override
-	public List<AnnouncerVoiceSample> getAllAnnouncerData() {
-		return announcerVoiceSampleRepository.findAll();
+	public List<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData() {
+		List<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findAll();
+		return announcerVoiceSamples.stream()
+				.map(AnnouncerVoiceSampleResponseDto::from)  // AnnouncerVoiceSample -> AnnouncerVoiceSampleResponseDto로 변환
+				.collect(Collectors.toList()); // 리스트로 수집
 	}
+
 
 	/**
 	 * 모든 아나운서 샘플 조회
+	 *
 	 * @return Page<AnnouncerVoiceSample>
 	 */
 	@Override
-	public Page<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria) {
+	public Page<AnnouncerVoiceSample> getAllAnnouncerData(int pageNo, String criteria) {
 		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
-		// return announcerVoiceSampleRepository.findAllWithJoin(pageable);
-		return null;
+		Page<AnnouncerVoiceSample> announcerServiceSamples = announcerVoiceSampleRepository.findAll(pageable);
+		if (announcerServiceSamples.isEmpty()) log.info("없음");
+		log.info("pageEnd");
+		return announcerServiceSamples;
 	}
 
 

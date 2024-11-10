@@ -1,5 +1,7 @@
 package com.fixspeech.spring_server.domain.announcer.controller;
 
+import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
+import lombok.ToString;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +22,8 @@ import com.fixspeech.spring_server.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -43,9 +47,11 @@ public class AnnouncerController {
 	public ApiResponse<?> getAllAnnouncerData(@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
 		@RequestParam(required = false, defaultValue = "createdAt", value = "criteria") String criteria) {
 		try {
-			Page<AnnouncerVoiceSampleResponseDto> announcerResponseDtos = announcerService.getAllAnnouncerData(pageNo, criteria);
-			log.info("announcerResponseDtos: {}",announcerResponseDtos);
-			return ApiResponse.createSuccess(announcerResponseDtos, "모든 아나운서 데이터 출력");
+			log.info("test");
+//			Page<AnnouncerVoiceSample> announcerResponse = announcerService.getAllAnnouncerData(pageNo, criteria);
+			List<AnnouncerVoiceSampleResponseDto> announcerResponse = announcerService.getAllAnnouncerData();
+			log.info("announcerResponseDtos: {}",announcerResponse);
+			return ApiResponse.createSuccess(announcerResponse, "모든 아나운서 데이터 출력");
 		} catch (Exception e) {
 			return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
 		}
