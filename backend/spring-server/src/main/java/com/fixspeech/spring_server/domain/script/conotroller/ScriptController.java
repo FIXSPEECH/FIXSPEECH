@@ -38,6 +38,7 @@ import com.fixspeech.spring_server.domain.script.dto.ScriptAnalyzeResponseDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptListDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptRequestDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptResponseDto;
+import com.fixspeech.spring_server.domain.script.dto.ScriptResultListDto;
 import com.fixspeech.spring_server.domain.script.dto.VoiceAnalysisMessage;
 import com.fixspeech.spring_server.domain.script.service.ScriptService;
 import com.fixspeech.spring_server.domain.user.model.Users;
@@ -207,7 +208,7 @@ public class ScriptController {
 		}
 	}
 
-	@GetMapping("/result/{resultId}")
+	@GetMapping("/result/detail/{resultId}")
 	public ApiResponse<?> getResultDetail(
 		@AuthenticationPrincipal UserDetails userDetails,
 		@PathVariable Long resultId
@@ -216,6 +217,19 @@ public class ScriptController {
 			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
 		ScriptAnalyzeResponseDto scriptAnalyzeResponseDto = scriptService.getResult(resultId, users);
 		return ApiResponse.createSuccess(scriptAnalyzeResponseDto, "대본 연습 결과 상세 조회");
+	}
+
+	@GetMapping("/result/{scriptId}")
+	public ApiResponse<?> getScriptResultList(
+		@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable Long scriptId,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size
+	) {
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+		Page<ScriptResultListDto> scriptResultListDtos = scriptService.getScriptResultList(scriptId, page, size);
+		return ApiResponse.createSuccess(scriptResultListDtos, "대본당 녹음 리스트 조회 성공");
 	}
 
 }
