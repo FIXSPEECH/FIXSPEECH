@@ -3,9 +3,13 @@ import { useNavigate } from "react-router-dom";
 import RegistModal from './RegistModal'
 import useVoiceStore from "../../store/voiceStore";
 
-function Timer() {
+interface Timer{
+  seconds: number
+}
+
+function Timer({seconds}: Timer) {
   const {setIsRecording} = useVoiceStore();
-  const [timeLeft, setTimeLeft] = useState(180); // 초기 시간 5:00 (300초)
+  const [timeLeft, setTimeLeft] = useState(seconds); // 초기 시간 5:00 (300초)
   const [progress, setProgress] = useState(100); // 원형 테두리의 진행 상태 (초기 100%)
   const [showModal, setShowModal] = useState<boolean>(false)
   const navigate = useNavigate();
@@ -36,7 +40,7 @@ function Timer() {
 
   useEffect(() => {
     // 타이머가 줄어들면서 원형 테두리 진행 상태 업데이트
-    setProgress((timeLeft / 200) * 100); // 300초에서 현재 남은 시간에 대한 비율 계산
+    setProgress((timeLeft / seconds) * 100); // 300초에서 현재 남은 시간에 대한 비율 계산
   }, [timeLeft]);
 
   // 원형 테두리의 스타일
