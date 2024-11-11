@@ -54,7 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/script")
-public class ScriptController {
+public class ScriptController implements ScriptApi {
 	private final ScriptService scriptService;
 	private final S3Service s3Service;
 	private final EmitterService emitterService;
