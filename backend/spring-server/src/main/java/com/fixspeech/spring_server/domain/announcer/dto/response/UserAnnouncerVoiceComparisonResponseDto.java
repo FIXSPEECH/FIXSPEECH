@@ -9,13 +9,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.kafka.common.Metric;
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAnnouncerVoiceComparisonResultDto {
+public class UserAnnouncerVoiceComparisonResponseDto {
 	private Long id;
 	private Long userId;
 	private Long announcerId;
@@ -31,12 +30,13 @@ public class UserAnnouncerVoiceComparisonResultDto {
 	private Metrics utteranceEnergy;
 	private Integer overall_score;
 	private String recommendations;
+	private AnnouncerVoiceSampleResponseDto announcer;
 	private LocalDateTime createdAt;
 
 	// Entity -> DTO 변환
-	public static UserAnnouncerVoiceComparisonResultDto from(
+	public static UserAnnouncerVoiceComparisonResponseDto from(
 		UserAnnouncerVoiceComparisonResult userAnnouncerVoiceComparisonResult) {
-		return UserAnnouncerVoiceComparisonResultDto.builder()
+		return UserAnnouncerVoiceComparisonResponseDto.builder()
 			.id(userAnnouncerVoiceComparisonResult.getId())
 			.userId(userAnnouncerVoiceComparisonResult.getUserId())
 			.announcerId(userAnnouncerVoiceComparisonResult.getAnnouncerId())
@@ -52,6 +52,7 @@ public class UserAnnouncerVoiceComparisonResultDto {
 			.utteranceEnergy(userAnnouncerVoiceComparisonResult.getUtteranceEnergy())
 			.overall_score(userAnnouncerVoiceComparisonResult.getOverallScore())
 			.recommendations(userAnnouncerVoiceComparisonResult.getRecommendations())
+			.announcer(AnnouncerVoiceSampleResponseDto.from(userAnnouncerVoiceComparisonResult.getAnnouncerVoiceSample()))
 			.createdAt(userAnnouncerVoiceComparisonResult.getCreatedAt())
 			.build();
 	}

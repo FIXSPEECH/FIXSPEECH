@@ -3,15 +3,15 @@ package com.fixspeech.spring_server.domain.announcer.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
-import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResultDto;
+import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
+import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
+import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResponseDto;
 import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
 import com.fixspeech.spring_server.domain.announcer.model.UserAnnouncerVoiceComparisonResult;
 import com.fixspeech.spring_server.domain.announcer.repository.AnnouncerVoiceSampleRepository;
@@ -65,26 +65,28 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	 * @return userAnnouncerVoiceComparisonResult - 음성 분석 비교 결과
 	 */
 	@Override
-	public UserAnnouncerVoiceComparisonResultDto getOneUserToAnnouncerVoiceComparison(Long id) {
+	public UserAnnouncerVoiceComparisonResponseDto getOneUserToAnnouncerVoiceComparison(Long id) {
 		UserAnnouncerVoiceComparisonResult userAnnouncerVoiceComparisonResult = userAnnouncerVoiceComparisonRepository.findById(id).orElse(null);
 		log.info("사용자와 아나운서 음성 비교 상세 조회= {}", userAnnouncerVoiceComparisonResult);
 		if (userAnnouncerVoiceComparisonResult == null) {
 			return null;
 		}
-		return UserAnnouncerVoiceComparisonResultDto.from(userAnnouncerVoiceComparisonResult);
+		return UserAnnouncerVoiceComparisonResponseDto.from(userAnnouncerVoiceComparisonResult);
 	}
 
 	/**
 	 * 사용자가 녹음한 아나운서 음성 분석 결과 전체 조회
-	 * @param pageNo 현재 페이지
+	 *
+	 * @param pageNo   현재 페이지
 	 * @param criteria 정렬 기준
-	 * @param userId 사용자 id
-	 * @return Page<UserAnnouncerVoiceComparisonResult>
+	 * @param userId   사용자 id
+	 * @return Page<UserAnnouncerVoiceComparisonResponseDto>
 	 */
 	@Override
-	public Page<UserAnnouncerVoiceComparisonResult> getAllUserToAnnouncerVoiceComparison(int pageNo, String criteria, Long userId) {
+	public Page<UserAnnouncerVoiceComparisonResponseDto> getAllUserToAnnouncerVoiceComparison(int pageNo, String criteria, Long userId) {
 		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
-		return userAnnouncerVoiceComparisonRepository.findByUserId(pageable, userId);
+		Page<UserAnnouncerVoiceComparisonResult> all = userAnnouncerVoiceComparisonRepository.findByUserId(pageable, userId);
+		return all.map(UserAnnouncerVoiceComparisonResponseDto::from);
 	}
 
 	@Override

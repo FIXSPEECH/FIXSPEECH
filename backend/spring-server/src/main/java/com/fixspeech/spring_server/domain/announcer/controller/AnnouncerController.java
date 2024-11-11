@@ -1,16 +1,14 @@
 package com.fixspeech.spring_server.domain.announcer.controller;
 
 import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
-import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
-import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
-import lombok.ToString;
+
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
-import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResultDto;
+import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResponseDto;
 import com.fixspeech.spring_server.domain.announcer.service.AnnouncerService;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
@@ -21,8 +19,6 @@ import com.fixspeech.spring_server.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -79,7 +75,7 @@ public class AnnouncerController {
 	 */
 	@GetMapping("compare/{id}")
 	public ApiResponse<?> getOneUserToAnnouncerVoiceComparison(@PathVariable Long id) {
-		UserAnnouncerVoiceComparisonResultDto userAnnouncerVoiceComparisonResultDto = announcerService.getOneUserToAnnouncerVoiceComparison(id);
+		UserAnnouncerVoiceComparisonResponseDto userAnnouncerVoiceComparisonResultDto = announcerService.getOneUserToAnnouncerVoiceComparison(id);
 		return ApiResponse.createSuccess(userAnnouncerVoiceComparisonResultDto,"사용자와 아나운서 음성 비교 데이터 출력 성공");
 	}
 
