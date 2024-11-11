@@ -88,50 +88,55 @@ function SelectScript() {
       <div className="text-[#FFAB01] text-3xl font-bold mb-8">
         저장된 대본 목록
       </div>
-      <div className="space-y-3">
-        {currentScripts.map((script: any) => (
-          <div
-            key={script.id}
-            className="p-5 rounded-lg border border-[#FFAB01] hover:border-2 cursor-pointer transition-all"
-            onClick={() => handleClick(script.scriptId)}
-          >
-            <div className="flex justify-between items-center">
-              <div className="text-white text-xl">{script.title}</div>
-              <div className="flex items-center">
-                <div className="text-[#FFAB01] text-sm mr-2">등록일: {script.createdAt}</div>
-                <DeleteIcon onClick={() => handleDelete(script.scriptId)}/>
+      {scripts.length === 0 ? (
+        <div className="text-[#FFAB01] text-lg">저장된 대본이 없습니다</div>
+      ) : (
+        <>
+          <div className="space-y-3">
+            {currentScripts.map((script: any) => (
+              <div
+                key={script.id}
+                className="p-5 rounded-lg border border-[#FFAB01] hover:border-2 cursor-pointer transition-all"
+                onClick={() => handleClick(script.scriptId)}
+              >
+                <div className="flex justify-between items-center">
+                  <div className="text-white text-xl">{script.title}</div>
+                  <div className="flex items-center">
+                    <div className="text-[#FFAB01] text-sm mr-2">등록일: {script.createdAt}</div>
+                    <DeleteIcon onClick={() => handleDelete(script.scriptId)} />
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <Stack spacing={2}
-          sx={{display: 'flex',
-            justifyContent: 'center',
-            width: 'fit-content', // Stack 너비를 내용에 맞게 설정
-            margin: '0 auto', // Stack을 가로 중앙으로 정렬
-            marginTop: '2%', // 위쪽 여백
-            }}>
-        <Pagination
-          count={Math.ceil(scripts.length / scriptsPerPage)} // 전체 페이지 수
-          page={currentPage} // 현재 페이지
-          onChange={paginate} // 페이지 변경 시 호출될 함수
-          shape="rounded"
-          size="large"
-          sx={{
-            "& .MuiPaginationItem-root": {
-              color: "#FFAB01", // 페이지 아이템 글자 색
-            },
-            "& .MuiPaginationItem-ellipsis": {
-              color: "#FFAB01", // Ellipsis(…) 아이템 글자 색
-            },
-            "& .MuiPaginationItem-root.Mui-selected": {
-              backgroundColor: "#FFAB01", // 선택된 페이지의 배경 색
-              color: "white", // 선택된 페이지의 글자 색
-            },
-          }}
-        />
-      </Stack>
+          <Stack
+            spacing={2}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              width: 'fit-content',
+              margin: '0 auto',
+              marginTop: '2%',
+            }}
+          >
+            <Pagination
+              count={Math.ceil(scripts.length / scriptsPerPage)}
+              page={currentPage}
+              onChange={paginate}
+              shape="rounded"
+              size="large"
+              sx={{
+                "& .MuiPaginationItem-root": { color: "#FFAB01" },
+                "& .MuiPaginationItem-ellipsis": { color: "#FFAB01" },
+                "& .MuiPaginationItem-root.Mui-selected": {
+                  backgroundColor: "#FFAB01",
+                  color: "white",
+                },
+              }}
+            />
+          </Stack>
+        </>
+      )}
     </div>
   );
 }
