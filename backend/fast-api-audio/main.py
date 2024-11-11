@@ -38,38 +38,55 @@ app.add_middleware(
 # WAV 파일 유효성 검사 함수
 def validate_wav_file(file: UploadFile):
     if not file.filename.endswith('.wav'):
+        logger.error(f"Invalid file type: {file.filename}. Expected .wav file")
         raise HTTPException(
             status_code=400, 
             detail={
                 "status": "error",
                 "message": "Invalid file type. Please upload a .wav file.",
-                "code": "INVALID_FILE_TYPE"
+                "code": "INVALID_FILE_TYPE",
+                "file_name": file.filename,
+                "file_content_type": file.content_type,
+                "error_details": "파일 확장자가 .wav가 아닙니다."
             }
         )
 
 # HTTP 예외 처리기
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
+    logger.error(f"HTTP Exception occurred: Status Code: {exc.status_code}, Detail: {exc.detail}")
     return JSONResponse(
         status_code=exc.status_code,
         content={
             "status": "error",
             "message": str(exc.detail),
-            "code": exc.status_code
+            "code": exc.status_code,
+            "request_path": str(request.url),
+            "request_method": request.method,
+            "error_details": "HTTP 요청 처리 중 오류가 발생했습니다."
         }
     )
 
 # 일반 예외 처리기
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
-    logger.error(f"Unexpected error: {str(exc)}", exc_info=True)
+    logger.error(f"Unexpected error occurred: {str(exc)}", exc_info=True)
+    error_context = {
+        "exception_type": type(exc).__name__,
+        "exception_message": str(exc),
+        "request_path": str(request.url),
+        "request_method": request.method
+    }
+    logger.error(f"Error context: {error_context}")
     return JSONResponse(
         status_code=500,
         content={
             "status": "error",
             "message": "Internal server error occurred",
             "detail": str(exc),
-            "code": "INTERNAL_SERVER_ERROR"
+            "code": "INTERNAL_SERVER_ERROR",
+            "error_context": error_context,
+            "error_details": "서버 내부에서 예상치 못한 오류가 발생했습니다."
         }
     )
 
@@ -500,7 +517,8 @@ async def practice_script(
             detail={
                 "status": "error",
                 "message": "Invalid gender. Must be 'male' or 'female'",
-                "code": "INVALID_GENDER"
+                "code": "INVALID_GENDER",
+                "error_details": "성별은 'male' 또는 'female'만 가능합니다."
             }
         )
     try:
@@ -509,8 +527,30 @@ async def practice_script(
         # TODO: 스크립트 정확도 분석 로직 추가
         results["data"]["script_accuracy"] = 92.5  # 예시 값
         return results
+
+    except ValueError as e:
+        logger.error(f"Value error in audio processing: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "status": "error",
+                "message": "Audio processing error",
+                "code": "INVALID_AUDIO_DATA",
+                "error_details": "음성 데이터 처리 중 오류가 발생했습니다."
+            }
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "status": "error",
+                "message": "Internal server error",
+                "code": "INTERNAL_SERVER_ERROR",
+                "error_details": "서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.",
+                "error_trace": str(e)
+            }
+        )
 
 # 단순 음성 분석 엔드포인트
 @app.post("/analyze/simple",

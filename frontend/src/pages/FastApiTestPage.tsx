@@ -141,47 +141,124 @@ const FastApiTestPage = () => {
     formData.append("file", selectedFile);
     formData.append("gender", userGender);
 
-    const isLocalhost = window.location.hostname === "localhost";
     const apiUrl = `${import.meta.env.VITE_FASTAPI_URL}/analyze/full`;
 
     try {
-      // 로컬 개발 환경에서 디버깅을 위한 로그
-      if (isLocalhost) {
-        console.log("Request:", {
-          url: apiUrl,
-          method: "POST",
-          formData: {
-            file: selectedFile.name,
-            gender: userGender,
+      // API 요청 로깅
+      console.log("[API Request]", {
+        url: apiUrl,
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        formData: {
+          file: {
+            name: selectedFile.name,
+            size: selectedFile.size,
+            type: selectedFile.type,
           },
-        });
-      }
+          gender: userGender,
+        },
+        timestamp: new Date().toISOString(),
+      });
 
-      // API 요청 전송
       const res = await fetch(apiUrl, {
         method: "POST",
         body: formData,
       });
-      const data: AnalysisResponse = await res.json();
 
-      // 응답 데이터 로깅 (로컬 환경에서만)
-      if (isLocalhost) {
-        console.log("Response:", data);
+      // 응답 로깅
+      console.log("[API Response]", {
+        status: res.status,
+        statusText: res.statusText,
+        headers: Object.fromEntries(res.headers.entries()),
+        server: res.headers.get("server"), // NGINX 서버 확인
+        timestamp: new Date().toISOString(),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({
+          status: "error",
+          message: res.statusText,
+          code: res.status,
+        }));
+
+        console.error("[API Error]", {
+          ...errorData,
+          status: res.status,
+          headers: Object.fromEntries(res.headers.entries()),
+          timestamp: new Date().toISOString(),
+        });
+
+        let errorMessage = "알 수 없는 오류가 발생했습니다.";
+
+        // NGINX 관련 오류 처리
+        if (res.status === 502) {
+          errorMessage = "서버가 일시적으로 응답하지 않습니다. (Bad Gateway)";
+        } else if (res.status === 504) {
+          errorMessage = "서버 응답 시간이 초과되었습니다. (Gateway Timeout)";
+        } else if (res.status === 413) {
+          errorMessage = "파일 크기가 너무 큽니다. (NGINX 제한)";
+        } else if (errorData.code === "INVALID_FILE_TYPE") {
+          errorMessage = "올바른 WAV 파일이 아닙니다.";
+        } else if (errorData.code === "PROCESSING_ERROR") {
+          errorMessage = `음성 분석 중 오류가 발생했습니다: ${errorData.detail}`;
+        } else if (errorData.code === "INTERNAL_SERVER_ERROR") {
+          errorMessage = `서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.\n상세: ${
+            errorData.error_details || errorData.detail
+          }`;
+        } else if (res.status === 403) {
+          errorMessage = "접근 권한이 없습니다.";
+        }
+
+        // CORS 오류 감지
+        if (
+          errorData.message?.includes("CORS") ||
+          !res.headers.get("access-control-allow-origin")
+        ) {
+          errorMessage =
+            "CORS 설정 오류가 발생했습니다. 관리자에게 문의해주세요.";
+          console.error("[CORS Error]", {
+            headers: Object.fromEntries(res.headers.entries()),
+            origin: window.location.origin,
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        setError(`${errorMessage}\n(상태 코드: ${res.status})`);
+        return;
       }
 
-      // 에러 처리
-      if (data.status === "error") {
-        throw new Error(data.message || "분석 중 오류가 발생했습니다.");
-      }
+      const data = await res.json();
+      console.log("[API Success]", {
+        ...data,
+        timestamp: new Date().toISOString(),
+      });
       setResponse(data);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      setError(
-        error instanceof Error
-          ? error.message
-          : "알 수 없는 오류가 발생했습니다."
-      );
-      setResponse(null);
+    } catch (err) {
+      console.error("[Request Error]", {
+        error: err,
+        browser: navigator.userAgent,
+        platform: navigator.platform,
+        isMobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent),
+        url: apiUrl,
+        timestamp: new Date().toISOString(),
+        networkInfo: {
+          type: (navigator as any).connection?.type,
+          effectiveType: (navigator as any).connection?.effectiveType,
+          downlink: (navigator as any).connection?.downlink,
+        },
+      });
+
+      if (err instanceof TypeError && err.message === "Failed to fetch") {
+        setError("서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.");
+      } else {
+        setError(
+          `요청 처리 중 오류가 발생했습니다: ${
+            err instanceof Error ? err.message : String(err)
+          }`
+        );
+      }
     } finally {
       setLoading(false);
     }
