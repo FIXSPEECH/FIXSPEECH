@@ -1,17 +1,21 @@
 package com.fixspeech.spring_server.domain.announcer.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.fixspeech.spring_server.domain.announcer.dto.AnnouncerResponseDto;
-import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResultDto;
+import com.fixspeech.spring_server.config.s3.S3Service;
+import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
+import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
+import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResponseDto;
 import com.fixspeech.spring_server.domain.announcer.service.AnnouncerService;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
@@ -30,19 +34,50 @@ public class AnnouncerController {
 
 	private final UserService userService;
 	private final AnnouncerService announcerService;
+	private final S3Service s3Service;
+
+	@GetMapping("test")
+	public ApiResponse<?> getTest() {
+		return ApiResponse.createSuccess(announcerService.getAllAnnouncerData(), "테스트 확인");
+	}
 
 	/**
 	 * 아나운서 음성 데이터 전체 조회
 	 * @return announcerResponseDtos
 	 */
 	@GetMapping
-	public ApiResponse<?> getAllAnnouncerData() {
+	public ApiResponse<?> getAllAnnouncerData(@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+		@RequestParam(required = false, defaultValue = "createdAt", value = "criteria") String criteria) {
 		try {
-			List<AnnouncerResponseDto> announcerResponseDtos = announcerService.getAllAnnouncerData();
-			return ApiResponse.createSuccess(announcerResponseDtos, "모든 아나운서 데이터 출력");
+			Page<AnnouncerVoiceSampleResponseDto> announcerResponse = announcerService.getAllAnnouncerData(pageNo, criteria);
+			log.info("announcerResponseDtos: {}",announcerResponse);
+			return ApiResponse.createSuccess(announcerResponse, "모든 아나운서 데이터 출력");
 		} catch (Exception e) {
 			return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
 		}
+	}
+
+	/**
+	 * 아나운서 따라잡기 사용자 음성 저장
+	 *
+	 * @param userDetails 사용자 정보
+	 * @param file 사용자 음성 파일
+	 * @param compareResultRequestDto 비교 결과
+	 * @return 저장된 정보의 PK
+	 */
+	@PostMapping("compare/record")
+	public ApiResponse<?> saveComparisonResult(@AuthenticationPrincipal UserDetails userDetails,
+		@RequestPart(value = "record", required = false) MultipartFile file,
+		@RequestPart(value = "data") CompareResultRequestDto compareResultRequestDto) {
+			try {
+				Users users = userService.findByEmail(userDetails.getUsername())
+						.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+				String recordAddress = s3Service.upload(file, "compare");
+				Long compareId = announcerService.saveComparisonResult(compareResultRequestDto, recordAddress, users.getId());
+				return ApiResponse.createSuccess(compareId, "비교 결과 저장 완료");
+			} catch (Exception e) {
+				throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
+			}
 	}
 
 	/**
@@ -52,7 +87,7 @@ public class AnnouncerController {
 	 */
 	@GetMapping("compare/{id}")
 	public ApiResponse<?> getOneUserToAnnouncerVoiceComparison(@PathVariable Long id) {
-		UserAnnouncerVoiceComparisonResultDto userAnnouncerVoiceComparisonResultDto = announcerService.getOneUserToAnnouncerVoiceComparison(id);
+		UserAnnouncerVoiceComparisonResponseDto userAnnouncerVoiceComparisonResultDto = announcerService.getOneUserToAnnouncerVoiceComparison(id);
 		return ApiResponse.createSuccess(userAnnouncerVoiceComparisonResultDto,"사용자와 아나운서 음성 비교 데이터 출력 성공");
 	}
 
