@@ -4,6 +4,7 @@ public record VoiceAnalysisMessage(
 	String redisKey,
 	Long scriptId,
 	String originalFilename,
-	Long userId
+	Long userId,
+	String gender
 ) {
 }
