@@ -10,17 +10,16 @@ import FinishModal from '../PracticePronounce/FinishModal'
 
 interface PronounceExampleProps {
     color: string; // color prop의 타입 정의
-    trainingId: number;
     size: number;
   }
 
-function AnnouncerExample() {
+function AnnouncerExample({color, size}: PronounceExampleProps) {
 
     const {audioURL, isRecording, setIsRecording, setAudioURL} = useVoiceStore();
     const {isNumber, setIsNumber,  setIsNumberZero, setIsNumberMinus} = usePronounceScoreStore();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
-    const [example, setExample] = useState<string>("")
+    const [example, setExample] = useState([])
     const [showModal, setShowModal] = useState<boolean>(false)
 
     const navigate = useNavigate();
@@ -78,7 +77,7 @@ function AnnouncerExample() {
     return (
         <>
         <div className="flex justify-center items-center w-screen">
-         <div>
+         <div style={{ width: `${size}rem`, height: `${size}rem`}}>
             {!isRecording && audioURL && (
             <div>
             <audio ref={audioRef} src={audioURL} 
@@ -86,7 +85,7 @@ function AnnouncerExample() {
             /> 
             <VolumeDownIcon 
             onClick={handlePlayAudio} 
-            style={{ cursor: 'pointer'}}
+            style={{ cursor: 'pointer', color, fontSize: `${size}rem` }}
             className="mb-6" 
             />
             </div>
@@ -94,7 +93,8 @@ function AnnouncerExample() {
            </div>
 
             <div className="text-[#FF8C82] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
-            {example}
+           
+            {/* {example.length > 0 ? example[0].text : 'Loading...'} */}
             </div>
             </div>
 

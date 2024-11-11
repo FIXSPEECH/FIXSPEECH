@@ -39,7 +39,9 @@ function AnnouncerPractice() {
       종료하기</Button>
     <div className="min-h-[70vh] flex justify-center">
     <div className="flex flex-col justify-center align-middle">
-      <AnnouncerExample/>
+      <AnnouncerExample   
+          color={"#FF8C82"}
+          size={3}/>
       <Recorder color={"#D5C6F5"} barColor={"rgb(177,140,254)"} width={300} height={75} visualizeWidth="300px" modalType="record"/>
     </div>
     </div>

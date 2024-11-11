@@ -22,6 +22,7 @@ import MyVoice from "./pages/MyVoicePage";
 import ErrorPage from "./pages/ErrorPage";
 import GameRanking from "./pages/Game/GameRanking";
 import FastApiTestPage from "./pages/FastApiTestPage";
+import SelectResult from "./pages/SituationPractice/SelectResultPage";
 // 레이아웃 컴포넌트 생성
 const Layout = () => {
   return (
@@ -91,6 +92,10 @@ const router = createBrowserRouter([
           {
             path: "/situation/select",
             element: <SelectScript />,
+          },
+          {
+            path: "/situation/result",
+            element: <SelectResult />,
           },
           {
             path: "/situation/practice/:scriptId",

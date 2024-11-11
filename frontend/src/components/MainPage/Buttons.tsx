@@ -49,7 +49,7 @@ function Buttons() {
     },
     {
       color: "#37AFE1",
-      label: "내 목소리 분석",
+      label: "내 목소리 분석 결과 확인",
       imageSrc: find,
       url: "/analysis",
       imgMargin: 50,
