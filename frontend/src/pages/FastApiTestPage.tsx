@@ -193,6 +193,18 @@ const FastApiTestPage = () => {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">음성 분석</h1>
 
+        {/* 예시 문장 섹션 추가 */}
+        <div className="mb-6 p-4 bg-gray-800/30 backdrop-blur-sm rounded-lg border border-gray-700/50">
+          <h2 className="text-lg font-semibold mb-2">📢 예시 문장</h2>
+          <p className="text-gray-300">
+            "안녕하세요. 오늘은 날씨가 정말 좋네요. 이런 날에는 산책하기가 참
+            좋습니다."
+          </p>
+          <p className="text-sm text-gray-400 mt-2">
+            ℹ️ 위 문장을 편안한 목소리로 읽어서 녹음해주세요.
+          </p>
+        </div>
+
         {/* 파일 입력과 녹음 버튼 섹션 */}
         <div className="mb-8 space-y-4">
           <div className="flex gap-4 items-center">
