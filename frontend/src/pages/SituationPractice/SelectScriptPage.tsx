@@ -5,10 +5,14 @@ import  {DeleteIcon}  from "../../Icons/DeleteIcon";
 import { ScriptDelte } from "../../services/SituationPractice/SituationPracticePost";
 import Swal from 'sweetalert2';
 import '../../styles/SituationPractice/SwalStyles.css'
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 
 function SelectScript() {
   const [scripts, setScripts] = useState<any>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1); // 현재 페이지
+  const [scriptsPerPage] = useState<number>(5); // 페이지당 스크립트 수
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,6 +29,17 @@ function SelectScript() {
     getScript();
 
   }, [])
+
+    // 현재 페이지에 해당하는 스크립트 목록 계산
+    const indexOfLastScript = currentPage * scriptsPerPage;
+    const indexOfFirstScript = indexOfLastScript - scriptsPerPage;
+    const currentScripts = scripts.slice(indexOfFirstScript, indexOfLastScript);
+  
+    // 페이지 변경 시 호출되는 함수
+    const paginate = (event: React.ChangeEvent<unknown>, value: number) => {
+      setCurrentPage(value);
+    };
+
 
   const handleClick =(scriptId: number) =>{
     navigate(`/situation/practice/${scriptId}`)
@@ -65,6 +80,7 @@ function SelectScript() {
     });
 
   }
+
   
 
   return (
@@ -73,7 +89,7 @@ function SelectScript() {
         저장된 대본 목록
       </div>
       <div className="space-y-3">
-        {scripts.map((script: any) => (
+        {currentScripts.map((script: any) => (
           <div
             key={script.id}
             className="p-5 rounded-lg border border-[#FFAB01] hover:border-2 cursor-pointer transition-all"
@@ -86,11 +102,36 @@ function SelectScript() {
                 <DeleteIcon onClick={() => handleDelete(script.scriptId)}/>
               </div>
             </div>
-
           </div>
         ))}
       </div>
-      {/* 선택 후에는 연습 페이지로 이동 */}
+      <Stack spacing={2}
+          sx={{display: 'flex',
+            justifyContent: 'center',
+            width: 'fit-content', // Stack 너비를 내용에 맞게 설정
+            margin: '0 auto', // Stack을 가로 중앙으로 정렬
+            marginTop: '2%', // 위쪽 여백
+            }}>
+        <Pagination
+          count={Math.ceil(scripts.length / scriptsPerPage)} // 전체 페이지 수
+          page={currentPage} // 현재 페이지
+          onChange={paginate} // 페이지 변경 시 호출될 함수
+          shape="rounded"
+          size="large"
+          sx={{
+            "& .MuiPaginationItem-root": {
+              color: "#FFAB01", // 페이지 아이템 글자 색
+            },
+            "& .MuiPaginationItem-ellipsis": {
+              color: "#FFAB01", // Ellipsis(…) 아이템 글자 색
+            },
+            "& .MuiPaginationItem-root.Mui-selected": {
+              backgroundColor: "#FFAB01", // 선택된 페이지의 배경 색
+              color: "white", // 선택된 페이지의 글자 색
+            },
+          }}
+        />
+      </Stack>
     </div>
   );
 }
