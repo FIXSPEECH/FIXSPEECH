@@ -36,7 +36,7 @@ function SelectScript() {
     const currentScripts = scripts.slice(indexOfFirstScript, indexOfLastScript);
   
     // 페이지 변경 시 호출되는 함수
-    const paginate = (event: React.ChangeEvent<unknown>, value: number) => {
+    const paginate = (_: React.ChangeEvent<unknown>, value: number) => {
       setCurrentPage(value);
     };
 
