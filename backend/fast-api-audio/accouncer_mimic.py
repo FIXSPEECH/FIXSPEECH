@@ -126,23 +126,23 @@ async def announcer_mimic(user_file: UploadFile, announcer_file: UploadFile, dow
         # 정규화된 데이터로 유사도 계산 (DTW를 이용한 거리 계산)
         try:
             distance, path = fastdtw(user_f0_norm, announcer_f0_norm, dist=2)
-            similarity_percentage = 100 * (1 - min(distance / max(len(user_f0_norm), len(announcer_f0_norm)), 1))
+            similarity_percentage = round(100 * (1 - min(distance / max(len(user_f0_norm), len(announcer_f0_norm)), 1)), 2)
             logger.info(f"Calculated DTW distance: {distance}, similarity: {similarity_percentage}%")
         except Exception as e:
             logger.error(f"Error in DTW calculation: {e}")
             raise HTTPException(status_code=500, detail="Error in DTW calculation")
 
         # response로 보낼 raw 데이터 다운샘플링 처리 (0 제외 후)
-        user_f0_downsampled = user_f0_raw[user_f0_raw > 0][::downsample_factor]
-        announcer_f0_downsampled = announcer_f0_raw[announcer_f0_raw > 0][::downsample_factor]
+        user_f0_downsampled = [round(val, 2) for val in user_f0_raw[user_f0_raw > 0][::downsample_factor]]
+        announcer_f0_downsampled = [round(val, 2) for val in announcer_f0_raw[announcer_f0_raw > 0][::downsample_factor]]
 
         return {
             "status": "success",
             "data": {
-                "f0_similarity_distance": distance,
+                "f0_similarity_distance": round(distance, 2),
                 "f0_similarity_percentage": similarity_percentage,
-                "user_f0_data": user_f0_downsampled.tolist(),
-                "announcer_f0_data": announcer_f0_downsampled.tolist(),
+                "user_f0_data": str(user_f0_downsampled),
+                "announcer_f0_data": str(announcer_f0_downsampled),
             }
         }
     except ValueError as e:
