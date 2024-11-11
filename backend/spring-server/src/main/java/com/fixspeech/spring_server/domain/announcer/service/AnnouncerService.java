@@ -5,15 +5,17 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
-import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
+import com.fixspeech.spring_server.domain.announcer.dto.response.SmallAnnouncerVoiceSampleResponseDto;
 import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResponseDto;
 
 public interface AnnouncerService {
 
-	List<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData();
+	SmallAnnouncerVoiceSampleResponseDto getOneAnnouncerData();
+
+	List<SmallAnnouncerVoiceSampleResponseDto> getAllAnnouncerData();
 
 	// 아나운서 음성 데이터 전체 조회
-	Page<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria);
+	Page<SmallAnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria);
 
 	// 사용자가 녹음한 아나운서 음성 분석 결과 전체 조회
 	Page<UserAnnouncerVoiceComparisonResponseDto> getAllUserToAnnouncerVoiceComparison(int pageNo, String criteria, Long userId);
