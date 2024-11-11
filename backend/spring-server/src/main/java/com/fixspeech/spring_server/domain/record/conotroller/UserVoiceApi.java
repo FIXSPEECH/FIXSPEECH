@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.domain.record.conotroller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +20,9 @@ public interface UserVoiceApi {
 		@ApiResponse(responseCode = "200", description = "분석 성공"),
 		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
 	})
-	com.fixspeech.spring_server.global.common.ApiResponse<?> analyze(MultipartFile file);
+	com.fixspeech.spring_server.global.common.ApiResponse<?> analyze(
+		@AuthenticationPrincipal UserDetails userDetails,
+		MultipartFile file);
 
 	@Operation(summary = "녹음 파일 및 분석 결과 저장 API", description = "사용자의 음성파일과 분석 결과를 저장하는 API")
 	@ApiResponses(value = {

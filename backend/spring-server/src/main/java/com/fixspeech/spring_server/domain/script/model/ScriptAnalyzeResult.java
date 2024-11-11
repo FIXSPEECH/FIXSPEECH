@@ -1,8 +1,11 @@
 package com.fixspeech.spring_server.domain.script.model;
 
+import java.util.Map;
+
 import com.fixspeech.spring_server.global.common.BaseTimeEntity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,9 +20,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
 @Table(name = "script_analyze_result")
 public class ScriptAnalyzeResult extends BaseTimeEntity {
 	@Id
@@ -30,34 +33,10 @@ public class ScriptAnalyzeResult extends BaseTimeEntity {
 	@JoinColumn(name = "script_id")
 	private Script script;
 
-	@Column(name = "file_address")
-	private String fileAddress;
+	@Column(name = "record_address")
+	String recordAddress;
 
-	@Column(name = "clarity")
-	private float clarity;
-
-	@Column(name = "intonation_pattern_consistency")
-	private float intonationPatternConsistency;
-
-	@Column(name = "melody_index")
-	private float melodyIndex;
-
-	@Column(name = "speech_rhythm")
-	private float speechRhythm;
-
-	@Column(name = "pause_timing")
-	private float pauseTiming;
-
-	@Column(name = "rate_variability")
-	private float rateVariability;
-
-	@Column(name = "jitter")
-	private float jitter;
-
-	@Column(name = "amr")
-	private float amr;
-
-	@Column(name = "utterance_energy")
-	private float utteranceEnergy;
-
+	@Convert(converter = JsonConverter.class)
+	@Column(name = "data", columnDefinition = "TEXT")
+	private Map<String, Object> data;
 }
