@@ -114,8 +114,62 @@ const FastApiTestPage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null); // 선택된 파일
   const userGender = useAuthStore((state) => state.userProfile?.gender); // 사용자 성별 정보
 
-  // 파일 선택 핸들러
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // 파일 시스템 권한 체크
+  const checkPermissions = async () => {
+    try {
+      // 마이크 권한 요청
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        try {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (e) {
+          console.error("Microphone permission denied:", e);
+          setError(
+            "마이크 접근 권한이 필요합니다. 브라우저 설정에서 권한을 허용해주세요."
+          );
+          return false;
+        }
+      }
+
+      // 파일 시스템 접근 권한 (모바일에서는 파일 선택 API 사용)
+      if ("showOpenFilePicker" in window) {
+        try {
+          const opts = {
+            types: [
+              {
+                description: "Audio Files",
+                accept: {
+                  "audio/wav": [".wav"],
+                },
+              },
+            ],
+            multiple: false,
+          };
+          await (window as any).showOpenFilePicker(opts);
+        } catch (e) {
+          // 사용자가 취소한 경우는 무시
+          if (e.name !== "AbortError") {
+            console.warn("File system access not available:", e);
+          }
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Permission check failed:", error);
+      setError(
+        "필요한 권한을 확인할 수 없습니다. 브라우저 설정을 확인해주세요."
+      );
+      return false;
+    }
+  };
+
+  // 파일 선택 핸들러 수정
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const hasPermissions = await checkPermissions();
+    if (!hasPermissions) return;
+
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
@@ -131,9 +185,12 @@ const FastApiTestPage = () => {
     setResponse(null);
   };
 
-  // 파일 제출 및 분석 요청 핸들러
+  // 파일 제출 및 분석 요청 핸들러 수정
   const handleSubmit = async () => {
     if (!selectedFile || !userGender) return;
+
+    const hasPermissions = await checkPermissions();
+    if (!hasPermissions) return;
 
     setLoading(true);
     setError(null);

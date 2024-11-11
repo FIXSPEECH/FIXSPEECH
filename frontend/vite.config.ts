@@ -60,13 +60,30 @@ export default defineConfig({
           {
             // FastAPI 요청 처리
             urlPattern: /^https?:\/\/.*\/fastapi\/.*/, // FastAPI 엔드포인트 패턴
-            handler: "NetworkFirst", // 네트워크 우선 전략 사용
+            handler: "NetworkOnly", // 캐싱 없이 항상 네트워크 요청
             options: {
-              cacheName: "fastapi-cache", // FastAPI 전용 캐시 저장소
-              networkTimeoutSeconds: 600, // 네트워크 타임아웃 시간 10분으로 설정
-              cacheableResponse: {
-                statuses: [0, 200], // 캐시할 HTTP 상태 코드
+              backgroundSync: {
+                name: "fastApiQueue",
+                options: {
+                  maxRetentionTime: 24 * 60, // 24시간 동안 재시도
+                },
               },
+              // 파일 업로드를 위한 설정
+              plugins: [
+                {
+                  requestWillFetch: async ({ request }) => {
+                    // multipart/form-data 요청은 캐시하지 않음
+                    if (
+                      request.headers
+                        .get("Content-Type")
+                        ?.includes("multipart/form-data")
+                    ) {
+                      return request;
+                    }
+                    return request;
+                  },
+                },
+              ],
             },
           },
         ],
