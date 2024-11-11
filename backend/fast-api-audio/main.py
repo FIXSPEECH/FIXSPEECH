@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from analyze_wav_file import analyze_audio, calculate_metrics_simple
-from accouncer_mimic import analyze_announcer_alone, announcer_mimic
+from accouncer_mimic import announcer_mimic
 import logging
 from dotenv import load_dotenv
 import os
@@ -300,77 +300,6 @@ async def mimic_announcer(user_file: UploadFile = File(..., description="사용�
         raise HTTPException(status_code=500, detail=str(e))
 
 # 아나운서 음성 분석
-
-
-@app.post("/analyze/announcer",
-          summary="아나운서 음성 분석",
-          description="아나운서 음성 분석해서 DB 저장하기 위한 일시적 엔드포인트.",
-          response_description={
-              200: {
-                  "description": "성공적으로 분석됨",
-                  "content": {
-                      "application/json": {
-                          "example": {
-                              "status": "success",
-                              "data": {
-                                  "announcer_f0_data": [{"time": 0.232, "F0": 232}, {"time": 0.464, "F0": 232}],
-                                  "metrics": {
-                                      "명료도(Clarity)": 20.27,
-                                      "억양 패턴 일관성 (Intonation Pattern Consistency)": 59.98,
-                                      "멜로디 지수(Melody Index)": -48.29,
-                                      "말의 리듬(Speech Rhythm)": 0.044,
-                                      "휴지 타이밍(Pause Timing)": 0.118,
-                                      "속도 변동성(Rate Variability)": 88.30,
-                                      "성대 떨림(Jitter)": 0.020,
-                                      "강도 변동성(AMR)": 0.005,
-                                      "발화의 에너지(Utterance Energy)": -23.55,
-                                  },
-                              }
-                          }
-                      }
-                  }
-              },
-              400: {
-                  "description": "잘못된 요청",
-                  "content": {
-                      "application/json": {
-                          "example": {
-                              "status": "error",
-                              "message": "Invalid file type",
-                              "code": "INVALID_FILE_TYPE"
-                          }
-                      }
-                  }
-              },
-              500: {
-                  "description": "서버 에러",
-                  "content": {
-                      "application/json": {
-                          "example": {
-                              "status": "error",
-                              "message": "Internal server error occurred",
-                              "code": "INTERNAL_SERVER_ERROR"
-                          }
-                      }
-                  }
-              }
-          }
-          )
-async def analyze_announcer(file: UploadFile = File(..., description="분석할 WAV 파일")):
-    validate_wav_file(file)
-    try:
-        f0_data = await analyze_announcer_alone(file)
-        f0_data = f0_data["data"]["announcer_f0_data"]
-        return {
-            "status": "success",
-            "data": {
-                "f0_data": f0_data
-            }
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        await file.close()
 
 
 @app.post("/analyze/practice",

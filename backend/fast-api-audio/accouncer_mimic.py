@@ -4,9 +4,7 @@ import librosa
 import numpy as np
 import tempfile
 import os
-import json
 from fastapi import UploadFile, HTTPException
-import analyze_wav_file
 import logging
 import noisereduce as nr
 
@@ -53,28 +51,6 @@ async def process_uploaded_audio(file: UploadFile):
         temp_file.flush()
         return temp_file.name
 
-
-async def analyze_announcer_alone(file: UploadFile):
-    """
-    아나운서 음성 단독 분석
-    """
-    file_path = await process_uploaded_audio(file)
-    try:
-        announcer_y, announcer_sr = load_and_denoise(file_path)
-        announcer_f0_data = extract_f0_and_prepare_data(announcer_y, announcer_sr)
-
-        return {
-            "status": "success",
-            "data": {
-                "announcer_f0_data": announcer_f0_data,
-            }
-        }
-    except Exception as e:
-        logger.error(f"Error in analyze_announcer_alone: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        if os.path.exists(file_path):
-            os.remove(file_path)
 
 
 def normalize_f0(f0_data):
