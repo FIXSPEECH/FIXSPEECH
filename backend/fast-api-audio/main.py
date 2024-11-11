@@ -25,7 +25,9 @@ app = FastAPI(
 )
 
 # CORS origins 설정
-origins = os.getenv('ALLOWED_ORIGINS', '').split(',')
+origins = [origin.strip() for origin in os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173').split(',') if origin.strip()]
+
+logger.info(f"Configured CORS origins: {origins}")  # 디버깅을 위한 로깅 추가
 
 # CORS 미들웨어 설정
 app.add_middleware(
@@ -186,7 +188,7 @@ async def general_exception_handler(request, exc):
                                     "value": -23.55,
                                     "grade": "excellent",
                                     "unit": "dB",
-                                    "reference": "남성: -24dB 이상, 여성: -23dB 이상이 최적",
+                                    "reference": "남성: -24dB 이상, 여��: -23dB 이상이 최적",
                                     "interpretation": "적절한 발화 에너지를 보입니다"
                                 }
                             },
