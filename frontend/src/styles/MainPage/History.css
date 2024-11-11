@@ -122,3 +122,16 @@
 .react-calendar-heatmap .color-scale-yellow-5 {
   fill: rgba(255, 171, 1, 1);
 }
+
+.react-calendar-heatmap {
+  user-select: none; /* 선택 비활성화 */
+  -webkit-user-select: none; /* Safari 지원 */
+  -moz-user-select: none; /* Firefox 지원 */
+  -ms-user-select: none; /* IE/Edge 지원 */
+}
+
+/* rect 요소의 outline도 제거 */
+.react-calendar-heatmap rect {
+  outline: none;
+  cursor: default;
+}
