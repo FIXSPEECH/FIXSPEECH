@@ -146,8 +146,7 @@ const FastApiTestPage = () => {
           };
           await (window as any).showOpenFilePicker(opts);
         } catch (e) {
-          // 사용자가 취소한 경우는 무시
-          if (e.name !== "AbortError") {
+          if (e instanceof Error && e.name !== "AbortError") {
             console.warn("File system access not available:", e);
           }
         }
