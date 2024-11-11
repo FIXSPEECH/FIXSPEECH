@@ -34,6 +34,7 @@ public class S3Service {
 	private String bucket;
 
 	private final String DIR_NAME = "record";
+	private final String COMPARE_DIR_NAME = "compare";
 
 	public String uploadBytes(byte[] bytes, String fileName, String contentType) {
 		String newFileName = buildFileName(fileName, "");
@@ -66,6 +67,23 @@ public class S3Service {
 		return uploadS3(multipartFile.getOriginalFilename(), uploadFile, extension);
 	}
 
+	/**
+	 * 커스텀 업로드
+	 * @param multipartFile 파일
+	 * @param dir 경로
+	 * @return uploadS3
+	 * @throws IOException
+	 */
+	public String upload(MultipartFile multipartFile, String dir) throws IOException {
+		String extension = multipartFile.getOriginalFilename()
+			.substring(multipartFile.getOriginalFilename().lastIndexOf("."));
+
+		File uploadFile = convert(multipartFile)
+			.orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
+		return uploadS3(multipartFile.getOriginalFilename(), uploadFile, extension, dir);
+	}
+
+
 	// 파일 이름을 고유하게 생성 (buildFileName 메서드 사용)
 	// S3에 파일 업로드 (putS3 메서드 사용)
 	// 업로드 후 로컬에서 임시로 생성된 파일을 삭제 (removeNewFile 메서드 사용)
@@ -76,6 +94,22 @@ public class S3Service {
 		return uploadImageUrl;
 	}
 
+	/**
+	 * 커스텀 S3 파일 업로드
+	 * @param fileName 파일 이름
+	 * @param uploadFile 업로드 파일
+	 * @param extend 확장자
+	 * @param dir 경로
+	 * @return S3 업로드 경로
+	 */
+	private String uploadS3(String fileName, File uploadFile, String extend, String dir) {
+		String newFileName = buildFileName(fileName, extend, dir);
+		String uploadImageUrl = putS3(uploadFile, newFileName);
+		removeNewFile(uploadFile);
+		return uploadImageUrl;
+	}
+
+
 	// 기능: 파일 이름에 고유한 UUID를 붙여 중복 방지
 	// 작동 방식: 파일 이름이 확장자(extend)로 끝나는 경우 그대로 두고, 그렇지 않으면 확장자를 추가
 	private String buildFileName(String fileName, String extend) {
@@ -85,6 +119,22 @@ public class S3Service {
 		}
 		return DIR_NAME + "/" + uuid + "_" + fileName + extend;
 	}
+
+	/**
+	 * Custom buildFileName
+	 * @param fileName 파일 이름
+	 * @param extend 확장자
+	 * @param dir 경로
+	 * @return buildFileName
+	 */
+	private String buildFileName(String fileName, String extend, String dir) {
+		String uuid = UUID.randomUUID().toString();
+		if (fileName.endsWith(extend)) {
+			return dir + "/" + uuid + "_" + fileName;
+		}
+		return dir + "/" + uuid + "_" + fileName + extend;
+	}
+	
 
 	// PutObjectRequest 객체를 사용해 파일을 S3 버킷에 업로드
 	// 업로드된 파일의 URL을 반환
