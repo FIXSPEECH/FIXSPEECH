@@ -89,10 +89,16 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 		return all.map(UserAnnouncerVoiceComparisonResponseDto::from);
 	}
 
+	/**
+	 * 아나운서 따라잡기 사용자 음성 분석 결과 db 저장
+	 *
+	 * @param compareResultRequestDto 비교 결과
+	 * @param recordAddress           주소
+	 * @param userId                  사용자 id
+	 * @return 저장된 정보의 PK
+	 */
 	@Override
-	public void saveComparisonResult(CompareResultRequestDto compareResultRequestDto, String recordAddress, Long userId) {
-		log.info("CompareResultRequestDto.toEntity(compareResultRequestDto, userId, recordAddress) = {}", CompareResultRequestDto.toEntity(compareResultRequestDto, userId, recordAddress));
-		userAnnouncerVoiceComparisonRepository.save(CompareResultRequestDto.toEntity(compareResultRequestDto, userId, recordAddress));
-//		log.info("save = {}", save);
+	public Long saveComparisonResult(CompareResultRequestDto compareResultRequestDto, String recordAddress, Long userId) {
+		return userAnnouncerVoiceComparisonRepository.save(CompareResultRequestDto.toEntity(compareResultRequestDto, userId, recordAddress)).getId();
 	}
 }

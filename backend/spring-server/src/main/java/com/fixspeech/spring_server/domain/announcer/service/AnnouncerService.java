@@ -22,7 +22,7 @@ public interface AnnouncerService {
 	UserAnnouncerVoiceComparisonResponseDto getOneUserToAnnouncerVoiceComparison(Long id);
 
 	// 유저 음성 녹음
-	void saveComparisonResult(CompareResultRequestDto compareResultRequestDto, String recordAddress, Long userId);
+	Long saveComparisonResult(CompareResultRequestDto compareResultRequestDto, String recordAddress, Long userId);
 	
 	// 사용자 음성와 아나운서 음성 분석 결과 저장
 }
