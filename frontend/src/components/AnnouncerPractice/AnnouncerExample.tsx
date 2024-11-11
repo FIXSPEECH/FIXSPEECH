@@ -21,6 +21,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
     const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
     const [example, setExample] = useState<string>('')
     const [showModal, setShowModal] = useState<boolean>(false)
+    const [announcerUrl, setAnnouncerUrl] = useState<string>('')
 
     const navigate = useNavigate();
 
@@ -44,6 +45,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
             const response = await AnnouncerExampleGet();
             console.log(response.data)
             setExample(response.data.text)
+            setAnnouncerUrl(response.data.sampleAddress)
         } catch(e) {
             console.log(e)
         }
@@ -79,9 +81,9 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
         <>
         <div className="flex justify-center items-center w-screen">
          <div style={{ width: `${size}rem`, height: `${size}rem`}}>
-            {!isRecording && audioURL && (
+            {announcerUrl && (
             <div>
-            <audio ref={audioRef} src={audioURL} 
+            <audio ref={audioRef} src={announcerUrl} 
                 onEnded={() => setIsPlaying(false)} // 오디오가 끝나면 상태를 다시 false로 설정
             /> 
             <VolumeDownIcon 
@@ -96,6 +98,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
             <div className="text-[#B18CFE] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
               {example}
             </div>
+            
             </div>
 
             {/* ArrowRight 컴포넌트 */}
