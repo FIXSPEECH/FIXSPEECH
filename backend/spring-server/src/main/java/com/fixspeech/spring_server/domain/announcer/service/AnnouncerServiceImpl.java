@@ -10,7 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
-import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
+import com.fixspeech.spring_server.domain.announcer.dto.response.SmallAnnouncerVoiceSampleResponseDto;
 import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResponseDto;
 import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
 import com.fixspeech.spring_server.domain.announcer.model.UserAnnouncerVoiceComparisonResult;
@@ -29,32 +29,55 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	private final UserAnnouncerVoiceComparisonRepository userAnnouncerVoiceComparisonRepository;
 
 	@Override
-	public List<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData() {
+	public List<SmallAnnouncerVoiceSampleResponseDto> getAllAnnouncerData() {
 		List<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findAll();
 		return announcerVoiceSamples.stream()
-				.map(AnnouncerVoiceSampleResponseDto::from)  // AnnouncerVoiceSample -> AnnouncerVoiceSampleResponseDto로 변환
+				.map(SmallAnnouncerVoiceSampleResponseDto::from)  // AnnouncerVoiceSample -> AnnouncerVoiceSampleResponseDto로 변환
 				.collect(Collectors.toList()); // 리스트로 수집
+	}
+
+	/**
+	 * 아나운서 음성, 대본 데이터 단일, 랜덤 조회
+	 * @return
+	 */
+	@Override
+	public SmallAnnouncerVoiceSampleResponseDto getOneAnnouncerData() {
+		// 전체 개수 탐색
+		Long cnt = announcerVoiceSampleRepository.count();
+
+		// 랜덤 인덱스 생성
+		long idx = (long)(Math.random() * cnt);
+		// 페이지 네이션을 위한 페이지 번호 계산
+		int page = (int)(idx / 1); // 한 페이지에 하나만 출력
+
+		PageRequest pageRequest = PageRequest.of(page, 1);
+		Page<AnnouncerVoiceSample> announcerPage = announcerVoiceSampleRepository.findAll(pageRequest);
+
+		if (announcerPage.hasContent()) {
+			AnnouncerVoiceSample announcerVoiceSample = announcerPage.getContent().get(0);
+			return SmallAnnouncerVoiceSampleResponseDto.from(announcerVoiceSample);
+		}
+		return null;
 	}
 
 
 	/**
-	 * 모든 아나운서 샘플 조회
-	 *
-	 * @return Page<AnnouncerVoiceSampleResponseDto>
+	 * 아나운서 음성 데이터 전체 조회
+	 * @param pageNo   현재 페이지
+	 * @param criteria 정렬 기준
+	 * @return Page<SmallAnnouncerVoiceSampleResponseDto>
 	 */
 	@Override
-	public Page<AnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria) {
+	public Page<SmallAnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria) {
 		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
 		Page<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findAll(pageable);
 
 		// AnnouncerVoiceSample -> AnnouncerVoiceSampleResponseDto로 변환하여 Page로 반환
-		Page<AnnouncerVoiceSampleResponseDto> announcerVoiceSampleResponseDtos = announcerVoiceSamples.map(AnnouncerVoiceSampleResponseDto::from);
-
+		Page<SmallAnnouncerVoiceSampleResponseDto> announcerVoiceSampleResponseDtos = announcerVoiceSamples.map(SmallAnnouncerVoiceSampleResponseDto::from);
 		if (announcerVoiceSampleResponseDtos.isEmpty()) {
 			log.info("없음");
 		}
 		log.info("pageEnd");
-
 		return announcerVoiceSampleResponseDtos;
 	}
 
