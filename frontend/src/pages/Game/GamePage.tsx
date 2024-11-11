@@ -214,8 +214,7 @@ export default function Game() {
 
           {isGameOver && (
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <h1 className="text-8xl font-bold text-colorFE6250 mb-4">GAME OVER</h1>
-
+              <h1 className="text-8xl font-bold text-colorFE6250 mb-4 text-center ">GAME OVER</h1>
               <div className="flex gap-4 mt-4 text-white">
                 <Button variant="text" onClick={() => (window.location.href = "/")}>
                   <p className="text-colorFE6250 font-bold">나가기</p>
