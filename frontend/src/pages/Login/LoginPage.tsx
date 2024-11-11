@@ -13,10 +13,13 @@ function Login() {
   };
 
   // 테스트 로그인 처리
-  const handleTestLogin = () => {
-    const testToken = import.meta.env.VITE_TEST_TOKEN;
+  const handleTestLogin = (gender: "male" | "female") => {
+    const testToken =
+      gender === "male"
+        ? import.meta.env.VITE_TEST_TOKEN_MALE
+        : import.meta.env.VITE_TEST_TOKEN_FEMALE;
 
-    setToken(testToken); // zustand가 자동으로 localStorage에 저장
+    setToken(testToken);
     navigate("/");
   };
 
@@ -30,10 +33,16 @@ function Login() {
           카카오 로그인
         </button>
         <button
-          onClick={handleTestLogin}
-          className="px-5 py-2.5 bg-gray-100 rounded cursor-pointer border-none"
+          onClick={() => handleTestLogin("male")}
+          className="neon-male-button"
         >
-          테스트 로그인
+          체험하기(남성)
+        </button>
+        <button
+          onClick={() => handleTestLogin("female")}
+          className="neon-female-button"
+        >
+          체험하기(여성)
         </button>
       </div>
     </div>

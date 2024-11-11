@@ -14,4 +14,28 @@
            hover:[text-shadow:none]
            active:scale-95;
   }
+
+  .neon-male-button {
+    @apply px-5 py-2.5 text-base font-bold text-black bg-transparent 
+           border-2 border-[#00BFFF] rounded-lg cursor-pointer 
+           relative overflow-hidden uppercase
+           shadow-[0_0_10px_#00BFFF,0_0_20px_#00BFFF,inset_0_0_10px_#00BFFF]
+           transition-all duration-300 ease-in-out
+           [text-shadow:-1px_-1px_0_#00BFFF,1px_-1px_0_#00BFFF,-1px_1px_0_#00BFFF,1px_1px_0_#00BFFF,0_0_10px_#00BFFF]
+           hover:bg-[#00BFFF] hover:text-white hover:shadow-[0_0_20px_#00BFFF,0_0_30px_#00BFFF] 
+           hover:[text-shadow:none]
+           active:scale-95;
+  }
+
+  .neon-female-button {
+    @apply px-5 py-2.5 text-base font-bold text-black bg-transparent 
+           border-2 border-[#FF69B4] rounded-lg cursor-pointer 
+           relative overflow-hidden uppercase
+           shadow-[0_0_10px_#FF69B4,0_0_20px_#FF69B4,inset_0_0_10px_#FF69B4]
+           transition-all duration-300 ease-in-out
+           [text-shadow:-1px_-1px_0_#FF69B4,1px_-1px_0_#FF69B4,-1px_1px_0_#FF69B4,1px_1px_0_#FF69B4,0_0_10px_#FF69B4]
+           hover:bg-[#FF69B4] hover:text-white hover:shadow-[0_0_20px_#FF69B4,0_0_30px_#FF69B4] 
+           hover:[text-shadow:none]
+           active:scale-95;
+  }
 }
