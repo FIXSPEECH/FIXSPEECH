@@ -1,0 +1,16 @@
+.swal2-confirm-btn, .swal2-deny-btn {
+    background-color: transparent !important; /* 배경 투명 */
+    border: none !important; /* 테두리 제거 */
+    color: #FFAB01 !important; /* 글자색 변경 */
+    font-weight: bold; /* 텍스트 굵기 조정 */
+  }
+  
+  .swal2-confirm-btn:hover, .swal2-deny-btn:hover {
+    color: #FFAB01 !important; /* 버튼 호버 시 글자색 */
+  }
+  
+
+/* 버튼 간격 조절 */
+.swal2-actions {
+    gap: 15px; /* 삭제 버튼과 취소 버튼 사이의 간격 조절 */
+  }
