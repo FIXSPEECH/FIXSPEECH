@@ -92,15 +92,15 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
             )}
            </div>
 
-            <div className="text-[#FF8C82] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
-           
+            <div className="text-[#B18CFE] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
+              내가 그린 그림은 기린 그림
             {/* {example.length > 0 ? example[0].text : 'Loading...'} */}
             </div>
             </div>
 
             {/* ArrowRight 컴포넌트 */}
             <div className="ml-auto mr-10 flex">
-            <ArrowRight  onClick={getExample}/>
+            <ArrowRight  onClick={getExample} color='#B18CFE'/>
             </div>     
 
             {/* isNumber가 11일 때 FinishModal이 자동으로 표시 */}

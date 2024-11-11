@@ -100,7 +100,7 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
 
             {/* ArrowRight 컴포넌트 */}
             <div className="ml-auto mr-10 flex">
-            <ArrowRight  onClick={getExample}/>
+            <ArrowRight  onClick={getExample} color='#FF8C82'/>
             </div>     
 
             {/* isNumber가 11일 때 FinishModal이 자동으로 표시 */}
