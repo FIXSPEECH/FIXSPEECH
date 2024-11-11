@@ -1,13 +1,12 @@
 package com.fixspeech.spring_server.domain.record.dto;
 
-import java.time.LocalDateTime;
-
-import com.fixspeech.spring_server.domain.record.model.AnalyzeResult;
+import java.time.LocalDate;
+import java.util.Map;
 
 public record UserVoiceListResponseDto(
-	AnalyzeResult analyzeResult,
+	Map<String, Object> analyzeResult,
 	String title,
-	String address,
-	LocalDateTime createdAt
+	String recordAddress,
+	LocalDate createdAt
 ) {
 }

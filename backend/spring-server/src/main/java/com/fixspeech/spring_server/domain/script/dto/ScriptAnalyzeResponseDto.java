@@ -1,14 +1,13 @@
-package com.fixspeech.spring_server.domain.record.dto;
+package com.fixspeech.spring_server.domain.script.dto;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import com.fixspeech.spring_server.domain.script.dto.ScriptAnalyzeResponseDto;
-
-public record AnalyzeResponseDto(
+public record ScriptAnalyzeResponseDto(
 	Long userId,
-	Map<String, ScriptAnalyzeResponseDto.MetricDetail> metrics,
+	Long scriptId,
+	Map<String, MetricDetail> metrics,
 	int overallScore,
 	List<String> recommendations,
 	LocalDate createdAt
@@ -29,15 +28,15 @@ public record AnalyzeResponseDto(
 		try {
 			Map<String, Object> data = (Map<String, Object>)rawData.get("data");
 			Map<String, Object> metricsContainer = (Map<String, Object>)data.get("metrics");
-			Map<String, Object> rawMetrics = (Map<String, Object>)metricsContainer.get("metrics");
 
 			// Transform raw metrics into structured MetricDetail objects
-			Map<String, ScriptAnalyzeResponseDto.MetricDetail> structuredMetrics = rawMetrics.entrySet().stream()
+			Map<String, MetricDetail> structuredMetrics = metricsContainer.entrySet().stream()
+				.filter(entry -> entry.getValue() instanceof Map)
 				.collect(java.util.stream.Collectors.toMap(
 					Map.Entry::getKey,
 					entry -> {
 						Map<String, Object> metricData = (Map<String, Object>)entry.getValue();
-						return new ScriptAnalyzeResponseDto.MetricDetail(
+						return new MetricDetail(
 							(String)metricData.get("unit"),
 							(String)metricData.get("grade"),
 							((Number)metricData.get("value")).doubleValue(),
@@ -51,8 +50,8 @@ public record AnalyzeResponseDto(
 				userId,
 				scriptId,
 				structuredMetrics,
-				((Number)metricsContainer.get("overall_score")).intValue(),
-				(List<String>)metricsContainer.get("recommendations"),
+				((Number)data.get("overall_score")).intValue(),
+				(List<String>)data.get("recommendations"),
 				createdAt
 			);
 		} catch (Exception e) {
@@ -60,4 +59,3 @@ public record AnalyzeResponseDto(
 		}
 	}
 }
-

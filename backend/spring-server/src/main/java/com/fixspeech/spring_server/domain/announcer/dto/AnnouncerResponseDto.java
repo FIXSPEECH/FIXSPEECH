@@ -1,8 +1,10 @@
 package com.fixspeech.spring_server.domain.announcer.dto;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
 
 import lombok.AllArgsConstructor;
@@ -18,15 +20,15 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AnnouncerResponseDto {
 	private String sampleAddress;
-	private float clarity;
-	private float intonationPatternConsistency;
-	private float melodyIndex;
-	private float speechRhythm;
-	private float pauseTiming;
-	private float rateVariability;
-	private float jitter;
-	private float amr;
-	private float utteranceEnergy;
+	private Object clarity;
+	private Object intonationPatternConsistency;
+	private Object melodyIndex;
+	private Object speechRhythm;
+	private Object pauseTiming;
+	private Object rateVariability;
+	private Object jitter;
+	private Object amr;
+	private Object utteranceEnergy;
 
 	public static AnnouncerResponseDto from(AnnouncerVoiceSample announcer) {
 		return AnnouncerResponseDto.builder()

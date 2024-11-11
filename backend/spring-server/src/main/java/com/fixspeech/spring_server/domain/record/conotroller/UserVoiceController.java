@@ -25,7 +25,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.config.s3.S3Service;
-import com.fixspeech.spring_server.domain.record.dto.AnalyzeResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
 import com.fixspeech.spring_server.domain.record.service.UserVoiceService;
@@ -47,11 +46,15 @@ public class UserVoiceController implements UserVoiceApi {
 
 	@PostMapping
 	public ApiResponse<?> analyze(
+		@AuthenticationPrincipal UserDetails userDetails,
 		@RequestPart(value = "record", required = false) MultipartFile file
 	) {
 		try {
+			Users users = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 			body.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
+			body.add("gender", users.getGender());
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
@@ -64,11 +67,7 @@ public class UserVoiceController implements UserVoiceApi {
 				requestEntity,
 				Map.class
 			);
-			Map<String, Object> responseData = response.getBody();
-			AnalyzeResponseDto analyzeResponseDto = userVoiceService.preProcessing(responseData);
-			assert responseData != null;
-			responseData.put("analyzeResponseDto", analyzeResponseDto);
-			return ApiResponse.createSuccess(responseData, "사용자 녹음 파일 분석 성공");
+			return ApiResponse.createSuccess(response.getBody(), "사용자 녹음 파일 분석 성공");
 
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
@@ -85,7 +84,7 @@ public class UserVoiceController implements UserVoiceApi {
 			Users users = userService.findByEmail(userDetails.getUsername())
 				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 			String fileUrl = s3Service.upload(file);
-			Long recordId = userVoiceService.saveImage(userVoiceRequestDto, fileUrl, users.getId());
+			Long recordId = userVoiceService.saveFile(userVoiceRequestDto, fileUrl, users.getId());
 			System.out.println("controller: " + fileUrl);
 
 			userVoiceService.saveResult(userVoiceRequestDto, users.getId(), recordId);
@@ -114,7 +113,7 @@ public class UserVoiceController implements UserVoiceApi {
 	}
 
 	//음성 분석 단일 조회
-	@GetMapping("{resultId}")
+	@GetMapping("/{resultId}")
 	public ApiResponse<?> getUserRecordDetail(
 		@PathVariable Long resultId
 	) {

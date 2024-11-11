@@ -118,7 +118,7 @@ const router = createBrowserRouter([
             element: <MyVoice />,
           },
           {
-            path: "/fastapi",
+            path: "/audiotest",
             element: <FastApiTestPage />,
           },
         ],

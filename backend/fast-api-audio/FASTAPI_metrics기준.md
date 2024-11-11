@@ -115,9 +115,9 @@
 ### 2.1 개별 메트릭 점수
 
 - Excellent: 100점
-- Good: 80점
-- Poor: 60점
-- Unknown: 50점
+- Good: 30점
+- Poor: -20점
+- Unknown: 0점
 
 ### 2.2 종합 점수 계산
 
