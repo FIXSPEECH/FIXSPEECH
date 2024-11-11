@@ -8,7 +8,6 @@ import os
 import logging
 import json
 import time
-from pydub import AudioSegment
 import io
 
 
@@ -163,7 +162,7 @@ def calculate_combined_rate_variability(times, voiced_flag, f0, spectral_slope):
     rate_variability = (voiced_variability_f0 * 0.5 + voiced_variability_slope * 0.1 + unvoiced_variability * 0.4)
     return rate_variability
 
-def evaluate_metric(metric_name, value, gender):
+def evaluate_metric(value: float, gender: str, metric_name: str) -> dict:
     """
     각 메트릭의 값을 평가하여 등급과 해석을 반환
     """
@@ -172,177 +171,157 @@ def evaluate_metric(metric_name, value, gender):
             "male": {
                 "excellent": lambda x: x > 15,
                 "good": lambda x: 13 <= x <= 15,
-                "poor": lambda x: x < 13,
-                "unit": "dB",
-                "reference": "13~15dB가 적정 범위"
+                "reference": "남성: 15dB 이상이 최적",
+                "unit": "dB"
             },
             "female": {
                 "excellent": lambda x: x > 16,
                 "good": lambda x: 14 <= x <= 16,
-                "poor": lambda x: x < 14,
-                "unit": "dB",
-                "reference": "14~16dB가 적정 범위"
+                "reference": "여성: 16dB 이상이 최적",
+                "unit": "dB"
             }
         },
         "억양 패턴 일관성 (Intonation Pattern Consistency)": {
             "male": {
                 "excellent": lambda x: 15 <= x <= 30,
-                "good": lambda x: 10 <= x <= 15,
-                "poor": lambda x: x < 10 or x > 30,
-                "unit": "Hz",
-                "reference": "15~30Hz가 적정 범위"
+                "good": lambda x: 10 <= x < 15,
+                "reference": "남성: 15~30Hz가 적정 범위",
+                "unit": "Hz"
             },
             "female": {
                 "excellent": lambda x: 20 <= x <= 35,
-                "good": lambda x: 15 <= x <= 20,
-                "poor": lambda x: x < 15 or x > 35,
-                "unit": "Hz",
-                "reference": "20~35Hz가 적정 범위"
+                "good": lambda x: 15 <= x < 20,
+                "reference": "여성: 20~35Hz가 적정 범위",
+                "unit": "Hz"
             }
         },
         "멜로디 지수(Melody Index)": {
             "male": {
                 "excellent": lambda x: x > -40,
                 "good": lambda x: -50 <= x <= -40,
-                "poor": lambda x: x < -50,
-                "unit": "MFCC",
-                "reference": "-40 이상이 최적"
+                "reference": "남성: -40 이상이 최적",
+                "unit": "MFCC"
             },
             "female": {
                 "excellent": lambda x: x > -35,
                 "good": lambda x: -45 <= x <= -35,
-                "poor": lambda x: x < -45,
-                "unit": "MFCC",
-                "reference": "-35 이상이 최적"
+                "reference": "여성: -35 이상이 최적",
+                "unit": "MFCC"
             }
         },
         "말의 리듬(Speech Rhythm)": {
             "male": {
                 "excellent": lambda x: 0.06 <= x <= 0.1,
                 "good": lambda x: 0.05 <= x < 0.06 or 0.1 < x <= 0.11,
-                "poor": lambda x: x < 0.05 or x > 0.11,
-                "unit": "초",
-                "reference": "0.06~0.1초가 적정 범위"
+                "reference": "남성: 0.06~0.1초가 적정 범위",
+                "unit": "초"
             },
             "female": {
                 "excellent": lambda x: 0.05 <= x <= 0.09,
                 "good": lambda x: 0.04 <= x < 0.05 or 0.09 < x <= 0.1,
-                "poor": lambda x: x < 0.04 or x > 0.1,
-                "unit": "초",
-                "reference": "0.05~0.09초가 적정 범위"
+                "reference": "여성: 0.05~0.09초가 적정 범위",
+                "unit": "초"
             }
         },
         "휴지 타이밍(Pause Timing)": {
             "male": {
                 "excellent": lambda x: 0.09 <= x <= 0.13,
                 "good": lambda x: 0.08 <= x < 0.09 or 0.13 < x <= 0.14,
-                "poor": lambda x: x < 0.08 or x > 0.14,
-                "unit": "초",
-                "reference": "0.09~0.13초가 적정 범위"
+                "reference": "남성: 0.09~0.13초가 적정 범위",
+                "unit": "초"
             },
             "female": {
                 "excellent": lambda x: 0.08 <= x <= 0.12,
                 "good": lambda x: 0.07 <= x < 0.08 or 0.12 < x <= 0.13,
-                "poor": lambda x: x < 0.07 or x > 0.13,
-                "unit": "초",
-                "reference": "0.08~0.12초가 적정 범위"
+                "reference": "여성: 0.08~0.12초가 적정 범위",
+                "unit": "초"
             }
         },
         "속도 변동성(Rate Variability)": {
             "male": {
                 "excellent": lambda x: 60 <= x <= 75,
                 "good": lambda x: 75 < x <= 85,
-                "poor": lambda x: x < 60 or x > 85,
-                "unit": "Hz",
-                "reference": "60~75Hz가 적정 범위"
+                "reference": "남성: 60~75Hz가 적정 범위",
+                "unit": "Hz"
             },
             "female": {
                 "excellent": lambda x: 65 <= x <= 80,
                 "good": lambda x: 80 < x <= 90,
-                "poor": lambda x: x < 65 or x > 90,
-                "unit": "Hz",
-                "reference": "65~80Hz가 적정 범위"
+                "reference": "여성: 65~80Hz가 적정 범위",
+                "unit": "Hz"
             }
         },
         "성대 떨림(Jitter)": {
             "male": {
                 "excellent": lambda x: x <= 0.03,
                 "good": lambda x: 0.03 < x <= 0.05,
-                "poor": lambda x: x > 0.05,
-                "unit": "비율",
-                "reference": "3% 이하가 최적"
+                "reference": "남성: 0.03 이하가 최적",
+                "unit": "비율"
             },
             "female": {
                 "excellent": lambda x: x <= 0.02,
                 "good": lambda x: 0.02 < x <= 0.04,
-                "poor": lambda x: x > 0.04,
-                "unit": "비율",
-                "reference": "2% 이하가 최적"
+                "reference": "여성: 0.02 이하가 최적",
+                "unit": "비율"
             }
         },
         "강도 변동성(AMR)": {
             "male": {
                 "excellent": lambda x: 0.004 <= x <= 0.007,
                 "good": lambda x: 0.003 <= x < 0.004 or 0.007 < x <= 0.008,
-                "poor": lambda x: x < 0.003 or x > 0.008,
-                "unit": "비율",
-                "reference": "0.004~0.007이 적정 범위"
+                "reference": "남성: 0.004~0.007이 적정 범위",
+                "unit": "비율"
             },
             "female": {
                 "excellent": lambda x: 0.003 <= x <= 0.006,
                 "good": lambda x: 0.002 <= x < 0.003 or 0.006 < x <= 0.007,
-                "poor": lambda x: x < 0.002 or x > 0.007,
-                "unit": "비율",
-                "reference": "0.003~0.006이 적정 범위"
+                "reference": "여성: 0.003~0.006이 적정 범위",
+                "unit": "비율"
             }
         },
         "발화의 에너지(Utterance Energy)": {
             "male": {
                 "excellent": lambda x: x >= -24,
                 "good": lambda x: -26 <= x < -24,
-                "poor": lambda x: x < -26,
-                "unit": "dB",
-                "reference": "-24dB 이상이 최적"
+                "reference": "남성: -24dB 이상이 최적",
+                "unit": "dB"
             },
             "female": {
                 "excellent": lambda x: x >= -23,
                 "good": lambda x: -25 <= x < -23,
-                "poor": lambda x: x < -25,
-                "unit": "dB",
-                "reference": "-23dB 이상이 최적"
+                "reference": "여성: -23dB 이상이 최적",
+                "unit": "dB"
             }
         }
     }
-    
-    if metric_name not in criteria:
+
+    metric_criteria = criteria.get(metric_name, {}).get(gender.lower(), {})
+    if not metric_criteria:
         return {
             "value": value,
             "grade": "unknown",
             "unit": "unknown",
             "reference": "기준 없음",
-            "interpretation": "평가 기준이 정의되지 않은 메트릭입니다"
+            "interpretation": "평가 불가"
         }
 
-    metric_criteria = criteria[metric_name][gender]
-    
-    grade = "poor"
+    # 등급 평가
     if metric_criteria["excellent"](value):
         grade = "excellent"
+        interpretation = "매우 우수한 수준입니다"
     elif metric_criteria["good"](value):
         grade = "good"
-
-    interpretations = {
-        "excellent": "매우 우수한 수준입니다",
-        "good": "양호한 수준입니다",
-        "poor": "개선이 필요한 수준입니다"
-    }
+        interpretation = "양호한 수준입니다"
+    else:
+        grade = "poor"
+        interpretation = "개선이 필요한 수준입니다"
 
     return {
-        "value": round(float(value), 3),
+        "value": value,
         "grade": grade,
         "unit": metric_criteria["unit"],
         "reference": metric_criteria["reference"],
-        "interpretation": interpretations[grade]
+        "interpretation": interpretation
     }
 
 def calculate_overall_score(metrics):
@@ -351,9 +330,9 @@ def calculate_overall_score(metrics):
     """
     grade_scores = {
         "excellent": 100,
-        "good": 80,
-        "poor": 60,
-        "unknown": 50
+        "good": 30,
+        "poor": -20,
+        "unknown": 0
     }
     
     total_score = 0
@@ -436,7 +415,7 @@ def calculate_metrics(file_path, gender=None):
     if gender:
         evaluated_metrics = {}
         for name, value in metrics.items():
-            evaluated_metrics[name] = evaluate_metric(name, value, gender)
+            evaluated_metrics[name] = evaluate_metric(value, gender, name)
         return evaluated_metrics
     
     # gender가 없는 경우 단순 메트릭 값만 반환
@@ -490,33 +469,6 @@ def convert_np_to_python(obj):
         return int(obj)
     return obj
 
-def convert_to_wav(file_content: bytes, original_filename: str) -> bytes:
-    """
-    오디오 파일을 WAV 형식으로 변환
-    """
-    try:
-        # 파일 확장자 확인
-        file_ext = original_filename.lower().split('.')[-1]
-        
-        # 메모리에서 AudioSegment 객체 생성
-        audio = AudioSegment.from_file(io.BytesIO(file_content), format=file_ext)
-        
-        # WAV 형식으로 변환
-        wav_buffer = io.BytesIO()
-        audio.export(wav_buffer, format='wav')
-        return wav_buffer.getvalue()
-        
-    except Exception as e:
-        logger.error(f"Error converting audio to WAV: {str(e)}")
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "status": "error",
-                "message": "Failed to convert audio to WAV format",
-                "detail": str(e),
-                "code": "CONVERSION_ERROR"
-            }
-        )
 
 async def analyze_audio(file: UploadFile, gender: str):
     """
@@ -526,9 +478,6 @@ async def analyze_audio(file: UploadFile, gender: str):
     
     try:
         contents = await file.read()
-        
-        # 오디오 파일을 WAV로 변환
-        wav_contents = convert_to_wav(contents, file.filename)
 
         # 임시 파일 생성 및 처리
         with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
