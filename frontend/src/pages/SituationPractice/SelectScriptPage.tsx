@@ -26,8 +26,8 @@ function SelectScript() {
 
   }, [])
 
-  const handleClick =() =>{
-    navigate('/situation/practice')
+  const handleClick =(scriptId: number) =>{
+    navigate(`/situation/practice/${scriptId}`)
   }
 
   const handleDelete = (scriptId: number) => {
@@ -64,22 +64,6 @@ function SelectScript() {
       }
     });
 
-    // const remove = async() => {
-    //   try{
-    //     const response = await ScriptDelte(scriptId)
-    //     console.log(response)
-
-    //     // 삭제 후 scripts 상태 업데이트 (삭제된 스크립트를 배열에서 제거)
-    //     setScripts((prevScripts: any) =>
-    //       prevScripts.filter((script: any) => script.scriptId !== scriptId)
-    //     );
-
-    //   } catch(e) {
-    //     console.log(e)
-    //   }
-    // }
-
-    // remove()
   }
   
 
@@ -93,7 +77,7 @@ function SelectScript() {
           <div
             key={script.id}
             className="p-5 rounded-lg border border-[#FFAB01] hover:border-2 cursor-pointer transition-all"
-            onClick={handleClick}
+            onClick={() => handleClick(script.scriptId)}
           >
             <div className="flex justify-between items-center">
               <div className="text-white text-xl">{script.title}</div>
