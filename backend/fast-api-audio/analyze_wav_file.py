@@ -163,178 +163,186 @@ def calculate_combined_rate_variability(times, voiced_flag, f0, spectral_slope):
     rate_variability = (voiced_variability_f0 * 0.5 + voiced_variability_slope * 0.1 + unvoiced_variability * 0.4)
     return rate_variability
 
-def evaluate_metric(name, value):
+def evaluate_metric(metric_name, value, gender):
     """
     각 메트릭의 값을 평가하여 등급과 해석을 반환
     """
     criteria = {
         "명료도(Clarity)": {
-            "ranges": [
-                (20, float('inf'), "excellent"),
-                (10, 20, "good"),
-                (-float('inf'), 10, "poor")
-            ],
-            "unit": "dB",
-            "reference": "20dB 이상이 최적",
-            "interpretations": {
-                "excellent": "매우 명료한 음성입니다",
-                "good": "보통의 명료도를 보입니다",
-                "poor": "명료도가 낮습니다"
+            "male": {
+                "excellent": lambda x: x > 15,
+                "good": lambda x: 13 <= x <= 15,
+                "poor": lambda x: x < 13,
+                "unit": "dB",
+                "reference": "13~15dB가 적정 범위"
+            },
+            "female": {
+                "excellent": lambda x: x > 16,
+                "good": lambda x: 14 <= x <= 16,
+                "poor": lambda x: x < 14,
+                "unit": "dB",
+                "reference": "14~16dB가 적정 범위"
             }
         },
         "억양 패턴 일관성 (Intonation Pattern Consistency)": {
-            "ranges": [
-                (40, 60, "excellent"),
-                (30, 40, "good"),
-                (60, 70, "good"),
-                (-float('inf'), 30, "poor"),
-                (70, float('inf'), "poor")
-            ],
-            "unit": "Hz",
-            "reference": "40-60Hz가 최적",
-            "interpretations": {
-                "excellent": "자연스러운 억양 변화를 보입니다",
-                "good": "대체로 자연스러운 억양입니다",
-                "poor": "부자연스러운 억양 변화를 보입니다"
+            "male": {
+                "excellent": lambda x: 15 <= x <= 30,
+                "good": lambda x: 10 <= x <= 15,
+                "poor": lambda x: x < 10 or x > 30,
+                "unit": "Hz",
+                "reference": "15~30Hz가 적정 범위"
+            },
+            "female": {
+                "excellent": lambda x: 20 <= x <= 35,
+                "good": lambda x: 15 <= x <= 20,
+                "poor": lambda x: x < 15 or x > 35,
+                "unit": "Hz",
+                "reference": "20~35Hz가 적정 범위"
             }
         },
         "멜로디 지수(Melody Index)": {
-            "ranges": [
-                (-50, -30, "excellent"),
-                (-60, -50, "good"),
-                (-30, -20, "good"),
-                (-float('inf'), -60, "poor"),
-                (-20, float('inf'), "poor")
-            ],
-            "unit": "MFCC",
-            "reference": "-50 ~ -30이 최적",
-            "interpretations": {
-                "excellent": "최적의 음성 멜로디를 보입니다",
-                "good": "적절한 음성 멜로디를 보입니다",
-                "poor": "음성 멜로디가 부자연스럽습니다"
+            "male": {
+                "excellent": lambda x: x > -40,
+                "good": lambda x: -50 <= x <= -40,
+                "poor": lambda x: x < -50,
+                "unit": "MFCC",
+                "reference": "-40 이상이 최적"
+            },
+            "female": {
+                "excellent": lambda x: x > -35,
+                "good": lambda x: -45 <= x <= -35,
+                "poor": lambda x: x < -45,
+                "unit": "MFCC",
+                "reference": "-35 이상이 최적"
             }
         },
         "말의 리듬(Speech Rhythm)": {
-            "ranges": [
-                (0.03, 0.06, "excellent"),
-                (0.02, 0.03, "good"),
-                (0.06, 0.07, "good"),
-                (-float('inf'), 0.02, "poor"),
-                (0.07, float('inf'), "poor")
-            ],
-            "unit": "초",
-            "reference": "0.03-0.06초가 최적",
-            "interpretations": {
-                "excellent": "적절한 발화 리듬을 보입니다",
-                "good": "대체로 자연스러운 리듬입니다",
-                "poor": "발화 리듬이 부자연스럽습니다"
+            "male": {
+                "excellent": lambda x: 0.06 <= x <= 0.1,
+                "good": lambda x: 0.05 <= x < 0.06 or 0.1 < x <= 0.11,
+                "poor": lambda x: x < 0.05 or x > 0.11,
+                "unit": "초",
+                "reference": "0.06~0.1초가 적정 범위"
+            },
+            "female": {
+                "excellent": lambda x: 0.05 <= x <= 0.09,
+                "good": lambda x: 0.04 <= x < 0.05 or 0.09 < x <= 0.1,
+                "poor": lambda x: x < 0.04 or x > 0.1,
+                "unit": "초",
+                "reference": "0.05~0.09초가 적정 범위"
             }
         },
         "휴지 타이밍(Pause Timing)": {
-            "ranges": [
-                (0.1, 0.15, "excellent"),
-                (0.08, 0.1, "good"),
-                (0.15, 0.18, "good"),
-                (-float('inf'), 0.08, "poor"),
-                (0.18, float('inf'), "poor")
-            ],
-            "unit": "초",
-            "reference": "0.1-0.15초가 최적",
-            "interpretations": {
-                "excellent": "자연스러운 휴지를 보입니다",
-                "good": "대체로 적절한 휴지를 보입니다",
-                "poor": "휴지가 부자연스럽습니다"
+            "male": {
+                "excellent": lambda x: 0.09 <= x <= 0.13,
+                "good": lambda x: 0.08 <= x < 0.09 or 0.13 < x <= 0.14,
+                "poor": lambda x: x < 0.08 or x > 0.14,
+                "unit": "초",
+                "reference": "0.09~0.13초가 적정 범위"
+            },
+            "female": {
+                "excellent": lambda x: 0.08 <= x <= 0.12,
+                "good": lambda x: 0.07 <= x < 0.08 or 0.12 < x <= 0.13,
+                "poor": lambda x: x < 0.07 or x > 0.13,
+                "unit": "초",
+                "reference": "0.08~0.12초가 적정 범위"
             }
         },
         "속도 변동성(Rate Variability)": {
-            "ranges": [
-                (80, 90, "excellent"),
-                (70, 80, "good"),
-                (90, 100, "good"),
-                (-float('inf'), 70, "poor"),
-                (100, float('inf'), "poor")
-            ],
-            "unit": "지수",
-            "reference": "80-90이 최적",
-            "interpretations": {
-                "excellent": "적절한 속도 변화를 보입니다",
-                "good": "대체로 안정적인 속도를 보입니다",
-                "poor": "속도 변화가 불안정합니다"
+            "male": {
+                "excellent": lambda x: 60 <= x <= 75,
+                "good": lambda x: 75 < x <= 85,
+                "poor": lambda x: x < 60 or x > 85,
+                "unit": "Hz",
+                "reference": "60~75Hz가 적정 범위"
+            },
+            "female": {
+                "excellent": lambda x: 65 <= x <= 80,
+                "good": lambda x: 80 < x <= 90,
+                "poor": lambda x: x < 65 or x > 90,
+                "unit": "Hz",
+                "reference": "65~80Hz가 적정 범위"
             }
         },
         "성대 떨림(Jitter)": {
-            "ranges": [
-                (0.01, 0.03, "excellent"),
-                (0.005, 0.01, "good"),
-                (0.03, 0.04, "good"),
-                (-float('inf'), 0.005, "poor"),
-                (0.04, float('inf'), "poor")
-            ],
-            "unit": "비율",
-            "reference": "0.01-0.03이 최적",
-            "interpretations": {
-                "excellent": "안정적인 성대 진동을 보입니다",
-                "good": "대체로 안정적인 성대 진동입니다",
-                "poor": "성대 진동이 불안정합니다"
+            "male": {
+                "excellent": lambda x: x <= 0.03,
+                "good": lambda x: 0.03 < x <= 0.05,
+                "poor": lambda x: x > 0.05,
+                "unit": "비율",
+                "reference": "3% 이하가 최적"
+            },
+            "female": {
+                "excellent": lambda x: x <= 0.02,
+                "good": lambda x: 0.02 < x <= 0.04,
+                "poor": lambda x: x > 0.04,
+                "unit": "비율",
+                "reference": "2% 이하가 최적"
             }
         },
         "강도 변동성(AMR)": {
-            "ranges": [
-                (0.003, 0.007, "excellent"),
-                (0.002, 0.003, "good"),
-                (0.007, 0.008, "good"),
-                (-float('inf'), 0.002, "poor"),
-                (0.008, float('inf'), "poor")
-            ],
-            "unit": "비율",
-            "reference": "0.003-0.007이 최적",
-            "interpretations": {
-                "excellent": "적절한 강도 변화를 보입니다",
-                "good": "대체로 안정적인 강도를 보입니다",
-                "poor": "강도 변화가 불안정합니다"
+            "male": {
+                "excellent": lambda x: 0.004 <= x <= 0.007,
+                "good": lambda x: 0.003 <= x < 0.004 or 0.007 < x <= 0.008,
+                "poor": lambda x: x < 0.003 or x > 0.008,
+                "unit": "비율",
+                "reference": "0.004~0.007이 적정 범위"
+            },
+            "female": {
+                "excellent": lambda x: 0.003 <= x <= 0.006,
+                "good": lambda x: 0.002 <= x < 0.003 or 0.006 < x <= 0.007,
+                "poor": lambda x: x < 0.002 or x > 0.007,
+                "unit": "비율",
+                "reference": "0.003~0.006이 적정 범위"
             }
         },
         "발화의 에너지(Utterance Energy)": {
-            "ranges": [
-                (-25, -20, "excellent"),
-                (-30, -25, "good"),
-                (-20, -15, "good"),
-                (-float('inf'), -30, "poor"),
-                (-15, float('inf'), "poor")
-            ],
-            "unit": "dB",
-            "reference": "-25 ~ -20dB이 최적",
-            "interpretations": {
-                "excellent": "적절한 발화 에너지를 보입니다",
-                "good": "대체로 적절한 에너지를 보입니다",
-                "poor": "발화 에너지가 부적절합니다"
+            "male": {
+                "excellent": lambda x: x >= -24,
+                "good": lambda x: -26 <= x < -24,
+                "poor": lambda x: x < -26,
+                "unit": "dB",
+                "reference": "-24dB 이상이 최적"
+            },
+            "female": {
+                "excellent": lambda x: x >= -23,
+                "good": lambda x: -25 <= x < -23,
+                "poor": lambda x: x < -25,
+                "unit": "dB",
+                "reference": "-23dB 이상이 최적"
             }
         }
     }
-
-    if name not in criteria:
+    
+    if metric_name not in criteria:
         return {
-            "value": round(value, 2),
+            "value": value,
             "grade": "unknown",
-            "unit": "N/A",
-            "reference": "기준이 정의되지 않음",
-            "interpretation": "평가 기준이 정의되지 않았습니다"
+            "unit": "unknown",
+            "reference": "기준 없음",
+            "interpretation": "평가 기준이 정의되지 않은 메트릭입니다"
         }
 
-    metric_criteria = criteria[name]
-    grade = "unknown"
+    metric_criteria = criteria[metric_name][gender]
     
-    for min_val, max_val, g in metric_criteria["ranges"]:
-        if min_val <= value <= max_val:
-            grade = g
-            break
+    grade = "poor"
+    if metric_criteria["excellent"](value):
+        grade = "excellent"
+    elif metric_criteria["good"](value):
+        grade = "good"
+
+    interpretations = {
+        "excellent": "매우 우수한 수준입니다",
+        "good": "양호한 수준입니다",
+        "poor": "개선이 필요한 수준입니다"
+    }
 
     return {
-        "value": round(value, 2),
+        "value": round(float(value), 3),
         "grade": grade,
         "unit": metric_criteria["unit"],
         "reference": metric_criteria["reference"],
-        "interpretation": metric_criteria["interpretations"].get(grade, "평가할 수 없는 범위입니다")
+        "interpretation": interpretations[grade]
     }
 
 def calculate_overall_score(metrics):
@@ -387,12 +395,13 @@ def generate_recommendations(metrics):
     
     return recommendations[:3]  # 상위 3개의 추천사항만 반환
 
-def calculate_metrics(file):
+def calculate_metrics(file_path, gender=None):
     """
-    음성 파일의 모든 메트릭 계산 및 평가
+    음성 파일의 모든 메트릭 계산
+    gender가 제공되면 성별 기준에 따라 평가도 함께 수행
     """
-    y, sr = load_audio(file)
-    sound = load_sound(file)
+    y, sr = load_audio(file_path)
+    sound = load_sound(file_path)
 
     # 각종 음성 특징 추출
     times_f0, f0, voiced_flag = getFundamentalFrequency(y, sr)
@@ -423,57 +432,15 @@ def calculate_metrics(file):
         '발화의 에너지(Utterance Energy)': utterance_energy
     }
 
-    # 각 메트릭에 대한 평가 수행
-    evaluated_metrics = {}
-    for name, value in metrics.items():
-        evaluated_metrics[name] = evaluate_metric(name, value)
-
-    # 전체 점수 계산
-    overall_score = calculate_overall_score(evaluated_metrics)
+    # gender가 제공된 경우 평가 수행
+    if gender:
+        evaluated_metrics = {}
+        for name, value in metrics.items():
+            evaluated_metrics[name] = evaluate_metric(name, value, gender)
+        return evaluated_metrics
     
-    # 추천사항 생성
-    recommendations = generate_recommendations(evaluated_metrics)
-
-    return {
-        "metrics": evaluated_metrics,
-        "overall_score": overall_score,
-        "recommendations": recommendations
-    }
-    
-def calculate_metrics_simple(file):
-    """
-    음성 파일의 메트릭 값만 계산
-    """
-    y, sr = load_audio(file)
-    sound = load_sound(file)
-
-    # 각종 음성 특징 추출
-    times_f0, f0, voiced_flag = getFundamentalFrequency(y, sr)
-    times_hnr, hnr_values, mean_hnr = getHNR(sound)
-    times_spectral_slope, spectral_slope = getSpectralSlope(y, sr, voiced_flag)
-    times_amr, amr = getAMR(y, sr)
-    jitter = getJitter(sound)
-    times_mel, mel_spectrogram_db, mfcc = getMel(y, sr, voiced_flag)
-
-    # 변동성 및 에너지 계산
-    rate_variability = calculate_combined_rate_variability(times_f0, voiced_flag, f0, spectral_slope)
-    rms = librosa.feature.rms(y=y)[0]
-    mean_rms = np.mean(rms)
-    mean_mel_energy = np.mean(mel_spectrogram_db)
-    utterance_energy = mean_rms * 0.6 + mean_mel_energy * 0.4
-
-    # 단순 메트릭 값만 반환
-    return {
-        "명료도(Clarity)": round(float(mean_hnr), 2),
-        "억양 패턴 일관성 (Intonation Pattern Consistency)": round(float(np.std(f0)), 2),
-        "멜로디 지수(Melody Index)": round(float(np.mean(mfcc)), 2),
-        "말의 리듬(Speech Rhythm)": round(float(np.mean(np.diff(times_f0[voiced_flag[:len(times_f0)]]))), 3),
-        "휴지 타이밍(Pause Timing)": round(float(np.mean(np.diff(times_f0[~voiced_flag[:len(times_f0)]]))), 3),
-        "속도 변동성(Rate Variability)": round(float(rate_variability), 2),
-        "성대 떨림(Jitter)": round(float(jitter), 3),
-        "강도 변동성(AMR)": round(float(np.std(amr)), 3),
-        "발화의 에너지(Utterance Energy)": round(float(utterance_energy), 2)
-    }
+    # gender가 없는 경우 단순 메트릭 값만 반환
+    return metrics
 
 def calculate_metrics_simple(file):
     """
@@ -551,7 +518,7 @@ def convert_to_wav(file_content: bytes, original_filename: str) -> bytes:
             }
         )
 
-async def analyze_audio(file: UploadFile):
+async def analyze_audio(file: UploadFile, gender: str):
     """
     업로드된 오디오 파일 분석 처리
     """
@@ -570,9 +537,17 @@ async def analyze_audio(file: UploadFile):
             temp_path = temp_file.name
 
         try:
-            # 메트릭 계산 및 NumPy 타입 변환
-            metrics = calculate_metrics(temp_path)
-            metrics = json.loads(json.dumps(metrics, default=convert_np_to_python))
+            # gender를 포함하여 메트릭 계산 및 평가
+            evaluated_metrics = calculate_metrics(temp_path, gender)
+            
+            # NumPy 타입을 Python 기본 타입으로 변환
+            evaluated_metrics = json.loads(json.dumps(evaluated_metrics, default=convert_np_to_python))
+            
+            # 전체 점수 계산
+            overall_score = calculate_overall_score(evaluated_metrics)
+            
+            # 추천사항 생성
+            recommendations = generate_recommendations(evaluated_metrics)
             
             # 처리 시간 계산
             processing_time = round(time.time() - start_time, 2)
@@ -580,7 +555,9 @@ async def analyze_audio(file: UploadFile):
             return {
                 "status": "success",
                 "data": {
-                    "metrics": metrics,
+                    "metrics": evaluated_metrics,
+                    "overall_score": overall_score,
+                    "recommendations": recommendations,
                     "processing_time_seconds": processing_time
                 }
             }
