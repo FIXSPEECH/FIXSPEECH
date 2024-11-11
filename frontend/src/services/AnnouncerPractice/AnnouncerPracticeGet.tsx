@@ -4,7 +4,7 @@ import axiosInstance from "../axiosInstance";
 
 export function AnnouncerExampleGet() {
     return axiosInstance
-        .get('/announcer')
+        .get('/announcer/one')
         .then((response) => {
             return Promise.resolve(response.data)
         })

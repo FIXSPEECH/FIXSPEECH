@@ -19,7 +19,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
     const {isNumber, setIsNumber,  setIsNumberZero, setIsNumberMinus} = usePronounceScoreStore();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
-    const [example, setExample] = useState([])
+    const [example, setExample] = useState<string>('')
     const [showModal, setShowModal] = useState<boolean>(false)
 
     const navigate = useNavigate();
@@ -42,7 +42,8 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
     const getExample = async () => {
         try {
             const response = await AnnouncerExampleGet();
-            setExample(response.data)
+            console.log(response.data)
+            setExample(response.data.text)
         } catch(e) {
             console.log(e)
         }
@@ -93,8 +94,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
            </div>
 
             <div className="text-[#B18CFE] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
-              내가 그린 그림은 기린 그림
-            {/* {example.length > 0 ? example[0].text : 'Loading...'} */}
+              {example}
             </div>
             </div>
 
