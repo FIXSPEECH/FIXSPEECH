@@ -25,9 +25,10 @@ const secondaryPathVariants: Variants = {
 
 interface ArrowRightIconProps {
   onClick?: () => void; // onClick prop 추가
+  color: string;
 }
 
-const ArrowRightIcon = ({onClick}: ArrowRightIconProps) => {
+const ArrowRightIcon = ({onClick, color}: ArrowRightIconProps) => {
   const controls = useAnimation();
 
   return (
@@ -47,7 +48,7 @@ const ArrowRightIcon = ({onClick}: ArrowRightIconProps) => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        stroke="#FF8C82" 
+        stroke={color}
       >
         <motion.path d="M5 12h14" variants={pathVariants} animate={controls} />
         <motion.path
