@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, Form
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from analyze_wav_file import analyze_audio, calculate_metrics_simple
@@ -358,22 +358,11 @@ async def analyze_full(
               }
           }
           )
-async def mimic_announcer(announcer_f0_data: list, file: UploadFile = File(..., description="분석할 WAV 파일"),gender: str = Form(..., description="성별 (male 또는 female)")):
-    # WAV 파일 유효성 검사
-    validate_wav_file(file)
-    if gender not in ["male", "female"]:
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "status": "error",
-                "message": "Invalid gender. Must be 'male' or 'female'",
-                "code": "INVALID_GENDER"
-            }
-        )
+async def mimic_announcer(user_file: UploadFile = File(..., description="사용자 음성 파일"), 
+                          announcer_file: UploadFile = File(..., description="참조 아나운서 음성 파일")):
     try:
-        # 음성 분석 수행
-        results = await announcer_mimic(file, announcer_f0_data)
-        # TODO: 아나운서 음성과의 유사도 분석 로직 추가
+        # 두 파일을 이용해 유사도 계산
+        results = await announcer_mimic(user_file, announcer_file)
         return JSONResponse(content=results)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -433,38 +422,17 @@ async def mimic_announcer(announcer_f0_data: list, file: UploadFile = File(..., 
               }
           }
           )
-async def analyze_announcer(file: UploadFile = File(..., description="분석할 WAV 파일"),
-    gender: str = Form(..., description="성별 (male 또는 female)")):
+async def analyze_announcer(file: UploadFile = File(..., description="분석할 WAV 파일")):
     validate_wav_file(file)
-    if gender not in ["male", "female"]:
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "status": "error",
-                "message": "Invalid gender. Must be 'male' or 'female'",
-                "code": "INVALID_GENDER"
-            }
-        )
     try:
-        contents = await file.read()
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
-            temp_file.write(contents)
-            temp_file.flush()
-            temp_path = temp_file.name
-
-        try:
-            f0_data = await analyze_announcer_alone(temp_path)
-            return {
-                "status": "success",
-                "data": {
-                    "f0_data": f0_data,
-                }
+        f0_data = await analyze_announcer_alone(file)
+        f0_data = f0_data["data"]["announcer_f0_data"]
+        return {
+            "status": "success",
+            "data": {
+                "f0_data": f0_data
             }
-        finally:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
