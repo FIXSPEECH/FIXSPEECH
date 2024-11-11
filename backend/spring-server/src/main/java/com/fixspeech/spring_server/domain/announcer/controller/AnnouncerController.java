@@ -1,6 +1,5 @@
 package com.fixspeech.spring_server.domain.announcer.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.config.s3.S3Service;
 import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
-import com.fixspeech.spring_server.domain.announcer.dto.response.AnnouncerVoiceSampleResponseDto;
 import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVoiceComparisonResponseDto;
 import com.fixspeech.spring_server.domain.announcer.service.AnnouncerService;
 import com.fixspeech.spring_server.domain.user.model.Users;
@@ -36,26 +34,30 @@ public class AnnouncerController {
 	private final AnnouncerService announcerService;
 	private final S3Service s3Service;
 
-	@GetMapping("test")
-	public ApiResponse<?> getTest() {
-		return ApiResponse.createSuccess(announcerService.getAllAnnouncerData(), "테스트 확인");
+	@GetMapping("one")
+	public ApiResponse<?> getOneAnnouncerData() {
+		return ApiResponse.createSuccess(announcerService.getOneAnnouncerData(),"아나운서 데이터 단일 조회 성공");
 	}
 
 	/**
 	 * 아나운서 음성 데이터 전체 조회
-	 * @return announcerResponseDtos
+	 *
+	 * @param pageNo   현재 페이지
+	 * @param criteria 정렬 기준
+	 * @return SmallAnnouncerVoiceSampleResponseDto
 	 */
-	@GetMapping
+	@GetMapping("all")
 	public ApiResponse<?> getAllAnnouncerData(@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
 		@RequestParam(required = false, defaultValue = "createdAt", value = "criteria") String criteria) {
 		try {
-			Page<AnnouncerVoiceSampleResponseDto> announcerResponse = announcerService.getAllAnnouncerData(pageNo, criteria);
-			log.info("announcerResponseDtos: {}",announcerResponse);
-			return ApiResponse.createSuccess(announcerResponse, "모든 아나운서 데이터 출력");
+			return ApiResponse.createSuccess(announcerService.getAllAnnouncerData(pageNo, criteria), "모든 아나운서 데이터 출력");
 		} catch (Exception e) {
 			return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
 		}
 	}
+
+
+
 
 	/**
 	 * 아나운서 따라잡기 사용자 음성 저장
@@ -95,8 +97,8 @@ public class AnnouncerController {
 	 * 사용자가 녹음한 아나운서 음성 분석 결과 전체 조회
 	 * @param pageNo 현재 페이지
 	 * @param criteria 정렬 기준
-	 * @param userDetails
-	 * @return
+	 * @param userDetails 사용자 정보
+	 * @return Page<UserAnnouncerVoiceComparisonResponseDto>
 	 */
 	@GetMapping("/compare/all")
 	public ApiResponse<?> getAllUserToAnnouncerVoiceComparison(@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
