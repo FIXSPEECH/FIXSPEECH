@@ -2,6 +2,7 @@ import { useState } from "react";
 import VoiceMetricCard from "../components/VoiceQuality/VoiceMetricCard";
 import MetricsVisualizer from "../components/VoiceQuality/MetricsVisualizer";
 import useAuthStore from "../store/authStore";
+import AudioRecorder from "../components/VoiceQuality/AudioRecorder";
 
 // 음성 분석 메트릭 데이터 타입 정의
 interface MetricData {
@@ -55,7 +56,7 @@ const METRIC_CRITERIA = {
   },
   "멜로디 지수(Melody Index)": {
     excellent: "남성: -40 이상, 여성: -35 이상",
-    good: "남성: -50 ~ -40, 여성: -45 ~ -35",
+    good: "남성: -50 ~ -40, 여: -45 ~ -35",
     poor: "남성: -50 미만, 여성: -45 미만",
     description:
       "목소리의 음악적인 특성을 나타냅니다. 이 값이 높을수록 듣기 좋은 목소리 톤을 가지고 있다는 의미예요.",
@@ -123,6 +124,13 @@ const FastApiTestPage = () => {
     }
   };
 
+  // 녹음 완료 핸들러
+  const handleRecordingComplete = (audioFile: File) => {
+    setSelectedFile(audioFile);
+    setError(null);
+    setResponse(null);
+  };
+
   // 파일 제출 및 분석 요청 핸들러
   const handleSubmit = async () => {
     if (!selectedFile || !userGender) return;
@@ -185,9 +193,21 @@ const FastApiTestPage = () => {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">음성 분석</h1>
 
-        {/* 파일 입력과 제출 버튼 섹션 */}
+        {/* 예시 문장 섹션 추가 */}
+        <div className="mb-6 p-4 bg-gray-800/30 backdrop-blur-sm rounded-lg border border-gray-700/50">
+          <h2 className="text-lg font-semibold mb-2">📢 예시 문장</h2>
+          <p className="text-gray-300">
+            "안녕하세요. 오늘은 날씨가 정말 좋네요. 이런 날에는 산책하기가 참
+            좋습니다."
+          </p>
+          <p className="text-sm text-gray-400 mt-2">
+            ℹ️ 위 문장을 편안한 목소리로 읽어서 녹음해주세요.
+          </p>
+        </div>
+
+        {/* 파일 입력과 녹음 버튼 섹션 */}
         <div className="mb-8 space-y-4">
-          <div>
+          <div className="flex gap-4 items-center">
             <input
               type="file"
               accept=".wav"
@@ -195,30 +215,36 @@ const FastApiTestPage = () => {
               className="bg-gray-800/30 p-2 rounded"
               disabled={!userGender}
             />
-            {selectedFile && (
-              <p className="mt-2 text-gray-300">
-                선택된 파일: {selectedFile.name}
-              </p>
-            )}
-            {!userGender && (
-              <p className="text-red-400 mt-2">
-                성별 정보가 필요합니다. 프로필을 설정해주세요.
-              </p>
-            )}
+            <AudioRecorder
+              onRecordingComplete={handleRecordingComplete}
+              disabled={!userGender}
+            />
           </div>
 
-          <button
-            onClick={handleSubmit}
-            disabled={!selectedFile || !userGender || loading}
-            className={`px-6 py-2 rounded-lg transition-colors ${
-              !selectedFile || !userGender || loading
-                ? "bg-gray-600 cursor-not-allowed"
-                : "bg-cyan-500 hover:bg-cyan-600"
-            }`}
-          >
-            분석 시작
-          </button>
+          {selectedFile && (
+            <p className="mt-2 text-gray-300">
+              선택된 파일: {selectedFile.name}
+            </p>
+          )}
+          {!userGender && (
+            <p className="text-red-400 mt-2">
+              성별 정보가 필요합니다. 프로필을 설정해주세요.
+            </p>
+          )}
         </div>
+
+        {/* 분석 시작 버튼 */}
+        <button
+          onClick={handleSubmit}
+          disabled={!selectedFile || !userGender || loading}
+          className={`px-6 py-2 rounded-lg transition-colors ${
+            !selectedFile || !userGender || loading
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-cyan-500 hover:bg-cyan-600"
+          }`}
+        >
+          분석 시작
+        </button>
 
         {/* 에러 메시지 표시 섹션 */}
         {error && (
