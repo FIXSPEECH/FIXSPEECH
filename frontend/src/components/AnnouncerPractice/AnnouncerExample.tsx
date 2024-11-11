@@ -2,25 +2,26 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useVoiceStore from "../../store/voiceStore";
 import VolumeDownIcon from '@mui/icons-material/VolumeDown';
-import { ExampleGet } from "../../services/PronouncePractice/PronouncePracticeGet";
+import { AnnouncerExampleGet } from "../../services/AnnouncerPractice/AnnouncerPracticeGet";
 import ArrowRight from '../../Icons/ArrowRightIcon'
 import usePronounceScoreStore from "../../store/pronounceScoreStore";
-import FinishModal from './FinishModal'
+import FinishModal from '../PracticePronounce/FinishModal'
+
 
 interface PronounceExampleProps {
     color: string; // color prop의 타입 정의
-    trainingId: number;
     size: number;
   }
 
+function AnnouncerExample({color, size}: PronounceExampleProps) {
 
-function PronounceExample({color, trainingId, size}:PronounceExampleProps){
-    const {audioURL, isRecording, setIsRecording, setAudioURL} = useVoiceStore();
+    const { setIsRecording, setAudioURL} = useVoiceStore();
     const {isNumber, setIsNumber,  setIsNumberZero, setIsNumberMinus} = usePronounceScoreStore();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
-    const [example, setExample] = useState<string>("")
+    const [example, setExample] = useState<string>('')
     const [showModal, setShowModal] = useState<boolean>(false)
+    const [announcerUrl, setAnnouncerUrl] = useState<string>('')
 
     const navigate = useNavigate();
 
@@ -41,8 +42,10 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
     // 연습 문제 가져오기
     const getExample = async () => {
         try {
-            const response = await ExampleGet(trainingId);
-            setExample(response.data)
+            const response = await AnnouncerExampleGet();
+            console.log(response.data)
+            setExample(response.data.text)
+            setAnnouncerUrl(response.data.sampleAddress)
         } catch(e) {
             console.log(e)
         }
@@ -73,15 +76,14 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
     setIsNumberZero();
     navigate('/training')
   }
-    
 
     return (
-    <>
+        <>
         <div className="flex justify-center items-center w-screen">
          <div style={{ width: `${size}rem`, height: `${size}rem`}}>
-            {!isRecording && audioURL && (
+            {announcerUrl && (
             <div>
-            <audio ref={audioRef} src={audioURL} 
+            <audio ref={audioRef} src={announcerUrl} 
                 onEnded={() => setIsPlaying(false)} // 오디오가 끝나면 상태를 다시 false로 설정
             /> 
             <VolumeDownIcon 
@@ -93,22 +95,22 @@ function PronounceExample({color, trainingId, size}:PronounceExampleProps){
             )}
            </div>
 
-            <div className="text-[#FF8C82] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
-            {example}
+            <div className="text-[#B18CFE] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
+              {example}
             </div>
+            
             </div>
 
             {/* ArrowRight 컴포넌트 */}
             <div className="ml-auto mr-10 flex">
-            <ArrowRight  onClick={getExample} color='#FF8C82'/>
+            <ArrowRight  onClick={getExample} color='#B18CFE'/>
             </div>     
 
             {/* isNumber가 11일 때 FinishModal이 자동으로 표시 */}
             <FinishModal isOpen={showModal} onClose={closeModal} />
             
         </>
-        
     )
 }
 
-export default PronounceExample;
+export default AnnouncerExample;

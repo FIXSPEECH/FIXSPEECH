@@ -23,6 +23,13 @@ function TrainSelect() {
       url: "select",
       imgMargin: 50,
     },
+    {
+      color: "#FFAB01",
+      label: "연습 내역 조회",
+      imageSrc: geo,
+      url: "result",
+      imgMargin: 50,
+    },
   ];
 
   return (
@@ -46,7 +53,7 @@ function TrainSelect() {
           >
             {gridItems.map((item, index) => (
               <Grid
-                size={{ xs: 6, sm: 6, md: 6 }}
+                size={{ xs: 4, sm: 4, md: 4 }}
                 className="w-full md:w-1/2 lg:w-1/3"
                 key={index}
                 sx={{
