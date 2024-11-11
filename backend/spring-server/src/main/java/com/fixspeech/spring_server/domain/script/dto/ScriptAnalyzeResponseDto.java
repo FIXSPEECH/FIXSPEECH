@@ -28,10 +28,10 @@ public record ScriptAnalyzeResponseDto(
 		try {
 			Map<String, Object> data = (Map<String, Object>)rawData.get("data");
 			Map<String, Object> metricsContainer = (Map<String, Object>)data.get("metrics");
-			Map<String, Object> rawMetrics = (Map<String, Object>)metricsContainer.get("metrics");
 
 			// Transform raw metrics into structured MetricDetail objects
-			Map<String, MetricDetail> structuredMetrics = rawMetrics.entrySet().stream()
+			Map<String, MetricDetail> structuredMetrics = metricsContainer.entrySet().stream()
+				.filter(entry -> entry.getValue() instanceof Map)
 				.collect(java.util.stream.Collectors.toMap(
 					Map.Entry::getKey,
 					entry -> {
@@ -50,8 +50,8 @@ public record ScriptAnalyzeResponseDto(
 				userId,
 				scriptId,
 				structuredMetrics,
-				((Number)metricsContainer.get("overall_score")).intValue(),
-				(List<String>)metricsContainer.get("recommendations"),
+				((Number)data.get("overall_score")).intValue(),
+				(List<String>)data.get("recommendations"),
 				createdAt
 			);
 		} catch (Exception e) {

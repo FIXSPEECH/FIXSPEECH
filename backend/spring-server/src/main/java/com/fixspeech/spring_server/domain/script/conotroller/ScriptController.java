@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.domain.script.conotroller;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -32,6 +33,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.config.s3.S3Service;
+import com.fixspeech.spring_server.domain.notification.service.EmitterService;
 import com.fixspeech.spring_server.domain.script.dto.ScriptAnalyzeResponseDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptListDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptRequestDto;
@@ -54,6 +56,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ScriptController {
 	private final ScriptService scriptService;
 	private final S3Service s3Service;
+	private final EmitterService emitterService;
 	private final UserService userService;
 	private final RestTemplate restTemplate;
 	private final RedisTemplate<String, byte[]> redisTemplate;
@@ -128,7 +131,8 @@ public class ScriptController {
 				redisKey,
 				scriptId,
 				file.getOriginalFilename(),
-				users.getId()
+				users.getId(),
+				users.getGender()
 			);
 			System.out.println(voiceAnalysisMessage);
 			kafkaTemplate.send("voice-analysis-topic", voiceAnalysisMessage)
@@ -162,7 +166,7 @@ public class ScriptController {
 			};
 			body.add("file", fileResource);
 			body.add("s3_url", s3Url);
-
+			body.add("gender", message.gender());
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
@@ -182,7 +186,22 @@ public class ScriptController {
 			scriptService.save(s3Url, message.scriptId(), responseBody);
 
 			System.out.println(response.getBody());
+
+			//분석 완료 알림
+			emitterService.notify(message.userId(), new HashMap<String, Object>() {{
+				put("type", "Analyze Complete");
+				put("data", responseBody);
+				put("message", "음성 분석이 완료되었습니다");
+			}});
+
 		} catch (Exception e) {
+
+			// 에러 발생 시에도 알림 전송
+			emitterService.notify(message.userId(), new HashMap<String, Object>() {{
+				put("type", "ANALYSIS_ERROR");
+				put("message", "음성 분석 중 오류가 발생했습니다.");
+			}});
+
 			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
 			// 여기에 실패 처리 로직 구현 (예: 재시도 큐에 넣기, 알림 보내기 등)
 		}
