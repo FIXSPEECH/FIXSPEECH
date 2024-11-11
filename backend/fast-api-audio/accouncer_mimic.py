@@ -21,8 +21,9 @@ def get_f0_data(y, sr):
 
 def extract_f0_and_prepare_data(y, sr):
     times, f0 = get_f0_data(y, sr)
-    f0_data = [{"time": t, "frequency": f if not np.isnan(f) else None} for t, f in zip(times, f0)]
-    return f0_data
+    f0_data = [{"time": t, "frequency": f if not np.isnan(f) else 0} for t, f in zip(times, f0)]
+    temp = str(f0_data).replace(" ","")
+    return temp
 
 async def process_uploaded_audio(file: UploadFile):
     contents = await file.read()

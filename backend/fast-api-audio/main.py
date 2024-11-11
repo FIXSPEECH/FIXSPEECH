@@ -358,7 +358,7 @@ async def analyze_full(
               }
           }
           )
-async def mimic_announcer(accouncer_info: list, file: UploadFile = File(..., description="분석할 WAV 파일")):
+async def mimic_announcer(announcer_f0_data: list, file: UploadFile = File(..., description="분석할 WAV 파일"),gender: str = Form(..., description="성별 (male 또는 female)")):
     # WAV 파일 유효성 검사
     validate_wav_file(file)
     if gender not in ["male", "female"]:
@@ -372,11 +372,103 @@ async def mimic_announcer(accouncer_info: list, file: UploadFile = File(..., des
         )
     try:
         # 음성 분석 수행
-        results = await announcer_mimic(file, accouncer_info)
+        results = await announcer_mimic(file, announcer_f0_data)
         # TODO: 아나운서 음성과의 유사도 분석 로직 추가
         return JSONResponse(content=results)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# 아나운서 음성 분석
+@app.post("/analyze/announcer",
+          summary="아나운서 음성 분석",
+          description="아나운서 음성 분석해서 DB 저장하기 위한 일시적 엔드포인트.",
+          response_description={
+              200: {
+                  "description": "성공적으로 분석됨",
+                  "content": {
+                      "application/json": {
+                          "example": {
+                              "status": "success",
+                              "data": {
+                                  "announcer_f0_data":[{"time":0.232,"F0":232},{"time":0.464,"F0":232}],
+                                  "metrics": {
+                                      "명료도(Clarity)": 20.27,
+                                      "억양 패턴 일관성 (Intonation Pattern Consistency)": 59.98,
+                                      "멜로디 지수(Melody Index)": -48.29,
+                                      "말의 리듬(Speech Rhythm)": 0.044,
+                                      "휴지 타이밍(Pause Timing)": 0.118,
+                                      "속도 변동성(Rate Variability)": 88.30,
+                                      "성대 떨림(Jitter)": 0.020,
+                                      "강도 변동성(AMR)": 0.005,
+                                      "발화의 에너지(Utterance Energy)": -23.55,
+                                  },
+                              }
+                          }
+                      }
+                  }
+              },
+              400: {
+                  "description": "잘못된 요청",
+                  "content": {
+                      "application/json": {
+                          "example": {
+                              "status": "error",
+                              "message": "Invalid file type",
+                              "code": "INVALID_FILE_TYPE"
+                          }
+                      }
+                  }
+              },
+              500: {
+                  "description": "서버 에러",
+                  "content": {
+                      "application/json": {
+                          "example": {
+                              "status": "error",
+                              "message": "Internal server error occurred",
+                              "code": "INTERNAL_SERVER_ERROR"
+                          }
+                      }
+                  }
+              }
+          }
+          )
+async def analyze_announcer(file: UploadFile = File(..., description="분석할 WAV 파일"),
+    gender: str = Form(..., description="성별 (male 또는 female)")):
+    validate_wav_file(file)
+    if gender not in ["male", "female"]:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "status": "error",
+                "message": "Invalid gender. Must be 'male' or 'female'",
+                "code": "INVALID_GENDER"
+            }
+        )
+    try:
+        contents = await file.read()
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
+            temp_file.write(contents)
+            temp_file.flush()
+            temp_path = temp_file.name
+
+        try:
+            f0_data = await analyze_announcer_alone(temp_path)
+            return {
+                "status": "success",
+                "data": {
+                    "f0_data": f0_data,
+                }
+            }
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await file.close()
 
 @app.post("/analyze/practice",
     summary="스크립트 연습 분석",

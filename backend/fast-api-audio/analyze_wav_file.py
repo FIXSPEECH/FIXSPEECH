@@ -8,7 +8,6 @@ import os
 import logging
 import json
 import time
-from pydub import AudioSegment
 import io
 
 
@@ -490,33 +489,7 @@ def convert_np_to_python(obj):
         return int(obj)
     return obj
 
-def convert_to_wav(file_content: bytes, original_filename: str) -> bytes:
-    """
-    오디오 파일을 WAV 형식으로 변환
-    """
-    try:
-        # 파일 확장자 확인
-        file_ext = original_filename.lower().split('.')[-1]
-        
-        # 메모리에서 AudioSegment 객체 생성
-        audio = AudioSegment.from_file(io.BytesIO(file_content), format=file_ext)
-        
-        # WAV 형식으로 변환
-        wav_buffer = io.BytesIO()
-        audio.export(wav_buffer, format='wav')
-        return wav_buffer.getvalue()
-        
-    except Exception as e:
-        logger.error(f"Error converting audio to WAV: {str(e)}")
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "status": "error",
-                "message": "Failed to convert audio to WAV format",
-                "detail": str(e),
-                "code": "CONVERSION_ERROR"
-            }
-        )
+
 
 async def analyze_audio(file: UploadFile, gender: str):
     """
@@ -527,8 +500,6 @@ async def analyze_audio(file: UploadFile, gender: str):
     try:
         contents = await file.read()
         
-        # 오디오 파일을 WAV로 변환
-        wav_contents = convert_to_wav(contents, file.filename)
 
         # 임시 파일 생성 및 처리
         with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
