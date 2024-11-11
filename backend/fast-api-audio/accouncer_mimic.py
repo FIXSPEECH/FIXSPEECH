@@ -4,10 +4,10 @@ import librosa
 import numpy as np
 import tempfile
 import os
+import requests
 from fastapi import UploadFile, HTTPException
 import logging
 import noisereduce as nr
-
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -52,6 +52,17 @@ async def process_uploaded_audio(file: UploadFile):
         return temp_file.name
 
 
+def download_audio_from_url(url: str):
+    """
+    URL에서 오디오 파일을 다운로드하여 임시 파일로 저장
+    """
+    response = requests.get(url)
+    response.raise_for_status()  # 다운로드 오류 처리
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
+        temp_file.write(response.content)
+        temp_file.flush()
+        return temp_file.name
+
 
 def normalize_f0(f0_data):
     """
@@ -63,24 +74,20 @@ def normalize_f0(f0_data):
     normalized_f0 = (f0_data - mean_f0) / std_f0
     return normalized_f0
 
-def calculate_similarity_percentage(distance, max_distance):
-    """
-    DTW 거리를 백분율 유사도로 변환 (0에서 max_distance 사이의 값을 기준으로 계산).
-    """
-    similarity = 1 - (distance / max_distance)
-    return max(0, min(similarity * 100, 100))
 
-async def announcer_mimic(user_file: UploadFile, announcer_file: UploadFile, downsample_factor=10):
+async def announcer_mimic(user_file: UploadFile, announcer_url: str, downsample_factor=10):
     user_file_path = None
     announcer_file_path = None
     try:
         logger.info("Starting announcer_mimic function.")
         
-        # 두 음성 파일을 로컬에 임시로 저장
+        # 사용자 음성 파일을 로컬에 임시로 저장
         user_file_path = await process_uploaded_audio(user_file)
-        announcer_file_path = await process_uploaded_audio(announcer_file)
         logger.info(f"Saved user file to {user_file_path}")
-        logger.info(f"Saved announcer file to {announcer_file_path}")
+        
+        # URL에서 아나운서 음성 파일 다운로드 및 로컬 저장
+        announcer_file_path = download_audio_from_url(announcer_url)
+        logger.info(f"Downloaded announcer file from URL and saved to {announcer_file_path}")
         
         # 음성 파일에서 F0 데이터 추출
         user_y, user_sr = librosa.load(user_file_path, sr=None)
@@ -96,8 +103,8 @@ async def announcer_mimic(user_file: UploadFile, announcer_file: UploadFile, dow
         announcer_f0_clean = announcer_f0_raw[np.isfinite(announcer_f0_raw) & (announcer_f0_raw > 0)].ravel()
 
         # 정규화하여 비교용으로 사용
-        user_f0_norm = (user_f0_clean - np.mean(user_f0_clean)) / np.std(user_f0_clean)
-        announcer_f0_norm = (announcer_f0_clean - np.mean(announcer_f0_clean)) / np.std(announcer_f0_clean)
+        user_f0_norm = normalize_f0(user_f0_clean)
+        announcer_f0_norm = normalize_f0(announcer_f0_clean)
 
         # 정규화된 데이터로 유사도 계산 (DTW를 이용한 거리 계산)
         try:
@@ -136,5 +143,4 @@ async def announcer_mimic(user_file: UploadFile, announcer_file: UploadFile, dow
             os.remove(announcer_file_path)
             logger.info(f"Deleted announcer file at {announcer_file_path}")
         await user_file.close()
-        await announcer_file.close()
         logger.info("Closed file resources.")

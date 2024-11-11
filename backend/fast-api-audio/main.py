@@ -291,15 +291,16 @@ async def analyze_full(
           }
           )
 async def mimic_announcer(user_file: UploadFile = File(..., description="사용자 음성 파일"),
-                          announcer_file: UploadFile = File(..., description="참조 아나운서 음성 파일")):
+                          announcer_url: str = Body(..., embed=True, description="아나운서 음성 파일 URL")):
+    """
+    사용자 음성 파일과 아나운서 음성 파일 URL을 이용하여 유사도 계산
+    """
     try:
         # 두 파일을 이용해 유사도 계산
-        results = await announcer_mimic(user_file, announcer_file)
+        results = await announcer_mimic(user_file, announcer_url)
         return JSONResponse(content=results)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-# 아나운서 음성 분석
 
 
 @app.post("/analyze/practice",
