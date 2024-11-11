@@ -6,7 +6,6 @@ import useVoiceStore from "../store/voiceStore";
 import { LiveAudioVisualizer } from "react-audio-visualize";
 import RegistModal from './SituationPractice/RegistModal'
 import RecordModal from './AnnouncerPractice/RecordModal'
-import useModalStore from "../store/modalStore";
 
 interface RecorderProps{
   color: string;
@@ -27,8 +26,8 @@ declare global {
 
 
 function Recorder({color, barColor, width, height, visualizeWidth, modalType}: RecorderProps){
-    const { isRecording, audioURL, setAudioBlob, setIsRecording, setAudioURL } = useVoiceStore();
-    const {setIsModal} = useModalStore();
+    const { isRecording, audioURL, setIsRecording, setAudioURL } = useVoiceStore();
+
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
@@ -46,8 +45,6 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
 
         // 녹음 시작하기 전에 audioURL 결과 초기화
         setAudioURL(null);
-        setAudioBlob(null);
-        setIsModal(false)
     
     
         try {
@@ -80,8 +77,6 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
             const audioBlob = new Blob(audioChunksRef.current, {
               type: "audio/wav",
             });
-
-            setAudioBlob(audioBlob)
 
             const audioUrl = URL.createObjectURL(audioBlob);
             setAudioURL(audioUrl);
@@ -120,7 +115,6 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
       const closeModal = () => {
         setShowModal(false); // 모달 닫기
         setAudioURL(null)
-        setIsModal(true)
         if (modalType === "record") {
           navigate('/announcer'); // FinalModal의 경우 홈 화면으로 이동
         } else if (modalType === "regist") {
@@ -212,12 +206,10 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
 
   
       {modalType === "regist" ? (
-        // 상황별 연습
         <RegistModal isOpen={showModal} onClose={closeModal} onReset={resetModal} />
       ) : (
         <RecordModal isOpen={showModal} onClose={closeModal} onReset={resetModal} />
-        // 아나운서 따라잡기
-     )}
+      )}
 
 
     </div>

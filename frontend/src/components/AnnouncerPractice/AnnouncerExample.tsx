@@ -6,8 +6,7 @@ import { AnnouncerExampleGet } from "../../services/AnnouncerPractice/AnnouncerP
 import ArrowRight from '../../Icons/ArrowRightIcon'
 import usePronounceScoreStore from "../../store/pronounceScoreStore";
 import FinishModal from '../PracticePronounce/FinishModal'
-import { audioPost } from "../../services/AnnouncerPractice/AnnouncerPracticePost";
-import useModalStore from "../../store/modalStore";
+
 
 interface PronounceExampleProps {
     color: string; // color prop의 타입 정의
@@ -15,8 +14,8 @@ interface PronounceExampleProps {
   }
 
 function AnnouncerExample({color, size}: PronounceExampleProps) {
-    const {isModal} = useModalStore();
-    const { setIsRecording, setAudioURL, audioBlob} = useVoiceStore();
+
+    const { setIsRecording, setAudioURL} = useVoiceStore();
     const {isNumber, setIsNumber,  setIsNumberZero, setIsNumberMinus} = usePronounceScoreStore();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
@@ -55,35 +54,6 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
         setIsRecording(false);
         setAudioURL(null);
     }
-
-
-
-    const postAudio = async() => {
-      if (!audioBlob) {
-        console.error('Audio blob is null');
-        return; // audioBlob이 null이면 함수 종료
-    }
-    
-      const data = new FormData()
-
-      data.append('user_file', audioBlob)
-      data.append('announcer_url', announcerUrl)
-
-      console.log('data', data)
-      try{
-        const response = await audioPost(data)
-        console.log(response.data)
-      } catch (e) {
-        console.log(e)
-      }
-    }
-
-
-    useEffect(() => {
-      if(isModal === true) {
-        postAudio();
-      }
-    },[isModal])
 
 
     // 페이지 로딩 시 연습문제 가져오기
