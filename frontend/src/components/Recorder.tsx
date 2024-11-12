@@ -28,7 +28,7 @@ declare global {
 
 
 function Recorder({color, barColor, width, height, visualizeWidth, modalType}: RecorderProps){
-    const { isRecording, audioURL, setAudioBlob, setIsRecording, setAudioURL } = useVoiceStore();
+    const { isRecording, setAudioBlob, setIsRecording, setAudioURL } = useVoiceStore();
     const {setResetTimer} = useTimerStore();
     const {setIsModal} = useModalStore();
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);

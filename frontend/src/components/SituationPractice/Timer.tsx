@@ -10,7 +10,7 @@ interface Timer{
 }
 
 function Timer({seconds}: Timer) {
-  const {setIsRecording, isRecording, setAudioURL} = useVoiceStore();
+  const {setIsRecording, isRecording} = useVoiceStore();
   const {setIsModal} = useModalStore();
   const {resetTimer, setResetTimer} = useTimerStore();
   const [timeLeft, setTimeLeft] = useState(seconds); // 초기 시간 5:00 (300초)
