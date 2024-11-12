@@ -108,7 +108,7 @@ public class ScriptServiceImpl implements ScriptService {
 	@Override
 	public void deleteScript(Users users, Long scriptId) {
 		Script script = findScript(scriptId);
-		if (findUser(script).equals(users.getId()))
+		if (!findUser(script).equals(users.getId()))
 			throw new CustomException(ErrorCode.FAIL_TO_DELETE_SCRIPT);
 		scriptRepository.deleteById(scriptId);
 	}

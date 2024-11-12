@@ -43,7 +43,6 @@ public enum ErrorCode {
 	FAIL_TO_LOAD_RECORD_DETAIL("R003", "유저 음성 분석 상세 조회 실패하였습니다", HttpStatus.BAD_REQUEST),
 	FAIL_TO_ANALYZE_RECORD("R004", "음성 분석에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 	INVALID_RECORD_FORMAT("R005", "지원하지 않는 음성 파일 형식입니다.", HttpStatus.BAD_REQUEST),
-
 	// Script
 	SCRIPT_NOT_FOUND("SC001", "대본을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 	FAIL_TO_SAVE_SCRIPT("SC002", "대본 저장에 실패하였습니다.", HttpStatus.BAD_REQUEST),

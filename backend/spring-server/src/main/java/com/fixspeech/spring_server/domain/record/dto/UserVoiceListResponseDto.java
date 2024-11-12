@@ -7,6 +7,7 @@ public record UserVoiceListResponseDto(
 	Map<String, Object> analyzeResult,
 	String title,
 	String recordAddress,
+	Long recordId,
 	LocalDate createdAt
 ) {
 }
