@@ -1,86 +1,66 @@
 import { useNavigate } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
-import AudioCubeVisualizer from "../../components/Visualizer/AudioCubeVisualizer";
+import AudioSphereVisualizer from "../../components/Visualizer/AudioSphereVisualizer";
+import AudioRecorder from "../../components/VoiceQuality/AudioRecorder";
+import { useState } from "react";
 
 function VoiceRecord() {
   const navigate = useNavigate();
+  const [isRecordingComplete, setIsRecordingComplete] = useState(false);
+
+  const handleRecordingComplete = (audioFile: File) => {
+    console.log("녹음 완료:", audioFile);
+    setIsRecordingComplete(true);
+    // TODO: 녹음된 파일 처리 로직 추가
+  };
 
   return (
-    <div
-      style={{
-        position: "relative",
-        height: "calc(100vh - 14vh)",
-        width: "100vw",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "20px",
-      }}
-    >
-      <div
-        style={{
-          color: "white",
-          textAlign: "center",
-          marginTop: "8vh",
-        }}
-      >
+    <div className="relative h-[calc(100vh-14vh)] w-screen overflow-hidden flex flex-col items-center p-5">
+      <div className="text-white text-center mt-[8vh]">
         아이콘을 누르고 제시된 문장을 읽어주세요.
       </div>
 
-      <div
-        style={{
-          color: "#B9E5E8",
-          textAlign: "center",
-          marginTop: "4vh",
-        }}
-      >
-        임시 페이지입니다. 코드 보존 없이 수정하면 됩니다.
+      <div className="text-[#B9E5E8] text-center mt-[4vh]">
+        거친 돌이 다듬어져 조각이 되듯
       </div>
 
-      <div style={{ position: "absolute", top: "20px", right: "40px" }}>
+      <div className="absolute top-5 right-10">
         <button
           onClick={() => navigate("/")}
-          style={{ color: "#B9E5E8", background: "none", border: "none" }}
+          className="text-[#B9E5E8] bg-transparent border-none"
         >
           건너뛰기
         </button>
       </div>
 
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "250px",
-          height: "250px",
-        }}
-      >
-        <Canvas camera={{ position: [7, 7, 7], fov: 70 }}>
-          <AudioCubeVisualizer />
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full overflow-hidden">
+        <Canvas camera={{ position: [3, 3, 3], fov: 70 }}>
+          <AudioSphereVisualizer />
         </Canvas>
       </div>
 
-      <div
-        style={{
-          position: "absolute",
-          bottom: "calc(20px + 2rem)",
-          right: "40px",
-          display: "flex",
-          gap: "20px",
-        }}
-      >
+      <div className="absolute bottom-[calc(20px+6rem)] left-1/2 transform -translate-x-1/2">
+        <AudioRecorder
+          onRecordingComplete={handleRecordingComplete}
+          disabled={isRecordingComplete}
+        />
+      </div>
+
+      <div className="absolute bottom-[calc(20px+2rem)] right-10 flex gap-5">
         <button
           onClick={() => navigate("/analysis/1")}
-          // {/* TODO: 실제 id로 교체 필요 */ }
-          style={{ color: "#B9E5E8", background: "none", border: "none" }}
+          disabled={!isRecordingComplete}
+          className={`bg-transparent border-none ${
+            isRecordingComplete
+              ? "text-[#B9E5E8] cursor-pointer"
+              : "text-[#666] cursor-not-allowed"
+          }`}
         >
           완료
         </button>
         <button
-          onClick={() => navigate("/fastapi")}
-          style={{ color: "#B9E5E8", background: "none", border: "none" }}
+          onClick={() => navigate("/audiotest")}
+          className="text-[#B9E5E8] bg-transparent border-none"
         >
           [분석 결과 test]
         </button>
