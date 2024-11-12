@@ -53,6 +53,9 @@ public enum ErrorCode {
 	FAIL_TO_ANALYZE_SCRIPT("SC006", "대본 분석에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 	FAIL_TO_LOAD_SCRIPT_RESULT("SC007", "대본 분석 결과 조회에 실패하였습니다.", HttpStatus.BAD_REQUEST),
 	FAIL_TO_SEND_MESSAGE("SC008", "Kafka에 메시지 전송 실패하였습니다.", HttpStatus.BAD_REQUEST),
+	FAIL_TO_DELETE_SCRIPT_RESULT("SC009", "대본 분석 결과 삭제 실패하였습니다.", HttpStatus.BAD_REQUEST),
+	SCRIPT_RESULT_NOT_FOUND("SC010", "대본 분석 결과를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
+	FAIL_TO_LOAD_SCRIPT_RESULT_LIST("SC011", "대본 분석 리스트 조회에 실패하였습니다.", HttpStatus.BAD_REQUEST),
 
 	//training
 	FAIL_TO_LOAD_SENTENCE("T001", "문장 불러오기 실패하였습니다", HttpStatus.BAD_REQUEST),

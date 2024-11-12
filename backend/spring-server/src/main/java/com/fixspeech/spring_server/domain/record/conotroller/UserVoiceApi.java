@@ -1,5 +1,7 @@
 package com.fixspeech.spring_server.domain.record.conotroller;
 
+import java.io.IOException;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +33,7 @@ public interface UserVoiceApi {
 		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
 	})
 	com.fixspeech.spring_server.global.common.ApiResponse<?> upload(UserDetails userDetails, MultipartFile file,
-		UserVoiceRequestDto userVoiceRequestDto);
+		UserVoiceRequestDto userVoiceRequestDto) throws IOException;
 
 	@Operation(summary = "녹음 목록 조회 API", description = "사용자의 녹음 목록을 조회하는 API")
 	@ApiResponses(value = {

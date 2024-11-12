@@ -31,23 +31,15 @@ public class GameController implements GameApi {
 
 	@GetMapping
 	public ApiResponse<?> getGame() {
-		try {
-			return ApiResponse.createSuccess(gameService.getGame(), "게임 목록 조회 성공");
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_LOAD_GAME);
-
-		}
+		return ApiResponse.createSuccess(gameService.getGame(), "게임 목록 조회 성공");
 	}
 
 	@GetMapping("/{level}")
 	public ApiResponse<?> getGameWord(
 		@PathVariable int level
 	) {
-		try {
-			return ApiResponse.createSuccess(gameService.getWord(level), "게임 단어 조회 성공");
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_LOAD_WORD);
-		}
+		return ApiResponse.createSuccess(gameService.getWord(level), "게임 단어 조회 성공");
+
 	}
 
 	@PostMapping
@@ -55,14 +47,11 @@ public class GameController implements GameApi {
 		@AuthenticationPrincipal UserDetails userDetails,
 		@RequestBody ResultRequestDto resultRequestDto
 	) {
-		try {
-			Users user = userService.findByEmail(userDetails.getUsername())
-				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-			gameService.saveResult(user, resultRequestDto);
-			return ApiResponse.createSuccess(resultRequestDto, "게임 결과 저장 성공");
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_SAVE_RESULT);
-		}
+		Users user = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		gameService.saveResult(user, resultRequestDto);
+		return ApiResponse.createSuccess(resultRequestDto, "게임 결과 저장 성공");
+
 	}
 
 	@GetMapping("{level}/result")
@@ -71,11 +60,8 @@ public class GameController implements GameApi {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		try {
-			Page<ResultResponseDto> result = gameService.getResult(page, size, level);
-			return ApiResponse.createSuccess(result, "게임 랭킹 출력");
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_LOAD_RESULT);
-		}
+		Page<ResultResponseDto> result = gameService.getResult(page, size, level);
+		return ApiResponse.createSuccess(result, "게임 랭킹 출력");
+
 	}
 }
