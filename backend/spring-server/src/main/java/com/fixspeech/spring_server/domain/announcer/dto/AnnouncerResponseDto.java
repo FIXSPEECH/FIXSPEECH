@@ -1,10 +1,8 @@
 package com.fixspeech.spring_server.domain.announcer.dto;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSample;
 
 import lombok.AllArgsConstructor;
@@ -20,28 +18,28 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AnnouncerResponseDto {
 	private String sampleAddress;
-	private Object clarity;
-	private Object intonationPatternConsistency;
-	private Object melodyIndex;
-	private Object speechRhythm;
-	private Object pauseTiming;
-	private Object rateVariability;
-	private Object jitter;
-	private Object amr;
-	private Object utteranceEnergy;
+	// private Object clarity;
+	// private Object intonationPatternConsistency;
+	// private Object melodyIndex;
+	// private Object speechRhythm;
+	// private Object pauseTiming;
+	// private Object rateVariability;
+	// private Object jitter;
+	// private Object amr;
+	// private Object utteranceEnergy;
 
 	public static AnnouncerResponseDto from(AnnouncerVoiceSample announcer) {
 		return AnnouncerResponseDto.builder()
 			.sampleAddress(announcer.getSampleAddress())
-			.clarity(announcer.getClarity())
-			.intonationPatternConsistency(announcer.getIntonationPatternConsistency())
-			.melodyIndex(announcer.getMelodyIndex())
-			.speechRhythm(announcer.getSpeechRhythm())
-			.pauseTiming(announcer.getPauseTiming())
-			.rateVariability(announcer.getRateVariability())
-			.jitter(announcer.getJitter())
-			.amr(announcer.getAmr())
-			.utteranceEnergy(announcer.getUtteranceEnergy())
+			// .clarity(announcer.getClarity())
+			// .intonationPatternConsistency(announcer.getIntonationPatternConsistency())
+			// .melodyIndex(announcer.getMelodyIndex())
+			// .speechRhythm(announcer.getSpeechRhythm())
+			// .pauseTiming(announcer.getPauseTiming())
+			// .rateVariability(announcer.getRateVariability())
+			// .jitter(announcer.getJitter())
+			// .amr(announcer.getAmr())
+			// .utteranceEnergy(announcer.getUtteranceEnergy())
 			.build();
 	}
 

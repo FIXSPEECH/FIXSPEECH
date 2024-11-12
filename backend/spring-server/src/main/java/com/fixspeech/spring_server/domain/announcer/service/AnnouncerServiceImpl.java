@@ -49,6 +49,7 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 		long idx = (long)(Math.random() * cnt);
 		// 페이지 네이션을 위한 페이지 번호 계산
 		int page = (int)(idx / 1); // 한 페이지에 하나만 출력
+		log.info("인덱스 번호={}", idx);
 
 		PageRequest pageRequest = PageRequest.of(page, 1);
 		Page<AnnouncerVoiceSample> announcerPage = announcerVoiceSampleRepository.findAll(pageRequest);
