@@ -63,6 +63,7 @@ function SituationPractice() {
     }
 
     console.log('isModal', isModal)
+    console.log('audioBlob', audioBlob)
   }, [isModal])
 
 

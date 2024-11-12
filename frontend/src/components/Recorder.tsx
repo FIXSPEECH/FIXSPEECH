@@ -45,6 +45,13 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
     useEffect(() => {
       setIsRecording(false)
     }, [])
+
+    useEffect(() => {
+      if (!isRecording && mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        stopRecording();
+      }
+    }, [isRecording]);
+    
     
 
     const isWavFile = async (blob: Blob) => {
@@ -146,6 +153,7 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
           console.log("[System] 음성 인식이 시작되었습니다.");
         } else {
           recognitionRef.current?.stop();
+          setIsRecording(false);
           stopRecording();
           setShowModal(true)
           console.log("[System] 음성 인식이 중지되었습니다.");
