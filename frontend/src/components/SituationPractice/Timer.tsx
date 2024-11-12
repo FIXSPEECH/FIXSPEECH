@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import RegistModal from './RegistModal'
 import useVoiceStore from "../../store/voiceStore";
+import useTimerStore from "../../store/timerStore";
 
 interface Timer{
   seconds: number
@@ -9,10 +10,13 @@ interface Timer{
 
 function Timer({seconds}: Timer) {
   const {setIsRecording, isRecording} = useVoiceStore();
+  const {resetTimer, setResetTimer} = useTimerStore();
   const [timeLeft, setTimeLeft] = useState(seconds); // 초기 시간 5:00 (300초)
   const [progress, setProgress] = useState(100); // 원형 테두리의 진행 상태 (초기 100%)
   const [showModal, setShowModal] = useState<boolean>(false)
   const navigate = useNavigate();
+  const {scriptId} = useParams();
+  const Id = Number(scriptId)
 
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
@@ -21,8 +25,16 @@ function Timer({seconds}: Timer) {
 
   const ResetModal = () => {
     setShowModal(false); // 모달 닫기
-    navigate('/situation/practice')
+    setTimeLeft(seconds);
+    navigate(`/situation/practice/${Id}`)
   }
+
+  useEffect(() => {
+    if (resetTimer === true) {
+      setTimeLeft(seconds)
+      setResetTimer(false)
+    }
+  },[resetTimer])
 
   useEffect(() => {
     if (!isRecording) {
