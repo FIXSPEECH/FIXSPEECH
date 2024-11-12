@@ -5,6 +5,8 @@ import fastApiInstance from "../axiosFastInstance";
 //     announcer_url: string
 // }
 
+
+// AnnouncerExample.tsx 컴포넌트에서 post 
 export function audioPost(payload: FormData) {
     return fastApiInstance
         .post('/analyze/mimic', payload)

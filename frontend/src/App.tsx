@@ -23,6 +23,7 @@ import ErrorPage from "./pages/ErrorPage";
 import GameRanking from "./pages/Game/GameRanking";
 import FastApiTestPage from "./pages/FastApiTestPage";
 import SelectResult from "./pages/SituationPractice/SelectResultPage";
+import VoiceList from "./pages/SituationPractice/VoiceListPage";
 // 레이아웃 컴포넌트 생성
 const Layout = () => {
   return (
@@ -100,6 +101,10 @@ const router = createBrowserRouter([
           {
             path: "/situation/practice/:scriptId",
             element: <SituationPractice />,
+          },
+          {
+            path: "/situation/voice/:scriptId",
+            element: <VoiceList />,
           },
           {
             path: "/announcer",
