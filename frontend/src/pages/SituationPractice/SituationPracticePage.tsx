@@ -31,10 +31,18 @@ function SituationPractice() {
       console.error('Audio blob is nulll')
       return;
     }
+    
+    // 현재 시간을 이용해 고유한 파일명 생성
+    const timestamp = new Date().getTime();
+    const filename = `recording_${timestamp}.wav`;
+
+    const file = new File([audioBlob], filename, {
+      type: 'audio/wav'
+    });
 
     const data = new FormData()
 
-    data.append('record', audioBlob)
+    data.append('record', file)
 
     try {
       const response = await ScriptVoicePost(data, Id)
