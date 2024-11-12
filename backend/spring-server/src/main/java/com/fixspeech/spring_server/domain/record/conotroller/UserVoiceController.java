@@ -70,7 +70,7 @@ public class UserVoiceController implements UserVoiceApi {
 			return ApiResponse.createSuccess(response.getBody(), "사용자 녹음 파일 분석 성공");
 
 		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
+			throw new CustomException(ErrorCode.FAIL_TO_ANALYZE_RECORD);
 		}
 	}
 
@@ -115,10 +115,14 @@ public class UserVoiceController implements UserVoiceApi {
 	//음성 분석 단일 조회
 	@GetMapping("/{resultId}")
 	public ApiResponse<?> getUserRecordDetail(
+		@AuthenticationPrincipal UserDetails userDetails,
 		@PathVariable Long resultId
 	) {
 		try {
-			UserVoiceListResponseDto result = userVoiceService.getUserRecordDetail(resultId);
+			Users users = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+			UserVoiceListResponseDto result = userVoiceService.getUserRecordDetail(users, resultId);
 			return ApiResponse.createSuccess(result, "음성분석 상세 조회");
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.FAIL_TO_LOAD_RECORD_DETAIL);

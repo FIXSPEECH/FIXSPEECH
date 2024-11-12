@@ -2,6 +2,7 @@ package com.fixspeech.spring_server.domain.record.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,6 +19,7 @@ import com.fixspeech.spring_server.domain.record.model.UserVoiceFile;
 import com.fixspeech.spring_server.domain.record.repository.AnalyzeJsonResultRepository;
 import com.fixspeech.spring_server.domain.record.repository.AnalyzeResultRepository;
 import com.fixspeech.spring_server.domain.record.repository.UserVoiceRepository;
+import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.global.exception.CustomException;
 import com.fixspeech.spring_server.global.exception.ErrorCode;
 
@@ -60,9 +62,13 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 	}
 
 	@Override
-	public UserVoiceListResponseDto getUserRecordDetail(Long resultId) {
+	public UserVoiceListResponseDto getUserRecordDetail(Users users, Long resultId) {
 
-		return convertTouserVoiceDto(resultId);
+		AnalyzeJsonResult analyzeResult = analyzeJsonResultRepository.findById(resultId)
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		if (!Objects.equals(analyzeResult.getUserVoiceFile().getUserId(), users.getId()))
+			throw new CustomException(ErrorCode.AUTHENTICATION_FAIL_ERROR);
+		return convertToUserVoiceDto(analyzeResult, resultId);
 	}
 
 	/**
@@ -76,9 +82,7 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 		return AnalyzeResultResponseDto.from(analyzeResult);
 	}
 
-	private UserVoiceListResponseDto convertTouserVoiceDto(Long resultId) {
-		AnalyzeJsonResult analyzeResult = analyzeJsonResultRepository.findById(resultId)
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+	private UserVoiceListResponseDto convertToUserVoiceDto(AnalyzeJsonResult analyzeResult, Long resultId) {
 
 		UserVoiceFile userVoiceFile = analyzeResult.getUserVoiceFile();
 		Map<String, Object> rawData = analyzeResult.getData();
