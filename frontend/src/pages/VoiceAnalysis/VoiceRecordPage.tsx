@@ -2,28 +2,24 @@ import { useNavigate } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import AudioSphereVisualizer from "../../components/Visualizer/AudioSphereVisualizer";
 import AudioRecorder from "../../components/VoiceQuality/AudioRecorder";
-import { useState } from "react";
 import useVoiceStore from "../../store/voiceStore";
 import useAuthStore from "../../store/authStore";
 
 function VoiceRecord() {
   const navigate = useNavigate();
-  const [isRecordingComplete, setIsRecordingComplete] = useState(false);
   const { setAudioBlob } = useVoiceStore();
   const userGender = useAuthStore((state) => state.userProfile?.gender);
 
   const handleRecordingComplete = (audioFile: File) => {
     console.log("녹음 완료:", audioFile);
-    setIsRecordingComplete(true);
 
     // Blob 형태로 저장
     const blob = new Blob([audioFile], { type: audioFile.type });
     setAudioBlob(blob);
-  };
 
-  const handleAnalysis = () => {
-    if (isRecordingComplete) {
-      navigate("/audiotest", { state: { fromRecordPage: true } });
+    // 녹음 완료 시 바로 분석 페이지로 이동
+    if (userGender) {
+      navigate("/record/result", { state: { fromRecordPage: true } });
     }
   };
 
@@ -46,22 +42,8 @@ function VoiceRecord() {
       <div className="absolute bottom-[calc(20px+6rem)] left-1/2 transform -translate-x-1/2">
         <AudioRecorder
           onRecordingComplete={handleRecordingComplete}
-          disabled={isRecordingComplete}
+          disabled={false}
         />
-      </div>
-
-      <div className="absolute bottom-[calc(20px+2rem)] right-10 flex gap-5">
-        <button
-          onClick={handleAnalysis}
-          disabled={!isRecordingComplete || !userGender}
-          className={`bg-transparent border-none ${
-            isRecordingComplete && userGender
-              ? "text-[#B9E5E8] cursor-pointer"
-              : "text-[#666] cursor-not-allowed"
-          }`}
-        >
-          분석하기
-        </button>
       </div>
     </div>
   );

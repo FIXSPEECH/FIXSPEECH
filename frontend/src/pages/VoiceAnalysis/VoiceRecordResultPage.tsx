@@ -4,6 +4,7 @@ import MetricsVisualizer from "../../components/VoiceQuality/MetricsVisualizer";
 import useAuthStore from "../../store/authStore";
 import useVoiceStore from "../../store/voiceStore";
 import { useNavigate, useLocation } from "react-router-dom";
+import GradientCirclePlanes from "../../components/Loader/GradientCirclePlanes";
 
 // 음성 분석 메트릭 데이터 타입 정의
 interface MetricData {
@@ -116,9 +117,14 @@ const VoiceRecordResultPage = () => {
   const { audioBlob } = useVoiceStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [loadingDots, setLoadingDots] = useState("");
 
   const handleReRecord = () => {
     navigate("/record"); // 녹음 페이지로 이동
+  };
+
+  const handleGoHome = () => {
+    navigate("/"); // 홈으로 이동
   };
 
   // 컴포넌트 마운트 시 녹음된 파일 처리
@@ -173,6 +179,19 @@ const VoiceRecordResultPage = () => {
     }
   }, [audioBlob, userGender, location.state]);
 
+  useEffect(() => {
+    if (loading) {
+      const interval = setInterval(() => {
+        setLoadingDots((prev) => {
+          if (prev === "....") return "";
+          return prev + ".";
+        });
+      }, 500);
+
+      return () => clearInterval(interval);
+    }
+  }, [loading]);
+
   // UI 렌더링
   return (
     <div className="min-h-screen bg-transparent text-white p-8">
@@ -181,9 +200,11 @@ const VoiceRecordResultPage = () => {
 
         {/* 로딩 상태 표시 */}
         {loading && (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mx-auto"></div>
-            <p className="mt-4 text-cyan-400">분석 중입니다...</p>
+          <div className="flex flex-col items-center justify-center py-8">
+            <GradientCirclePlanes />
+            <p className="mt-8 text-white text-lg font-medium">
+              분석 중입니다{loadingDots}
+            </p>
           </div>
         )}
 
@@ -278,6 +299,16 @@ const VoiceRecordResultPage = () => {
               {/* 처리 시간 표시 */}
               <div className="mt-8 text-sm text-gray-400">
                 처리 시간: {response.data.processing_time_seconds.toFixed(3)}초
+              </div>
+
+              {/* 홈으로 가기 버튼 추가 */}
+              <div className="mt-8 flex justify-center">
+                <button
+                  onClick={handleGoHome}
+                  className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors font-medium"
+                >
+                  학습하러 가기
+                </button>
               </div>
             </div>
           </div>
