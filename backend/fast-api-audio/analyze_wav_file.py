@@ -330,8 +330,8 @@ def calculate_overall_score(metrics):
     """
     grade_scores = {
         "excellent": 100,
-        "good": 30,
-        "poor": -20,
+        "good": 75,
+        "poor": 35,
         "unknown": 0
     }
     
@@ -459,11 +459,13 @@ def calculate_metrics_simple(file):
 
 def convert_np_to_python(obj):
     """
-    NumPy 타입을 Python 기본 타입으로 변환
+    NumPy 타입을 Python 기본 타입으로 변환하고 무한값/NaN 처리
     """
     if isinstance(obj, np.ndarray):
         return obj.tolist()
-    if isinstance(obj, np.float32):
+    if isinstance(obj, (np.float32, np.float64, float)):
+        if np.isnan(obj) or np.isinf(obj):
+            return 0.0  # 또는 다른 기본값
         return float(obj)
     if isinstance(obj, np.integer):
         return int(obj)

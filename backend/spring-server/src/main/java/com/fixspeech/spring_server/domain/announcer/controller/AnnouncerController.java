@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("announcer")
 @RequiredArgsConstructor
-public class AnnouncerController {
+public class AnnouncerController implements AnnouncerApi {
 
 	private final UserService userService;
 	private final AnnouncerService announcerService;
@@ -36,7 +36,7 @@ public class AnnouncerController {
 
 	@GetMapping("one")
 	public ApiResponse<?> getOneAnnouncerData() {
-		return ApiResponse.createSuccess(announcerService.getOneAnnouncerData(),"아나운서 데이터 단일 조회 성공");
+		return ApiResponse.createSuccess(announcerService.getOneAnnouncerData(), "아나운서 데이터 단일 조회 성공");
 	}
 
 	/**
@@ -47,7 +47,8 @@ public class AnnouncerController {
 	 * @return SmallAnnouncerVoiceSampleResponseDto
 	 */
 	@GetMapping("all")
-	public ApiResponse<?> getAllAnnouncerData(@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+	public ApiResponse<?> getAllAnnouncerData(
+		@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
 		@RequestParam(required = false, defaultValue = "createdAt", value = "criteria") String criteria) {
 		try {
 			return ApiResponse.createSuccess(announcerService.getAllAnnouncerData(pageNo, criteria), "모든 아나운서 데이터 출력");
@@ -55,9 +56,6 @@ public class AnnouncerController {
 			return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
 		}
 	}
-
-
-
 
 	/**
 	 * 아나운서 따라잡기 사용자 음성 저장
@@ -71,15 +69,16 @@ public class AnnouncerController {
 	public ApiResponse<?> saveComparisonResult(@AuthenticationPrincipal UserDetails userDetails,
 		@RequestPart(value = "record", required = false) MultipartFile file,
 		@RequestPart(value = "data") CompareResultRequestDto compareResultRequestDto) {
-			try {
-				Users users = userService.findByEmail(userDetails.getUsername())
-						.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-				String recordAddress = s3Service.upload(file, "compare");
-				Long compareId = announcerService.saveComparisonResult(compareResultRequestDto, recordAddress, users.getId());
-				return ApiResponse.createSuccess(compareId, "비교 결과 저장 완료");
-			} catch (Exception e) {
-				throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
-			}
+		try {
+			Users users = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+			String recordAddress = s3Service.upload(file, "compare");
+			Long compareId = announcerService.saveComparisonResult(compareResultRequestDto, recordAddress,
+				users.getId());
+			return ApiResponse.createSuccess(compareId, "비교 결과 저장 완료");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
+		}
 	}
 
 	/**
@@ -89,8 +88,9 @@ public class AnnouncerController {
 	 */
 	@GetMapping("compare/{id}")
 	public ApiResponse<?> getOneUserToAnnouncerVoiceComparison(@PathVariable Long id) {
-		UserAnnouncerVoiceComparisonResponseDto userAnnouncerVoiceComparisonResultDto = announcerService.getOneUserToAnnouncerVoiceComparison(id);
-		return ApiResponse.createSuccess(userAnnouncerVoiceComparisonResultDto,"사용자와 아나운서 음성 비교 데이터 출력 성공");
+		UserAnnouncerVoiceComparisonResponseDto userAnnouncerVoiceComparisonResultDto = announcerService.getOneUserToAnnouncerVoiceComparison(
+			id);
+		return ApiResponse.createSuccess(userAnnouncerVoiceComparisonResultDto, "사용자와 아나운서 음성 비교 데이터 출력 성공");
 	}
 
 	/**
@@ -101,14 +101,17 @@ public class AnnouncerController {
 	 * @return Page<UserAnnouncerVoiceComparisonResponseDto>
 	 */
 	@GetMapping("/compare/all")
-	public ApiResponse<?> getAllUserToAnnouncerVoiceComparison(@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+	public ApiResponse<?> getAllUserToAnnouncerVoiceComparison(
+		@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
 		@RequestParam(required = false, defaultValue = "createdAt", value = "criteria") String criteria,
 		@AuthenticationPrincipal UserDetails userDetails) {
 		String email = userDetails.getUsername();
 
 		Users user = userService.findByEmail(email)
 			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-		
-		return ApiResponse.createSuccess(announcerService.getAllUserToAnnouncerVoiceComparison(pageNo, criteria, user.getId()), "사용자와 아나운서 음성 비교 데이터 페이지 출력 성공");
+
+		return ApiResponse.createSuccess(
+			announcerService.getAllUserToAnnouncerVoiceComparison(pageNo, criteria, user.getId()),
+			"사용자와 아나운서 음성 비교 데이터 페이지 출력 성공");
 	}
 }
