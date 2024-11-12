@@ -19,6 +19,8 @@ import com.fixspeech.spring_server.domain.script.model.ScriptAnalyzeResult;
 import com.fixspeech.spring_server.domain.script.repository.ScriptAnalyzeResultRepository;
 import com.fixspeech.spring_server.domain.script.repository.ScriptRepository;
 import com.fixspeech.spring_server.domain.user.model.Users;
+import com.fixspeech.spring_server.global.exception.CustomException;
+import com.fixspeech.spring_server.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -62,6 +64,8 @@ public class ScriptServiceImpl implements ScriptService {
 	public ScriptResponseDto getScript(Long scriptId, Users users) {
 		Script script = scriptRepository.findById(scriptId)
 			.orElseThrow(null);
+		if (!script.getUser().equals(users))
+			throw new CustomException(ErrorCode.AUTHENTICATION_FAIL_ERROR);
 		ScriptResponseDto scriptResponseDto = new ScriptResponseDto(
 			script.getTitle(),
 			script.getContent(),
