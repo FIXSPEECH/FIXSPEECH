@@ -7,7 +7,7 @@ import { tokenRefresh } from "./axiosInstance"; // tokenRefresh 함수를 별도
 const fastApiInstance = axios.create({
     baseURL: import.meta.env.VITE_FASTAPI_URL, // FastAPI 서버의 URL
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "multipart/form-data",
     },
   });
   

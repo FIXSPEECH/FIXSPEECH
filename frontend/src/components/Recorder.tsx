@@ -42,6 +42,15 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
       setIsRecording(false)
     }, [])
     
+
+    const isWavFile = async (blob: Blob) => {
+      const arrayBuffer = await blob.arrayBuffer();
+      const view = new DataView(arrayBuffer);
+      const isWav = view.getUint32(0, false) === 0x52494646 && view.getUint32(8, false) === 0x57415645;
+      console.log("isWavFile check: ", isWav);
+      return isWav;
+    };
+
     const startRecording = async () => {
 
         // 녹음 시작하기 전에 audioURL 결과 초기화
@@ -75,16 +84,39 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
             }
           };
     
-          mediaRecorder.onstop = () => {
+          mediaRecorder.onstop = async() => {
             // 녹음 된 음성 파일
             const audioBlob = new Blob(audioChunksRef.current, {
               type: "audio/wav",
             });
 
-            setAudioBlob(audioBlob)
+            // setAudioBlob(audioBlob)
 
-            const audioUrl = URL.createObjectURL(audioBlob);
-            setAudioURL(audioUrl);
+            // const audioUrl = URL.createObjectURL(audioBlob);
+            // setAudioURL(audioUrl);
+
+             // WAV 파일로 변환
+             const arrayBuffer = await audioBlob.arrayBuffer();
+             const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+             const wavBuffer = audioBufferToWav(audioBuffer);
+             const wavBlob = new Blob([wavBuffer], { type: "audio/wav" });
+ 
+            //  setAudioBlob(wavBlob);
+            //  const audioUrl = URL.createObjectURL(wavBlob);
+            //  setAudioURL(audioUrl);
+
+             // WAV 파일인지 확인
+            const isWav = await isWavFile(wavBlob);
+            if (isWav) {
+              console.log("This is a valid WAV file.");
+              setAudioBlob(wavBlob);
+              const audioUrl = URL.createObjectURL(wavBlob);
+              setAudioURL(audioUrl);
+            } else {
+              console.error("The recorded file is not a valid WAV file.");
+            }
+        
+            
           };
     
           mediaRecorder.start();
@@ -139,6 +171,62 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
       }
         
       console.log('barcolor', barColor)
+
+      const audioBufferToWav = (buffer: AudioBuffer) => {
+        let numOfChannels = buffer.numberOfChannels,
+          length = buffer.length * numOfChannels * 2 + 44,
+          bufferArray = new ArrayBuffer(length),
+          view = new DataView(bufferArray),
+          channels = [],
+          i,
+          sample,
+          offset = 0,
+          pos = 0;
+    
+        // write WAV header
+        setUint32(0x46464952); // "RIFF"
+        setUint32(length - 8); // file length - 8
+        setUint32(0x45564157); // "WAVE"
+    
+        setUint32(0x20746d66); // "fmt "
+        setUint32(16); // length = 16
+        setUint16(1); // PCM (uncompressed)
+        setUint16(numOfChannels);
+        setUint32(buffer.sampleRate);
+        setUint32(buffer.sampleRate * 2 * numOfChannels); // avg. bytes/sec
+        setUint16(numOfChannels * 2); // block-align
+        setUint16(16); // 16-bit (hardcoded)
+    
+        setUint32(0x61746164); // "data"
+        setUint32(length - pos - 4); // chunk length
+
+         // write interleaved data
+      for (i = 0; i < buffer.numberOfChannels; i++)
+        channels.push(buffer.getChannelData(i));
+  
+      while (pos < length) {
+        for (i = 0; i < numOfChannels; i++) {
+          sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+          sample = (0.5 + sample * 32767) | 0; // scale to 16-bit signed int
+          view.setInt16(pos, sample, true); // write 16-bit sample
+          pos += 2;
+        }
+        offset++;
+      }
+  
+      return view;
+  
+      function setUint16(data: any) {
+        view.setUint16(pos, data, true);
+        pos += 2;
+      }
+  
+      function setUint32(data: any) {
+        view.setUint32(pos, data, true);
+        pos += 4;
+      }
+    };
+
 
     return(
         <div className="text-center mt-20">
