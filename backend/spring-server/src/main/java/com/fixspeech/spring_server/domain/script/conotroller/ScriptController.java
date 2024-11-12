@@ -1,9 +1,8 @@
 package com.fixspeech.spring_server.domain.script.conotroller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -69,14 +68,11 @@ public class ScriptController implements ScriptApi {
 		@AuthenticationPrincipal UserDetails userDetails,
 		@RequestBody ScriptRequestDto scriptRequestDto
 	) {
-		try {
-			Users users = userService.findByEmail(userDetails.getUsername())
-				.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-			Long scriptId = scriptService.uploadScript(scriptRequestDto, users);
-			return ApiResponse.createSuccess(scriptId, "대본 저장 완료");
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_SAVE_SCRIPT);
-		}
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+		Long scriptId = scriptService.uploadScript(scriptRequestDto, users);
+		return ApiResponse.createSuccess(scriptId, "대본 저장 완료");
+
 	}
 
 	//대본 리스트 불러오기
@@ -86,14 +82,11 @@ public class ScriptController implements ScriptApi {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		try {
-			Users users = userService.findByEmail(userDetails.getUsername())
-				.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-			Page<ScriptListDto> result = scriptService.getScriptList(users, page, size);
-			return ApiResponse.createSuccess(result, "대본 리슽 조회 성공");
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_LOAD_SCRIPT);
-		}
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+		Page<ScriptListDto> result = scriptService.getScriptList(users, page, size);
+		return ApiResponse.createSuccess(result, "대본 리슽 조회 성공");
+
 	}
 
 	//단일 대본 불러오기
@@ -102,14 +95,11 @@ public class ScriptController implements ScriptApi {
 		@AuthenticationPrincipal UserDetails userDetails,
 		@PathVariable Long scriptId
 	) {
-		try {
-			Users users = userService.findByEmail(userDetails.getUsername())
-				.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-			ScriptResponseDto script = scriptService.getScript(scriptId, users);
-			return ApiResponse.createSuccess(script, "단일 대본 조회 성공");
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_LOAD_SCRIPT);
-		}
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+		ScriptResponseDto script = scriptService.getScript(scriptId, users);
+		return ApiResponse.createSuccess(script, "단일 대본 조회 성공");
+
 	}
 
 	@DeleteMapping("{scriptId}")
@@ -119,11 +109,8 @@ public class ScriptController implements ScriptApi {
 	) {
 		Users users = userService.findByEmail(userDetails.getUsername())
 			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-		if (Objects.equals(users.getId(), scriptService.getScriptWriter(scriptId))) {
-			scriptService.deleteScript(scriptId);
-			return ApiResponse.success("대본 삭제 성공");
-		}
-		return ApiResponse.createError(ErrorCode.FAIL_TO_DELETE_SCRIPT);
+		scriptService.deleteScript(users, scriptId);
+		return ApiResponse.success("대본 삭제 성공");
 	}
 
 	@PostMapping("/analyze/{scriptId}")
@@ -131,33 +118,12 @@ public class ScriptController implements ScriptApi {
 		@AuthenticationPrincipal UserDetails userDetails,
 		@PathVariable Long scriptId,
 		@RequestPart(value = "record", required = false) MultipartFile file
-	) {
-		try {
-			Users users = userService.findByEmail(userDetails.getUsername())
-				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-			byte[] fileBytes = file.getBytes();
-			String redisKey = "file:" + UUID.randomUUID() + ":" + file.getOriginalFilename();
-			redisTemplate.opsForValue().set(redisKey, fileBytes);
+	) throws IOException {
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		scriptService.sendMessage(file, scriptId, users);
+		return ApiResponse.success("음성 파일 분석 시작");
 
-			VoiceAnalysisMessage voiceAnalysisMessage = new VoiceAnalysisMessage(
-				redisKey,
-				scriptId,
-				file.getOriginalFilename(),
-				users.getId(),
-				users.getGender()
-			);
-			System.out.println(voiceAnalysisMessage);
-			kafkaTemplate.send("voice-analysis-topic", voiceAnalysisMessage)
-				.thenAccept(result -> log.info("Message sent successfully for user: {}", users.getId()))
-				.exceptionally(ex -> {
-					log.error("Failed to send message: ", ex);
-					return null;
-				});
-			return ApiResponse.createSuccess(null, "음성 파일 분석 시작");
-
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_SEND_MESSAGE);
-		}
 	}
 
 	@KafkaListener(topics = "voice-analysis-topic", groupId = "voice-analysis-group", concurrency = "5")
@@ -218,21 +184,33 @@ public class ScriptController implements ScriptApi {
 		}
 	}
 
+	//대본 음성데이터 상세 조회
 	@GetMapping("/result/detail/{resultId}")
 	public ApiResponse<?> getResultDetail(
 		@AuthenticationPrincipal UserDetails userDetails,
 		@PathVariable Long resultId
 	) {
-		try {
-			Users users = userService.findByEmail(userDetails.getUsername())
-				.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-			ScriptAnalyzeResponseDto scriptAnalyzeResponseDto = scriptService.getResult(resultId, users);
-			return ApiResponse.createSuccess(scriptAnalyzeResponseDto, "대본 연습 결과 상세 조회");
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_LOAD_SCRIPT_RESULT);
-		}
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+		ScriptAnalyzeResponseDto scriptAnalyzeResponseDto = scriptService.getResult(resultId, users);
+		return ApiResponse.createSuccess(scriptAnalyzeResponseDto, "대본 연습 결과 상세 조회");
+
 	}
 
+	//대본 음성데이터 단일 삭제
+	@DeleteMapping("/result/detail/{resultId}")
+	public ApiResponse<?> deleteResultDetail(
+		@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable Long resultId
+	) {
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+		scriptService.deleteResult(resultId, users);
+		return ApiResponse.success("대본 분석 결과 삭제 성공");
+
+	}
+
+	//대본별 음성 리스트 조회
 	@GetMapping("/result/{scriptId}")
 	public ApiResponse<?> getScriptResultList(
 		@AuthenticationPrincipal UserDetails userDetails,
@@ -240,14 +218,11 @@ public class ScriptController implements ScriptApi {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		try {
-			Users users = userService.findByEmail(userDetails.getUsername())
-				.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-			Page<ScriptResultListDto> scriptResultListDtos = scriptService.getScriptResultList(scriptId, page, size);
-			return ApiResponse.createSuccess(scriptResultListDtos, "대본당 녹음 리스트 조회 성공");
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_LOAD_SCRIPT_RESULT);
-		}
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+		Page<ScriptResultListDto> scriptResultListDtos = scriptService.getScriptResultList(scriptId, page, size);
+		return ApiResponse.createSuccess(scriptResultListDtos, "대본당 녹음 리스트 조회 성공");
+
 	}
 
 }

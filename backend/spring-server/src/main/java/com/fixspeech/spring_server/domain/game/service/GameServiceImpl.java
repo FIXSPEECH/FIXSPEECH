@@ -20,6 +20,8 @@ import com.fixspeech.spring_server.domain.game.repository.GameResultRepository;
 import com.fixspeech.spring_server.domain.game.repository.GameWordRepository;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
+import com.fixspeech.spring_server.global.exception.CustomException;
+import com.fixspeech.spring_server.global.exception.ErrorCode;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,47 +36,66 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public List<Game> getGame() {
-		return gameRepository.findAll();
+		try {
+			return gameRepository.findAll();
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_GAME);
+
+		}
 	}
 
 	@Override
 	public List<String> getWord(int level) {
-		Game game = gameRepository.findTopByLevel(level);
-		List<GameWord> wordList = gameWordRepository.findAllByGameId(game.getId());
-		List<String> words = new ArrayList<String>();
-		for (GameWord word : wordList) {
-			words.add(word.getWord());
+		try {
+			Game game = gameRepository.findTopByLevel(level);
+			List<GameWord> wordList = gameWordRepository.findAllByGameId(game.getId());
+			List<String> words = new ArrayList<>();
+			for (GameWord word : wordList) {
+				words.add(word.getWord());
+			}
+			Collections.shuffle(words);
+			return words;
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_WORD);
 		}
-		Collections.shuffle(words);
-		return words;
 	}
 
 	@Transactional
 	@Override
 	public void saveResult(Users user, ResultRequestDto resultRequestDto) {
-		Game game = gameRepository.findTopByLevel(resultRequestDto.level());
-		if (gameResultRepository.existsByGameIdAndUsers_Id(game.getId(), user.getId())) {
-			gameResultRepository.deleteAllByGameIdAndUsers_Id(game.getId(), user.getId());
+		try {
+
+			Game game = gameRepository.findTopByLevel(resultRequestDto.level());
+			if (gameResultRepository.existsByGameIdAndUsers_Id(game.getId(), user.getId())) {
+				gameResultRepository.deleteAllByGameIdAndUsers_Id(game.getId(), user.getId());
+			}
+			;
+			GameResult gameResult = GameResult.builder()
+				.users(user)
+				.game(game)
+				.correctNumber(resultRequestDto.correctNumber())
+				.playtime(resultRequestDto.playtime())
+				.build();
+			gameResultRepository.save(gameResult);
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_SAVE_RESULT);
 		}
-		;
-		GameResult gameResult = GameResult.builder()
-			.users(user)
-			.game(game)
-			.correctNumber(resultRequestDto.correctNumber())
-			.playtime(resultRequestDto.playtime())
-			.build();
-		gameResultRepository.save(gameResult);
 	}
 
 	@Override
 	public Page<ResultResponseDto> getResult(int page, int size, int level) {
-		Pageable pageable = PageRequest.of(page, size);
-		Game game = gameRepository.findTopByLevel(level);
-		Page<GameResult> resultPages = gameResultRepository.findAllByGameIdOrderByPlaytimeDesc(game.getId(), pageable);
-		List<ResultResponseDto> resultResponseDtos = resultPages.stream()
-			.map(this::convertToResultDto)
-			.toList();
-		return new PageImpl<>(resultResponseDtos, pageable, resultPages.getTotalElements());
+		try {
+			Pageable pageable = PageRequest.of(page, size);
+			Game game = gameRepository.findTopByLevel(level);
+			Page<GameResult> resultPages = gameResultRepository.findAllByGameIdOrderByPlaytimeDesc(game.getId(),
+				pageable);
+			List<ResultResponseDto> resultResponseDtos = resultPages.stream()
+				.map(this::convertToResultDto)
+				.toList();
+			return new PageImpl<>(resultResponseDtos, pageable, resultPages.getTotalElements());
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_RESULT);
+		}
 	}
 
 	private ResultResponseDto convertToResultDto(GameResult resultPage) {

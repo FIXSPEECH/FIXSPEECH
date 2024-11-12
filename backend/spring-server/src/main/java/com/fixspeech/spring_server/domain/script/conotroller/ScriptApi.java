@@ -1,5 +1,7 @@
 package com.fixspeech.spring_server.domain.script.conotroller;
 
+import java.io.IOException;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,7 +54,7 @@ public interface ScriptApi {
 		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
 	})
 	com.fixspeech.spring_server.global.common.ApiResponse<?> analyze(UserDetails userDetails, Long scriptId,
-		MultipartFile file);
+		MultipartFile file) throws IOException;
 
 	@Operation(summary = "분석 결과 상세 조회 API", description = "특정 분석 결과의 상세 정보를 조회하는 API")
 	@ApiResponses(value = {
