@@ -1,30 +1,49 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import RegistModal from './RegistModal'
 import useVoiceStore from "../../store/voiceStore";
+import useTimerStore from "../../store/timerStore";
+import useModalStore from "../../store/modalStore";
 
 interface Timer{
   seconds: number
 }
 
 function Timer({seconds}: Timer) {
-  const {setIsRecording} = useVoiceStore();
+  const {setIsRecording, isRecording} = useVoiceStore();
+  const {setIsModal} = useModalStore();
+  const {resetTimer, setResetTimer} = useTimerStore();
   const [timeLeft, setTimeLeft] = useState(seconds); // 초기 시간 5:00 (300초)
   const [progress, setProgress] = useState(100); // 원형 테두리의 진행 상태 (초기 100%)
   const [showModal, setShowModal] = useState<boolean>(false)
   const navigate = useNavigate();
+  const {scriptId} = useParams();
+  const Id = Number(scriptId)
 
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
-    navigate('/')
+    setIsModal(true);
+    setResetTimer(true)
+    // navigate('/situation')
   }
 
   const ResetModal = () => {
     setShowModal(false); // 모달 닫기
-    navigate('/situation/practice')
+    setTimeLeft(seconds);
+    navigate(`/situation/practice/${Id}`)
   }
 
   useEffect(() => {
+    if (resetTimer === true) {
+      setTimeLeft(seconds)
+      setResetTimer(false)
+    }
+  },[resetTimer])
+
+  useEffect(() => {
+    if (!isRecording) {
+      return ;  // isRecording이 false일때는 일시정지
+    }
     if (timeLeft === 0) {
         setShowModal(true)
         setIsRecording(false)
@@ -36,7 +55,7 @@ function Timer({seconds}: Timer) {
     }, 1000);
 
     return () => clearInterval(interval); // 컴포넌트 언마운트 시 interval 클리어
-  }, [timeLeft]);
+  }, [timeLeft, isRecording]);
 
   useEffect(() => {
     // 타이머가 줄어들면서 원형 테두리 진행 상태 업데이트

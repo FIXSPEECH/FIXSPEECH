@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect} from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import MicNoneIcon from "@mui/icons-material/MicNone";
 import MicIcon from "@mui/icons-material/Mic";
 import useVoiceStore from "../store/voiceStore";
@@ -7,6 +7,7 @@ import { LiveAudioVisualizer } from "react-audio-visualize";
 import RegistModal from './SituationPractice/RegistModal'
 import RecordModal from './AnnouncerPractice/RecordModal'
 import useModalStore from "../store/modalStore";
+import useTimerStore from "../store/timerStore";
 
 interface RecorderProps{
   color: string;
@@ -27,7 +28,8 @@ declare global {
 
 
 function Recorder({color, barColor, width, height, visualizeWidth, modalType}: RecorderProps){
-    const { isRecording, audioURL, setAudioBlob, setIsRecording, setAudioURL } = useVoiceStore();
+    const { isRecording, setAudioBlob, setIsRecording, setAudioURL } = useVoiceStore();
+    const {setResetTimer} = useTimerStore();
     const {setIsModal} = useModalStore();
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -37,10 +39,19 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
     const [showModal, setShowModal] = useState<boolean>(false)
     const recognitionRef = useRef<any>(null);
     const navigate = useNavigate();
+    const {scriptId} = useParams();
+    const Id = Number(scriptId)
 
     useEffect(() => {
       setIsRecording(false)
     }, [])
+
+    useEffect(() => {
+      if (!isRecording && mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        stopRecording();
+      }
+    }, [isRecording]);
+    
     
 
     const isWavFile = async (blob: Blob) => {
@@ -142,6 +153,7 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
           console.log("[System] 음성 인식이 시작되었습니다.");
         } else {
           recognitionRef.current?.stop();
+          setIsRecording(false);
           stopRecording();
           setShowModal(true)
           console.log("[System] 음성 인식이 중지되었습니다.");
@@ -156,7 +168,8 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
         if (modalType === "record") {
           navigate('/announcer'); // FinalModal의 경우 홈 화면으로 이동
         } else if (modalType === "regist") {
-          navigate('/situation'); // RegistModal의 경우 다른 경로로 이동
+          setResetTimer(true)
+          // navigate('/situation'); // RegistModal의 경우 다른 경로로 이동
         }
       }
         
@@ -166,7 +179,8 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
         if (modalType === "record") {
           navigate('/announcer'); // FinalModal의 경우 홈 화면으로 이동
         } else if (modalType === "regist") {
-          navigate('/situation/practice')
+          setResetTimer(true)
+          navigate(`/situation/practice/${Id}`)
         }
       }
         
@@ -292,11 +306,11 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
         </div>
 
       {/* 녹음된 오디오를 재생할 수 있는 오디오 플레이어 */}
-      {audioURL && (
+      {/* {audioURL && (
         <audio controls src={audioURL} className="mt-4">
           Your browser does not support the audio element.
         </audio>
-      )}
+      )} */}
 
   
       {modalType === "regist" ? (
