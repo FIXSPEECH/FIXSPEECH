@@ -8,8 +8,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fixspeech.spring_server.domain.record.conotroller.UserVoiceController;
 import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
@@ -37,14 +47,18 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 	@Transactional
 	@Override
 	public Long saveFile(UserVoiceRequestDto userVoiceRequestDto, String fileUrl, Long userId) {
-		UserVoiceFile userVoiceFile = UserVoiceFile.builder()
-			.userId(userId)
-			.recordTitle(userVoiceRequestDto.getRecordTitle())
-			.recordAddress(fileUrl)
-			.build();
-		userVoiceRepository.save(userVoiceFile);
-		UserVoiceFile newUserVoiceFile = userVoiceRepository.findTopByUserIdOrderByCreatedAtDesc(userId);
-		return newUserVoiceFile.getId();
+		try {
+			UserVoiceFile userVoiceFile = UserVoiceFile.builder()
+				.userId(userId)
+				.recordTitle(userVoiceRequestDto.getRecordTitle())
+				.recordAddress(fileUrl)
+				.build();
+			userVoiceRepository.save(userVoiceFile);
+			UserVoiceFile newUserVoiceFile = userVoiceRepository.findTopByUserIdOrderByCreatedAtDesc(userId);
+			return newUserVoiceFile.getId();
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
+		}
 	}
 
 	@Override
@@ -105,33 +119,62 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 
 	@Override
 	public Page<UserVoiceListResponseDto> getUserRecordList(int page, int size, Long userId) {
-		Pageable pageable = PageRequest.of(page, size);
-		Page<AnalyzeJsonResult> analyzePages = analyzeJsonResultRepository.findAllByUserVoiceFile_UserId(userId,
-			pageable);
+		try {
+			Pageable pageable = PageRequest.of(page, size);
+			Page<AnalyzeJsonResult> analyzePages = analyzeJsonResultRepository.findAllByUserVoiceFile_UserId(userId,
+				pageable);
 
-		List<UserVoiceListResponseDto> userVoiceListResponseDtos = analyzePages.stream()
-			.map(analyzeResult -> {
-				UserVoiceFile userVoiceFile = analyzeResult.getUserVoiceFile();
-				Map<String, Object> rawData = analyzeResult.getData();
+			List<UserVoiceListResponseDto> userVoiceListResponseDtos = analyzePages.stream()
+				.map(analyzeResult -> {
+					UserVoiceFile userVoiceFile = analyzeResult.getUserVoiceFile();
+					Map<String, Object> rawData = analyzeResult.getData();
 
-				// 새로운 데이터 구조에 맞게 변환
-				Map<String, Object> metrics = (Map<String, Object>)rawData.get("metrics");
+					// 새로운 데이터 구조에 맞게 변환
+					Map<String, Object> metrics = (Map<String, Object>)rawData.get("metrics");
 
-				// 새로운 응답 데이터 구조 생성
-				Map<String, Object> responseData = Map.of(
-					"metrics", metrics
-				);
+					// 새로운 응답 데이터 구조 생성
+					Map<String, Object> responseData = Map.of(
+						"metrics", metrics
+					);
 
-				return new UserVoiceListResponseDto(
-					responseData,
-					userVoiceFile.getRecordTitle(),
-					userVoiceFile.getRecordAddress(),
-					userVoiceFile.getCreatedAt().toLocalDate()
-				);
-			})
-			.toList();
+					return new UserVoiceListResponseDto(
+						responseData,
+						userVoiceFile.getRecordTitle(),
+						userVoiceFile.getRecordAddress(),
+						userVoiceFile.getCreatedAt().toLocalDate()
+					);
+				})
+				.toList();
 
-		return new PageImpl<>(userVoiceListResponseDtos, pageable, analyzePages.getTotalElements());
+			return new PageImpl<>(userVoiceListResponseDtos, pageable, analyzePages.getTotalElements());
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_RECORD_LIST);
+		}
+	}
+
+	@Override
+	public ResponseEntity<Map> analyze(Users users, MultipartFile file) {
+		try {
+
+			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+			body.add("file", new UserVoiceController.MultipartInputStreamFileResource(file.getInputStream(),
+				file.getOriginalFilename()));
+			body.add("gender", users.getGender());
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<Map> response = restTemplate.exchange(
+				"https://k11d206.p.ssafy.io/fastapi/analyze/full",
+				HttpMethod.POST,
+				requestEntity,
+				Map.class
+			);
+			return response;
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_ANALYZE_RECORD);
+		}
 	}
 
 }

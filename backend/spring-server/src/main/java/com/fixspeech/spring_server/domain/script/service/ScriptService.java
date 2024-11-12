@@ -1,8 +1,10 @@
 package com.fixspeech.spring_server.domain.script.service;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.domain.script.dto.ScriptAnalyzeResponseDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptListDto;
@@ -20,11 +22,16 @@ public interface ScriptService {
 
 	Long getScriptWriter(Long scriptId);
 
-	void deleteScript(Long scriptId);
+	void deleteScript(Users users, Long scriptId);
 
 	void save(String s3Url, Long scriptId, Map<String, Object> responseBody);
 
 	ScriptAnalyzeResponseDto getResult(Long resultId, Users users);
 
 	Page<ScriptResultListDto> getScriptResultList(Long scriptId, int page, int size);
+
+	void deleteResult(Long resultId, Users users);
+
+	void sendMessage(MultipartFile file, Long scriptId, Users users) throws IOException;
+
 }
