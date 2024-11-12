@@ -4,6 +4,9 @@ import Script from "../../components/SituationPractice/Script";
 import Timer from "../../components/SituationPractice/Timer";
 import Recorder from "../../components/Recorder";
 import { ScriptGet } from "../../services/SituationPractice/SituationPracticeGet";
+import useModalStore from "../../store/modalStore";
+import useVoiceStore from "../../store/voiceStore";
+import { ScriptVoicePost } from "../../services/SituationPractice/SituationPracticePost";
 
 interface Data {
   title: string;
@@ -18,8 +21,35 @@ function SituationPractice() {
   const {scriptId} = useParams();
   const Id = Number(scriptId)
   const [data, setData] = useState<Data>();
+  const {isModal} = useModalStore();
+  const {audioBlob} = useVoiceStore();
 
   console.log('id 타입', typeof Id)
+
+  const postVoice = async() => {
+    if(!audioBlob) {
+      console.error('Audio blob is nulll')
+      return;
+    }
+
+    const data = new FormData()
+
+    data.append('record', audioBlob)
+
+    try {
+      const response = await ScriptVoicePost(data, Id)
+      console.log(response)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+    if (isModal === true) {
+      postVoice();
+      console.log('isModal', isModal)
+    }
+  }, [isModal])
   
   useEffect(() => {
     const PracticeContent = async() => {
