@@ -1,14 +1,13 @@
 package com.fixspeech.spring_server.domain.record.conotroller;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.config.s3.S3Service;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
-import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
 import com.fixspeech.spring_server.domain.record.service.UserVoiceService;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
@@ -46,27 +44,27 @@ public class UserVoiceController implements UserVoiceApi {
 
 		Users users = userService.findByEmail(userDetails.getUsername())
 			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-		ResponseEntity<Map> response = userVoiceService.analyze(users, file);
-		return ApiResponse.createSuccess(response.getBody(), "사용자 녹음 파일 분석 성공");
+		Map<String, Object> result = userVoiceService.analyzeAndSave(users, file);
+		return ApiResponse.createSuccess(result, "사용자 녹음 파일 분석 성공");
 
 	}
-
-	@PostMapping("/save")
-	public ApiResponse<?> upload(
-		@AuthenticationPrincipal UserDetails userDetails,
-		@RequestPart(value = "record", required = false) MultipartFile file,
-		@RequestPart(value = "data") UserVoiceRequestDto userVoiceRequestDto
-	) throws IOException {
-		Users users = userService.findByEmail(userDetails.getUsername())
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-		String fileUrl = s3Service.upload(file);
-		Long recordId = userVoiceService.saveFile(userVoiceRequestDto, fileUrl, users.getId());
-		System.out.println("controller: " + fileUrl);
-
-		userVoiceService.saveResult(userVoiceRequestDto, users.getId(), recordId);
-		return ApiResponse.success("사용자 녹음 파일 및 분석 결과 저장 성공");
-
-	}
+	//
+	// @PostMapping("/save")
+	// public ApiResponse<?> upload(
+	// 	@AuthenticationPrincipal UserDetails userDetails,
+	// 	@RequestPart(value = "record", required = false) MultipartFile file,
+	// 	@RequestPart(value = "data") UserVoiceRequestDto userVoiceRequestDto
+	// ) throws IOException {
+	// 	Users users = userService.findByEmail(userDetails.getUsername())
+	// 		.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+	// 	String fileUrl = s3Service.upload(file);
+	// 	Long recordId = userVoiceService.saveFile(userVoiceRequestDto, fileUrl, users.getId());
+	// 	System.out.println("controller: " + fileUrl);
+	//
+	// 	userVoiceService.saveResult(userVoiceRequestDto, users.getId(), recordId);
+	// 	return ApiResponse.success("사용자 녹음 파일 및 분석 결과 저장 성공");
+	//
+	// }
 
 	//리스트 목록
 	@GetMapping
@@ -93,6 +91,18 @@ public class UserVoiceController implements UserVoiceApi {
 
 		UserVoiceListResponseDto result = userVoiceService.getUserRecordDetail(users, resultId);
 		return ApiResponse.createSuccess(result, "음성분석 상세 조회");
+	}
+
+	//음성 분석 단일 삭제
+	@DeleteMapping("/{recordId}")
+	public ApiResponse<?> deleteUserRecord(
+		@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable Long recordId
+	) {
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		userVoiceService.deleteRecord(users, recordId);
+		return ApiResponse.success("유저 음성 삭제 완료");
 	}
 
 	// MultipartFile의 InputStream을 처리하기 위한 헬퍼 클래스
