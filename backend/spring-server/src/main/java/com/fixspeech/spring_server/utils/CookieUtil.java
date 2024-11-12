@@ -10,20 +10,25 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
 
-	private static final long COOKIE_MAX_AGE = 60 * 60 * 24 * 14;
-
 	// 요청값(이름, 값, 만료 기간)을 바탕으로 HTTP 응답에 쿠키 추가
 	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
 		Cookie cookie = new Cookie(name, value);
-		cookie.setPath("/");
-		cookie.setMaxAge(maxAge);
+		cookie.setDomain("localhost");
+		cookie.setMaxAge(maxAge); // 쿠키 만료 시간 설정
+		cookie.setPath("/"); // 모든 경로에 대해 적용
+		cookie.setSecure(true); // HTTPS 연결에서만 쿠키 전송
+		cookie.setHttpOnly(true); // JavaScript에서 접근 불가
+		cookie.setAttribute("SameSite", "None");
+		response.addCookie(cookie);
 	}
 
 	// 쿠키의 이름을 입력받아 쿠키 삭제
 	public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
 		Cookie[] cookies = request.getCookies();
 
-		if (cookies == null) return;
+		if (cookies == null) {
+			return;
+		}
 
 		// 실제로 삭제하는 방법은 없으므로 파라미터로 넘어온 키의 쿠키를 빈 값으로 바꾸고
 		// 만료 시간을 0으로 설정해 쿠키가 재생성 되자마자 만료 처리한다.
@@ -37,11 +42,13 @@ public class CookieUtil {
 		}
 	}
 
+	// 객체를 직렬화해 쿠키의 값으로 변환
 	public static String serialize(Object obj) {
 		return Base64.getUrlEncoder()
 			.encodeToString(SerializationUtils.serialize(obj));
 	}
 
+	// 쿠키를 역직렬화해서 객체로 변환
 	public static <T> T deserialize(Cookie cookie, Class<T> cls) {
 		return cls.cast(
 			SerializationUtils.deserialize(
@@ -49,5 +56,4 @@ public class CookieUtil {
 			)
 		);
 	}
-
 }
