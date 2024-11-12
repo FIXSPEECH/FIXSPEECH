@@ -291,7 +291,7 @@ async def analyze_full(
                               "code": "INVALID_FILE_TYPE"
                           }
                       }
-                  }
+                  } 
               },
               500: {
                   "description": "서버 에러",
@@ -308,7 +308,7 @@ async def analyze_full(
           }
           )
 async def mimic_announcer(user_file: UploadFile = File(..., description="사용자 음성 파일"),
-                          announcer_url: str = Body(..., embed=True, description="아나운서 음성 파일 URL")):
+                          announcer_url: str = Form(...,description="아나운서 음성 파일 URL")):
     """
     사용자 음성 파일과 아나운서 음성 파일 URL을 이용하여 유사도 계산
     """
