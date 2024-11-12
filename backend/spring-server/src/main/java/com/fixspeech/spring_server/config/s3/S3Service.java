@@ -36,6 +36,10 @@ public class S3Service {
 	private final String DIR_NAME = "record";
 	private final String COMPARE_DIR_NAME = "compare";
 
+	public String getBucket() {
+		return bucket;
+	}
+
 	public String uploadBytes(byte[] bytes, String fileName, String contentType) {
 		String newFileName = buildFileName(fileName, "");
 
@@ -83,7 +87,6 @@ public class S3Service {
 		return uploadS3(multipartFile.getOriginalFilename(), uploadFile, extension, dir);
 	}
 
-
 	// 파일 이름을 고유하게 생성 (buildFileName 메서드 사용)
 	// S3에 파일 업로드 (putS3 메서드 사용)
 	// 업로드 후 로컬에서 임시로 생성된 파일을 삭제 (removeNewFile 메서드 사용)
@@ -109,7 +112,6 @@ public class S3Service {
 		return uploadImageUrl;
 	}
 
-
 	// 기능: 파일 이름에 고유한 UUID를 붙여 중복 방지
 	// 작동 방식: 파일 이름이 확장자(extend)로 끝나는 경우 그대로 두고, 그렇지 않으면 확장자를 추가
 	private String buildFileName(String fileName, String extend) {
@@ -134,7 +136,6 @@ public class S3Service {
 		}
 		return dir + "/" + uuid + "_" + fileName + extend;
 	}
-	
 
 	// PutObjectRequest 객체를 사용해 파일을 S3 버킷에 업로드
 	// 업로드된 파일의 URL을 반환
