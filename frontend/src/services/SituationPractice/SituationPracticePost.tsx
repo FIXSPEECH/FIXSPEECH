@@ -30,3 +30,22 @@ export async function ScriptDelte(scriptId: number) {
             return Promise.reject(error)
         })
 }
+
+
+// 상황별 연습 목소리 post
+export async function ScriptVoicePost(payload: FormData, scriptId: number) {
+    return axiosInstance
+        .post(`/script/analyze/${scriptId}`, payload, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        } )
+        .then((response) => {
+            return Promise.resolve(response.data)
+        })
+        .catch ((error) => {
+            return Promise.reject(error)
+        })
+}
+
+
