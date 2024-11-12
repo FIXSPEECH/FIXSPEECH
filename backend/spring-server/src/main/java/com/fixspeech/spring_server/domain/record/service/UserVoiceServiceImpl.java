@@ -115,10 +115,12 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 	// }
 
 	@Override
-	public UserVoiceListResponseDto getUserRecordDetail(Users users, Long resultId) {
+	public UserVoiceListResponseDto getUserRecordDetail(Users users, Long recordId) {
 
-		AnalyzeJsonResult analyzeResult = analyzeJsonResultRepository.findById(resultId)
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		UserVoiceFile userVoiceFile = userVoiceRepository.findById(recordId)
+			.orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+		Long resultId = userVoiceFile.getId();
+		AnalyzeJsonResult analyzeResult = analyzeJsonResultRepository.findTopByRecordId(resultId);
 		if (!Objects.equals(analyzeResult.getUserVoiceFile().getUserId(), users.getId()))
 			throw new CustomException(ErrorCode.AUTHENTICATION_FAIL_ERROR);
 		return convertToUserVoiceDto(analyzeResult, resultId);

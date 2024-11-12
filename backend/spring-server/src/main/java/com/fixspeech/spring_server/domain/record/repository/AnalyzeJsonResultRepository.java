@@ -8,4 +8,6 @@ import com.fixspeech.spring_server.domain.record.model.AnalyzeJsonResult;
 
 public interface AnalyzeJsonResultRepository extends JpaRepository<AnalyzeJsonResult, Long> {
 	Page<AnalyzeJsonResult> findAllByUserVoiceFile_UserId(Long userId, Pageable pageable);
+
+	AnalyzeJsonResult findTopByRecordId(Long id);
 }
