@@ -36,9 +36,12 @@ app.add_middleware(
     allow_headers=["*"],    # 모든 헤더 허용
 )
 
+# OPTIONS 요청 수동 처리 (선택 사항)
+@app.options("/{full_path:path}")
+async def preflight_handler(full_path: str):
+    return JSONResponse(status_code=200)
+
 # WAV 파일 유효성 검사 함수
-
-
 def validate_wav_file(file: UploadFile):
     if not file.filename.endswith('.wav'):
         logger.error(f"Invalid file type: {file.filename}. Expected .wav file")

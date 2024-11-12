@@ -43,11 +43,11 @@ const MetricsVisualizer = ({ metrics }: MetricsVisualizerProps) => {
   const gradeToValue = (grade: string) => {
     switch (grade) {
       case "excellent":
-        return 1;
+        return 1; // 100%
       case "good":
-        return 0.7;
+        return 0.75; // 75%
       case "poor":
-        return 0.3;
+        return 0.35; // 35%
       default:
         return 0;
     }

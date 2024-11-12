@@ -54,7 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/script")
-public class ScriptController {
+public class ScriptController implements ScriptApi {
 	private final ScriptService scriptService;
 	private final S3Service s3Service;
 	private final EmitterService emitterService;
@@ -69,10 +69,14 @@ public class ScriptController {
 		@AuthenticationPrincipal UserDetails userDetails,
 		@RequestBody ScriptRequestDto scriptRequestDto
 	) {
-		Users users = userService.findByEmail(userDetails.getUsername())
-			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-		Long scriptId = scriptService.uploadScript(scriptRequestDto, users);
-		return ApiResponse.createSuccess(scriptId, "대본 저장 완료");
+		try {
+			Users users = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+			Long scriptId = scriptService.uploadScript(scriptRequestDto, users);
+			return ApiResponse.createSuccess(scriptId, "대본 저장 완료");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_SAVE_SCRIPT);
+		}
 	}
 
 	//대본 리스트 불러오기
@@ -82,10 +86,14 @@ public class ScriptController {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		Users users = userService.findByEmail(userDetails.getUsername())
-			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-		Page<ScriptListDto> result = scriptService.getScriptList(users, page, size);
-		return ApiResponse.createSuccess(result, "대본 리슽 조회 성공");
+		try {
+			Users users = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+			Page<ScriptListDto> result = scriptService.getScriptList(users, page, size);
+			return ApiResponse.createSuccess(result, "대본 리슽 조회 성공");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_SCRIPT);
+		}
 	}
 
 	//단일 대본 불러오기
@@ -94,10 +102,14 @@ public class ScriptController {
 		@AuthenticationPrincipal UserDetails userDetails,
 		@PathVariable Long scriptId
 	) {
-		Users users = userService.findByEmail(userDetails.getUsername())
-			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-		ScriptResponseDto script = scriptService.getScript(scriptId, users);
-		return ApiResponse.createSuccess(script, "단일 대본 조회 성공");
+		try {
+			Users users = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+			ScriptResponseDto script = scriptService.getScript(scriptId, users);
+			return ApiResponse.createSuccess(script, "단일 대본 조회 성공");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_SCRIPT);
+		}
 	}
 
 	@DeleteMapping("{scriptId}")
@@ -110,9 +122,8 @@ public class ScriptController {
 		if (Objects.equals(users.getId(), scriptService.getScriptWriter(scriptId))) {
 			scriptService.deleteScript(scriptId);
 			return ApiResponse.success("대본 삭제 성공");
-
 		}
-		return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+		return ApiResponse.createError(ErrorCode.FAIL_TO_DELETE_SCRIPT);
 	}
 
 	@PostMapping("/analyze/{scriptId}")
@@ -145,7 +156,7 @@ public class ScriptController {
 			return ApiResponse.createSuccess(null, "음성 파일 분석 시작");
 
 		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
+			throw new CustomException(ErrorCode.FAIL_TO_SEND_MESSAGE);
 		}
 	}
 
@@ -203,8 +214,7 @@ public class ScriptController {
 				put("message", "음성 분석 중 오류가 발생했습니다.");
 			}});
 
-			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
-			// 여기에 실패 처리 로직 구현 (예: 재시도 큐에 넣기, 알림 보내기 등)
+			throw new CustomException(ErrorCode.FAIL_TO_ANALYZE_SCRIPT);
 		}
 	}
 
@@ -213,10 +223,14 @@ public class ScriptController {
 		@AuthenticationPrincipal UserDetails userDetails,
 		@PathVariable Long resultId
 	) {
-		Users users = userService.findByEmail(userDetails.getUsername())
-			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-		ScriptAnalyzeResponseDto scriptAnalyzeResponseDto = scriptService.getResult(resultId, users);
-		return ApiResponse.createSuccess(scriptAnalyzeResponseDto, "대본 연습 결과 상세 조회");
+		try {
+			Users users = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+			ScriptAnalyzeResponseDto scriptAnalyzeResponseDto = scriptService.getResult(resultId, users);
+			return ApiResponse.createSuccess(scriptAnalyzeResponseDto, "대본 연습 결과 상세 조회");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_SCRIPT_RESULT);
+		}
 	}
 
 	@GetMapping("/result/{scriptId}")
@@ -226,10 +240,14 @@ public class ScriptController {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		Users users = userService.findByEmail(userDetails.getUsername())
-			.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
-		Page<ScriptResultListDto> scriptResultListDtos = scriptService.getScriptResultList(scriptId, page, size);
-		return ApiResponse.createSuccess(scriptResultListDtos, "대본당 녹음 리스트 조회 성공");
+		try {
+			Users users = userService.findByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new UsernameNotFoundException(userDetails.getUsername()));
+			Page<ScriptResultListDto> scriptResultListDtos = scriptService.getScriptResultList(scriptId, page, size);
+			return ApiResponse.createSuccess(scriptResultListDtos, "대본당 녹음 리스트 조회 성공");
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_LOAD_SCRIPT_RESULT);
+		}
 	}
 
 }
