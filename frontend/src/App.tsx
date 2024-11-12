@@ -5,6 +5,7 @@ import LoginPage from "./pages/Login/LoginPage";
 import MainPage from "./pages/MainPage";
 import AccessPage from "./pages/Login/AccessPage";
 import VoiceRecord from "./pages/VoiceAnalysis/VoiceRecordPage";
+import VoiceRecordResult from "./pages/VoiceAnalysis/VoiceRecordResultPage";
 import VoiceAnalysisList from "./pages/VoiceAnalysis/VoiceAnalysisListPage";
 import VoiceAnalysisDetail from "./pages/VoiceAnalysis/VoiceAnalysisDetailPage";
 import TrainSelect from "./pages/PronounceTraining/TrainSelectPage";
@@ -21,7 +22,6 @@ import Game from "./pages/Game/GamePage";
 import MyVoice from "./pages/MyVoicePage";
 import ErrorPage from "./pages/ErrorPage";
 import GameRanking from "./pages/Game/GameRanking";
-import FastApiTestPage from "./pages/FastApiTestPage";
 import SelectResult from "./pages/SituationPractice/SelectResultPage";
 import VoiceList from "./pages/SituationPractice/VoiceListPage";
 // 레이아웃 컴포넌트 생성
@@ -61,6 +61,10 @@ const router = createBrowserRouter([
           {
             path: "/record",
             element: <VoiceRecord />,
+          },
+          {
+            path: "/record/result",
+            element: <VoiceRecordResult />,
           },
           {
             path: "/analysis",
@@ -121,10 +125,6 @@ const router = createBrowserRouter([
           {
             path: "/myvoice",
             element: <MyVoice />,
-          },
-          {
-            path: "/audiotest",
-            element: <FastApiTestPage />,
           },
         ],
       },

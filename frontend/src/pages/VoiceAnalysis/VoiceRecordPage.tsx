@@ -3,15 +3,28 @@ import { Canvas } from "@react-three/fiber";
 import AudioSphereVisualizer from "../../components/Visualizer/AudioSphereVisualizer";
 import AudioRecorder from "../../components/VoiceQuality/AudioRecorder";
 import { useState } from "react";
+import useVoiceStore from "../../store/voiceStore";
+import useAuthStore from "../../store/authStore";
 
 function VoiceRecord() {
   const navigate = useNavigate();
   const [isRecordingComplete, setIsRecordingComplete] = useState(false);
+  const { setAudioBlob } = useVoiceStore();
+  const userGender = useAuthStore((state) => state.userProfile?.gender);
 
   const handleRecordingComplete = (audioFile: File) => {
     console.log("녹음 완료:", audioFile);
     setIsRecordingComplete(true);
-    // TODO: 녹음된 파일 처리 로직 추가
+
+    // Blob 형태로 저장
+    const blob = new Blob([audioFile], { type: audioFile.type });
+    setAudioBlob(blob);
+  };
+
+  const handleAnalysis = () => {
+    if (isRecordingComplete) {
+      navigate("/audiotest", { state: { fromRecordPage: true } });
+    }
   };
 
   return (
@@ -22,15 +35,6 @@ function VoiceRecord() {
 
       <div className="text-[#B9E5E8] text-center mt-[4vh]">
         거친 돌이 다듬어져 조각이 되듯
-      </div>
-
-      <div className="absolute top-5 right-10">
-        <button
-          onClick={() => navigate("/")}
-          className="text-[#B9E5E8] bg-transparent border-none"
-        >
-          건너뛰기
-        </button>
       </div>
 
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full overflow-hidden">
@@ -48,21 +52,15 @@ function VoiceRecord() {
 
       <div className="absolute bottom-[calc(20px+2rem)] right-10 flex gap-5">
         <button
-          onClick={() => navigate("/analysis/1")}
-          disabled={!isRecordingComplete}
+          onClick={handleAnalysis}
+          disabled={!isRecordingComplete || !userGender}
           className={`bg-transparent border-none ${
-            isRecordingComplete
+            isRecordingComplete && userGender
               ? "text-[#B9E5E8] cursor-pointer"
               : "text-[#666] cursor-not-allowed"
           }`}
         >
-          완료
-        </button>
-        <button
-          onClick={() => navigate("/audiotest")}
-          className="text-[#B9E5E8] bg-transparent border-none"
-        >
-          [분석 결과 test]
+          분석하기
         </button>
       </div>
     </div>
