@@ -41,15 +41,31 @@ public enum ErrorCode {
 	FAIL_TO_UPLOAD_RECORD("R001", "유저 목소리 녹음 업로드 실패하였습니다.", HttpStatus.BAD_REQUEST),
 	FAIL_TO_LOAD_RECORD_LIST("R002", "유저 음성 분석 리스트 조회 실패하였습니다", HttpStatus.BAD_REQUEST),
 	FAIL_TO_LOAD_RECORD_DETAIL("R003", "유저 음성 분석 상세 조회 실패하였습니다", HttpStatus.BAD_REQUEST),
+	FAIL_TO_ANALYZE_RECORD("R004", "음성 분석에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+	INVALID_RECORD_FORMAT("R005", "지원하지 않는 음성 파일 형식입니다.", HttpStatus.BAD_REQUEST),
+
+	// Script
+	SCRIPT_NOT_FOUND("SC001", "대본을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+	FAIL_TO_SAVE_SCRIPT("SC002", "대본 저장에 실패하였습니다.", HttpStatus.BAD_REQUEST),
+	FAIL_TO_DELETE_SCRIPT("SC003", "대본 삭제에 실패하였습니다.", HttpStatus.BAD_REQUEST),
+	FAIL_TO_LOAD_SCRIPT("SC004", "대본 조회에 실패하였습니다.", HttpStatus.BAD_REQUEST),
+	UNAUTHORIZED_SCRIPT_ACCESS("SC005", "대본에 대한 접근 권한이 없습니다.", HttpStatus.FORBIDDEN),
+	FAIL_TO_ANALYZE_SCRIPT("SC006", "대본 분석에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+	FAIL_TO_LOAD_SCRIPT_RESULT("SC007", "대본 분석 결과 조회에 실패하였습니다.", HttpStatus.BAD_REQUEST),
+	FAIL_TO_SEND_MESSAGE("SC008", "Kafka에 메시지 전송 실패하였습니다.", HttpStatus.BAD_REQUEST),
 
 	//training
 	FAIL_TO_LOAD_SENTENCE("T001", "문장 불러오기 실패하였습니다", HttpStatus.BAD_REQUEST),
+	FAIL_TO_SAVE_TRAINING("T002", "훈련 결과 저장에 실패하였습니다.", HttpStatus.BAD_REQUEST),
+	FAIL_TO_LOAD_TRAINING("T003", "훈련 결과 조회에 실패하였습니다.", HttpStatus.BAD_REQUEST),
 
-	//Game
+	// Game
 	FAIL_TO_LOAD_GAME("G001", "게임 목록 조회 실패하였습니다.", HttpStatus.BAD_REQUEST),
 	FAIL_TO_SAVE_RESULT("G002", "게임 결과 저장 실패하였습니다", HttpStatus.BAD_REQUEST),
 	FAIL_TO_LOAD_RESULT("G003", "게임 랭킹 조회 실패하였습니다", HttpStatus.BAD_REQUEST),
-	FAIL_TO_LOAD_WORD("G004", "게임 단어 생성 실패하였습니다", HttpStatus.BAD_REQUEST);
+	FAIL_TO_LOAD_WORD("G004", "게임 단어 생성 실패하였습니다", HttpStatus.BAD_REQUEST),
+	INVALID_GAME_LEVEL("G005", "유효하지 않은 게임 레벨입니다.", HttpStatus.BAD_REQUEST),
+	GAME_NOT_FOUND("G006", "해당 게임을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
 
 	private final String code;
 	private final String message;

@@ -47,7 +47,9 @@ public interface UserVoiceApi {
 		@ApiResponse(responseCode = "200", description = "상세 조회 성공"),
 		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
 	})
-	com.fixspeech.spring_server.global.common.ApiResponse<?> getUserRecordDetail(Long resultId);
+	com.fixspeech.spring_server.global.common.ApiResponse<?> getUserRecordDetail(
+		@AuthenticationPrincipal UserDetails userDetails,
+		Long resultId);
 }
 
 
