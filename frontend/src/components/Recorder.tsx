@@ -160,7 +160,8 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
         if (modalType === "record") {
           navigate('/announcer'); // FinalModal의 경우 홈 화면으로 이동
         } else if (modalType === "regist") {
-          navigate('/situation'); // RegistModal의 경우 다른 경로로 이동
+          setResetTimer(true)
+          // navigate('/situation'); // RegistModal의 경우 다른 경로로 이동
         }
       }
         

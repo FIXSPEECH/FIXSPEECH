@@ -3,13 +3,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import RegistModal from './RegistModal'
 import useVoiceStore from "../../store/voiceStore";
 import useTimerStore from "../../store/timerStore";
+import useModalStore from "../../store/modalStore";
 
 interface Timer{
   seconds: number
 }
 
 function Timer({seconds}: Timer) {
-  const {setIsRecording, isRecording} = useVoiceStore();
+  const {setIsRecording, isRecording, setAudioURL} = useVoiceStore();
+  const {setIsModal} = useModalStore();
   const {resetTimer, setResetTimer} = useTimerStore();
   const [timeLeft, setTimeLeft] = useState(seconds); // 초기 시간 5:00 (300초)
   const [progress, setProgress] = useState(100); // 원형 테두리의 진행 상태 (초기 100%)
@@ -20,7 +22,9 @@ function Timer({seconds}: Timer) {
 
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
-    navigate('/situation')
+    setIsModal(true);
+    setResetTimer(true)
+    // navigate('/situation')
   }
 
   const ResetModal = () => {

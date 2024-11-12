@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Script from "../../components/SituationPractice/Script";
 import Timer from "../../components/SituationPractice/Timer";
 import Recorder from "../../components/Recorder";
@@ -7,6 +7,8 @@ import { ScriptGet } from "../../services/SituationPractice/SituationPracticeGet
 import useModalStore from "../../store/modalStore";
 import useVoiceStore from "../../store/voiceStore";
 import { ScriptVoicePost } from "../../services/SituationPractice/SituationPracticePost";
+import Swal from 'sweetalert2';
+import '../../styles/SituationPractice/SwalStyles.css'
 
 interface Data {
   title: string;
@@ -21,8 +23,10 @@ function SituationPractice() {
   const {scriptId} = useParams();
   const Id = Number(scriptId)
   const [data, setData] = useState<Data>();
-  const {isModal} = useModalStore();
+  const {isModal, setIsModal} = useModalStore();
   const {audioBlob} = useVoiceStore();
+  const navigate = useNavigate();
+  const [status, setStatus] = useState<string>('')
 
   console.log('id 타입', typeof Id)
 
@@ -46,7 +50,8 @@ function SituationPractice() {
 
     try {
       const response = await ScriptVoicePost(data, Id)
-      console.log(response)
+
+      setStatus(response.status)
     } catch (e) {
       console.log(e)
     }
@@ -55,9 +60,30 @@ function SituationPractice() {
   useEffect(() => {
     if (isModal === true) {
       postVoice();
-      console.log('isModal', isModal)
     }
+
+    console.log('isModal', isModal)
   }, [isModal])
+
+
+  useEffect(() => {
+    if (status === 'C000') {
+      Swal.fire({
+        title: "대본 연습이 전송되었습니다.",
+        text: '분석 완료시 알려드리겠습니다.',
+        showDenyButton: false,
+        confirmButtonText: "확인",
+        customClass: {
+          confirmButton: "swal2-confirm-btn", // 삭제 버튼
+        },
+        buttonsStyling: false
+      }) .then(() =>{
+        setStatus('')
+        setIsModal(false)
+        navigate('/situation')
+      })
+  }
+  }, [status])
   
   useEffect(() => {
     const PracticeContent = async() => {
