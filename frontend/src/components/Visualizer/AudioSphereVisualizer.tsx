@@ -15,6 +15,9 @@ const VISUALIZER_CONFIG = {
   RADIUS: 2, // 전체 구의 반지름
   N_CUBES: 1000, // 총 큐브 개수
   CUBE_SIZE: 0.08, // 큐브 크기
+  MIN_SCALE: 0.9, // 최소 크기 배율 (0.8 -> 0.9로 증가)
+  MAX_SCALE: 1.3, // 최대 크기 배율 (1.5 -> 1.3으로 감소)
+  SCALE_SMOOTHING: 0.05, // 크기 변화 부드러움 (0.1 -> 0.05로 감소)
 
   // 색상 설정
   COLOR_START: new Color("#00ffff"), // 네온 시안
@@ -22,8 +25,8 @@ const VISUALIZER_CONFIG = {
   COLOR_ACTIVE: new Color("#ffff00"), // 선명한 노랑
 
   // 애니메이션 설정
-  ROTATION_SPEED: 0.0005, // 회전 속도
-  COLOR_TRANSITION_SPEED: 0.05, // 색상 전환 속도
+  ROTATION_SPEED: 0.0003, // 회전 속도 감소
+  COLOR_TRANSITION_SPEED: 0.03, // 색상 전환 속도 감소
 
   // 조명 설정
   AMBIENT_LIGHT: {
@@ -34,7 +37,9 @@ const VISUALIZER_CONFIG = {
   SAMPLE_SIZE: 32, // 오디오 샘플 크기
 
   // 반응성 설정
-  AUDIO_SENSITIVITY: 2.5, // 오디오 민감도
+  AUDIO_SENSITIVITY: 4.0, // 오디오 민감도 증가 (2.5 -> 4.0)
+  VOLUME_THRESHOLD: 0.05, // 볼륨 임계값 (작은 소리에도 반응하도록)
+  BASE_SCALE: 0.2, // 기본 스케일 값 (항상 어느정도 움직임 보장)
 };
 
 const AudioSphereVisualizer = () => {
@@ -44,6 +49,8 @@ const AudioSphereVisualizer = () => {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const currentColors = useRef<Color[]>([]);
+  const currentScale = useRef<number>(1);
+  const prevVolumeRef = useRef<number>(0); // 이전 볼륨 저장용
 
   const [isListening, setIsListening] = useState(false);
   const tmpMatrix = useMemo(() => new Matrix4(), []);
@@ -59,7 +66,7 @@ const AudioSphereVisualizer = () => {
         analyserRef.current = audioContextRef.current.createAnalyser();
         const source = audioContextRef.current.createMediaStreamSource(stream);
 
-        analyserRef.current.smoothingTimeConstant = 0.8;
+        analyserRef.current.smoothingTimeConstant = 0.9; // 더 부드러운 전환을 위해 증가
         analyserRef.current.fftSize = VISUALIZER_CONFIG.SAMPLE_SIZE * 2;
         source.connect(analyserRef.current);
 
@@ -146,10 +153,26 @@ const AudioSphereVisualizer = () => {
       totalVolume += Math.abs(dataArrayRef.current[i] - 128);
     }
     const averageVolume = totalVolume / dataArrayRef.current.length / 128;
+
+    // 볼륨 보간 및 기본 움직임 추가
+    const smoothedVolume = averageVolume * 0.3 + prevVolumeRef.current * 0.7;
+    prevVolumeRef.current = smoothedVolume;
+
     const normalizedVolume = Math.min(
-      averageVolume * VISUALIZER_CONFIG.AUDIO_SENSITIVITY,
+      smoothedVolume * VISUALIZER_CONFIG.AUDIO_SENSITIVITY +
+        VISUALIZER_CONFIG.BASE_SCALE,
       1
     );
+
+    // 목표 스케일 계산 (볼륨에 따라)
+    const targetScale =
+      VISUALIZER_CONFIG.MIN_SCALE +
+      (VISUALIZER_CONFIG.MAX_SCALE - VISUALIZER_CONFIG.MIN_SCALE) *
+        normalizedVolume;
+
+    // 현재 스케일을 목표 스케일로 부드럽게 보간
+    currentScale.current +=
+      (targetScale - currentScale.current) * VISUALIZER_CONFIG.SCALE_SMOOTHING;
 
     for (let i = 0; i < VISUALIZER_CONFIG.N_CUBES; i++) {
       const t = i / VISUALIZER_CONFIG.N_CUBES;
@@ -161,9 +184,9 @@ const AudioSphereVisualizer = () => {
       const z = Math.cos(inclination);
 
       tmpMatrix.setPosition(
-        x * VISUALIZER_CONFIG.RADIUS,
-        y * VISUALIZER_CONFIG.RADIUS,
-        z * VISUALIZER_CONFIG.RADIUS
+        x * VISUALIZER_CONFIG.RADIUS * currentScale.current,
+        y * VISUALIZER_CONFIG.RADIUS * currentScale.current,
+        z * VISUALIZER_CONFIG.RADIUS * currentScale.current
       );
 
       const scale = VISUALIZER_CONFIG.CUBE_SIZE;
@@ -177,8 +200,8 @@ const AudioSphereVisualizer = () => {
       const currentColor = currentColors.current[i];
       const targetColor = new Color();
 
-      // 볼륨에 따른 색상 보간
-      if (normalizedVolume > 0.1) {
+      // 볼륨에 따른 색상 보간 (임계값 낮춤)
+      if (normalizedVolume > VISUALIZER_CONFIG.VOLUME_THRESHOLD) {
         targetColor.lerpColors(
           VISUALIZER_CONFIG.COLOR_END,
           VISUALIZER_CONFIG.COLOR_ACTIVE,
