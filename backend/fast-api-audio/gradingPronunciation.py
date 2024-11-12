@@ -42,7 +42,7 @@ def compare_texts(answer_text: str, user_text: str):
     # 차이점 추출
     differences = []
     for opcode, a0, a1, b0, b1 in matcher.get_opcodes():
-        if opcode != "equal":
+        if opcode == "replace":
           answer_start = answer_map[a0] if a0 < len(answer_map) else None
           answer_end = answer_map[a1 - 1] + 1 if a1 - 1 < len(answer_map) else None
           user_start = user_map[b0] if b0 < len(user_map) else None
