@@ -1,6 +1,10 @@
 package com.fixspeech.spring_server.domain.record.service;
 
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
@@ -18,4 +22,5 @@ public interface UserVoiceService {
 
 	Page<UserVoiceListResponseDto> getUserRecordList(int page, int size, Long id);
 
+	ResponseEntity<Map> analyze(Users users, MultipartFile file);
 }
