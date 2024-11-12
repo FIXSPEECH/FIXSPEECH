@@ -8,7 +8,7 @@ interface Timer{
 }
 
 function Timer({seconds}: Timer) {
-  const {setIsRecording} = useVoiceStore();
+  const {setIsRecording, isRecording} = useVoiceStore();
   const [timeLeft, setTimeLeft] = useState(seconds); // 초기 시간 5:00 (300초)
   const [progress, setProgress] = useState(100); // 원형 테두리의 진행 상태 (초기 100%)
   const [showModal, setShowModal] = useState<boolean>(false)
@@ -16,7 +16,7 @@ function Timer({seconds}: Timer) {
 
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
-    navigate('/')
+    navigate('/situation')
   }
 
   const ResetModal = () => {
@@ -25,6 +25,9 @@ function Timer({seconds}: Timer) {
   }
 
   useEffect(() => {
+    if (!isRecording) {
+      return ;  // isRecording이 false일때는 일시정지
+    }
     if (timeLeft === 0) {
         setShowModal(true)
         setIsRecording(false)
@@ -36,7 +39,7 @@ function Timer({seconds}: Timer) {
     }, 1000);
 
     return () => clearInterval(interval); // 컴포넌트 언마운트 시 interval 클리어
-  }, [timeLeft]);
+  }, [timeLeft, isRecording]);
 
   useEffect(() => {
     // 타이머가 줄어들면서 원형 테두리 진행 상태 업데이트
