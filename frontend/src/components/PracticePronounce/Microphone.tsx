@@ -19,7 +19,7 @@ declare global {
 
 
 function AudioRecorder({ color, size }: MicrophoneProps) {
-  const { isRecording, audioURL, setIsRecording, setAudioURL } =
+  const { isRecording, audioURL, setIsRecording, setAudioURL, setAudioBlob } =
     useVoiceStore();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -27,6 +27,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
     null
   );
   const [interimTranscript, setInterimTranscript] = useState("");
+  const [finalTranscript, setFinalTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
   
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -39,19 +40,20 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       recognition.lang = "ko-KR";
 
       recognition.onresult = (event: any) => {
-        let finalTranscript = "";
+        let newFinalTranscript = "";
         let interimTranscript = "";
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript;
           if (event.results[i].isFinal) {
-            finalTranscript += transcript;
+            newFinalTranscript += transcript;
           } else {
             interimTranscript += transcript;
           }
         }
 
         setInterimTranscript(interimTranscript);
+        setFinalTranscript(newFinalTranscript)
       };
 
       recognition.onerror = (event: any) => {
@@ -63,6 +65,14 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       alert("이 브라우저는 음성 인식을 지원하지 않습니다.");
     }
   }, []);
+
+  const isWavFile = async (blob: Blob) => {
+    const arrayBuffer = await blob.arrayBuffer();
+    const view = new DataView(arrayBuffer);
+    const isWav = view.getUint32(0, false) === 0x52494646 && view.getUint32(8, false) === 0x57415645;
+    console.log("isWavFile check: ", isWav);
+    return isWav;
+  };
 
   const startRecording = async () => {
 
@@ -95,12 +105,32 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
         }
       };
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async() => {
         const audioBlob = new Blob(audioChunksRef.current, {
           type: "audio/wav",
         });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        setAudioURL(audioUrl);
+
+        // const audioUrl = URL.createObjectURL(audioBlob);
+        // setAudioURL(audioUrl);
+
+         // WAV 파일로 변환
+         const arrayBuffer = await audioBlob.arrayBuffer();
+         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+         const wavBuffer = audioBufferToWav(audioBuffer);
+         const wavBlob = new Blob([wavBuffer], { type: "audio/wav" });
+
+         // WAV 파일인지 확인
+         const isWav = await isWavFile(wavBlob);
+         if (isWav) {
+           console.log("This is a valid WAV file.");
+           setAudioBlob(wavBlob);
+           const audioUrl = URL.createObjectURL(wavBlob);
+           setAudioURL(audioUrl);
+         } else {
+           console.error("The recorded file is not a valid WAV file.");
+         }
+     
+
       };
 
       mediaRecorder.start();
@@ -119,6 +149,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
     }
   };
 
+
   const handleStartStop = () => {
     if (!isRecording) {
       recognitionRef.current?.start();
@@ -130,6 +161,63 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       console.log("[System] 음성 인식이 중지되었습니다.");
     }
   };
+
+  const audioBufferToWav = (buffer: AudioBuffer) => {
+    let numOfChannels = buffer.numberOfChannels,
+      length = buffer.length * numOfChannels * 2 + 44,
+      bufferArray = new ArrayBuffer(length),
+      view = new DataView(bufferArray),
+      channels = [],
+      i,
+      sample,
+      offset = 0,
+      pos = 0;
+
+    // write WAV header
+    setUint32(0x46464952); // "RIFF"
+    setUint32(length - 8); // file length - 8
+    setUint32(0x45564157); // "WAVE"
+
+    setUint32(0x20746d66); // "fmt "
+    setUint32(16); // length = 16
+    setUint16(1); // PCM (uncompressed)
+    setUint16(numOfChannels);
+    setUint32(buffer.sampleRate);
+    setUint32(buffer.sampleRate * 2 * numOfChannels); // avg. bytes/sec
+    setUint16(numOfChannels * 2); // block-align
+    setUint16(16); // 16-bit (hardcoded)
+
+    setUint32(0x61746164); // "data"
+    setUint32(length - pos - 4); // chunk length
+
+     // write interleaved data
+  for (i = 0; i < buffer.numberOfChannels; i++)
+    channels.push(buffer.getChannelData(i));
+
+  while (pos < length) {
+    for (i = 0; i < numOfChannels; i++) {
+      sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+      sample = (0.5 + sample * 32767) | 0; // scale to 16-bit signed int
+      view.setInt16(pos, sample, true); // write 16-bit sample
+      pos += 2;
+    }
+    offset++;
+  }
+
+  return view;
+
+  function setUint16(data: any) {
+    view.setUint16(pos, data, true);
+    pos += 2;
+  }
+
+  function setUint32(data: any) {
+    view.setUint32(pos, data, true);
+    pos += 4;
+  }
+};
+
+
 
   return (
     <div className="text-center mt-20">
@@ -197,7 +285,16 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       </div>
 
 
-      <div className="text-white">{interimTranscript}</div>
+
+      {/* 녹음된 오디오를 재생할 수 있는 오디오 플레이어 */}
+      {/* {audioURL && (
+        <audio controls src={audioURL} className="mt-4">
+          Your browser does not support the audio element.
+        </audio>
+      )} */}
+
+      <div className="text-white">(중간) {interimTranscript}</div>
+      <div className="text-white">(파이널) {finalTranscript}</div>
       {/* stt 결과 post 보내고 나면
           // setInterimTranscript("")를 통해 초기화
       */}

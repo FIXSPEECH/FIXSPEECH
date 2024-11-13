@@ -8,6 +8,7 @@ import RegistModal from './SituationPractice/RegistModal'
 import RecordModal from './AnnouncerPractice/RecordModal'
 import useModalStore from "../store/modalStore";
 import useTimerStore from "../store/timerStore";
+import useGraphStore from "../store/graphStore";
 
 interface RecorderProps{
   color: string;
@@ -41,6 +42,7 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
     const navigate = useNavigate();
     const {scriptId} = useParams();
     const Id = Number(scriptId)
+    const {setAnnouncer, setUser} = useGraphStore();
 
     useEffect(() => {
       setIsRecording(false)
@@ -68,7 +70,8 @@ function Recorder({color, barColor, width, height, visualizeWidth, modalType}: R
         setAudioURL(null);
         setAudioBlob(null);
         setIsModal(false)
-    
+        setAnnouncer([]);
+        setUser([]);
     
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });

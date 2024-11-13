@@ -5,11 +5,15 @@ import Button from '@mui/material/Button';
 import Recorder from "../components/Recorder";
 import usePronounceScoreStore from "../store/pronounceScoreStore";
 import FinishModal from '../components/PracticePronounce/FinishModal'
+import useGraphStore from "../store/graphStore";
+import VoiceComparisonChart from "../components/AnnouncerPractice/VoiceChart";
+
 
 function AnnouncerPractice() {
   const [showModal, setShowModal] = useState<boolean>(false)
   const {setIsNumberZero} = usePronounceScoreStore();
   const navigate = useNavigate();
+  const { user, announcer} = useGraphStore();
 
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
@@ -42,9 +46,27 @@ function AnnouncerPractice() {
       <AnnouncerExample   
           color={"#B18CFE"}
           size={3}/>
-      <Recorder color={"#D5C6F5"} barColor={"rgb(177,140,254)"} width={300} height={75} visualizeWidth="300px" modalType="record"/>
+      {/* <Recorder color={"#D5C6F5"} barColor={"rgb(177,140,254)"} width={300} height={75} visualizeWidth="300px" modalType="record"/> */}
+
+       {/* 수평 배치를 위한 flex-row 추가 */}
+       <div className="flex flex-row justify-center items-center space-x-4">
+            <Recorder color={"#D5C6F5"} barColor={"rgb(177,140,254)"} width={300} height={75} visualizeWidth="300px" modalType="record" />
+            
+            {user && announcer && user.length > 0 && announcer.length > 0 ? (
+                <div style={{ width: '600px' }}>
+                  <VoiceComparisonChart userF0Data={user} announcerF0Data={announcer} />
+                </div>
+              ) : null}
+
+
+
+            
+          </div>
+
+
     </div>
     </div>
+
 
     <FinishModal isOpen={showModal} onClose={closeModal} />
   </>

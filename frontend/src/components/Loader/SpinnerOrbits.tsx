@@ -1,14 +1,18 @@
 import styled from "@emotion/styled";
 
-const SpinnerOrbits = () => {
+interface SpinnerOrbitsProps {
+  size: number; // size prop 추가
+}
+
+const SpinnerOrbits = ({ size }: SpinnerOrbitsProps) => {
   return (
-    <SpinnerBox>
-      <BlueOrbit className="leo" />
-      <GreenOrbit className="leo" />
-      <RedOrbit className="leo" />
-      <WhiteOrbit className="w1 leo" />
-      <WhiteOrbit className="w2 leo" />
-      <WhiteOrbit className="w3 leo" />
+    <SpinnerBox size={size}>
+      <BlueOrbit size={size * 0.55} />
+      <GreenOrbit size={size * 0.4} />
+      <RedOrbit size={size * 0.3} />
+      <WhiteOrbit className="w1" size={size * 0.2} />
+      <WhiteOrbit className="w2" size={size * 0.2} />
+      <WhiteOrbit className="w3" size={size * 0.2} />
     </SpinnerBox>
   );
 };
@@ -24,49 +28,43 @@ const spin3DKeyframes = `
   }
 `;
 
-const SpinnerBox = styled.div`
+const SpinnerBox = styled.div<SpinnerOrbitsProps>`
   ${spin3DKeyframes}
-  width: 300px;
-  height: 300px;
+  width: ${({ size }) => size}px;
+  height: ${({ size }) => size}px;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: transparent;
 `;
 
-const Orbit = styled.div`
+const Orbit = styled.div<{ size: number }>`
   position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
   z-index: 99;
+  width: ${({ size }) => size}px;
+  height: ${({ size }) => size}px;
 `;
 
 const BlueOrbit = styled(Orbit)`
-  width: 165px;
-  height: 165px;
   border: 1px solid #91daffa5;
   animation: spin3D 3s linear 0.2s infinite;
 `;
 
 const GreenOrbit = styled(Orbit)`
-  width: 120px;
-  height: 120px;
   border: 1px solid #91ffbfa5;
   animation: spin3D 2s linear 0s infinite;
 `;
 
 const RedOrbit = styled(Orbit)`
-  width: 90px;
-  height: 90px;
   border: 1px solid #ffca91a5;
   animation: spin3D 1s linear 0s infinite;
 `;
 
 const WhiteOrbit = styled(Orbit)`
-  width: 60px;
-  height: 60px;
   border: 2px solid #ffffff;
   animation: spin3D 10s linear 0s infinite;
 
