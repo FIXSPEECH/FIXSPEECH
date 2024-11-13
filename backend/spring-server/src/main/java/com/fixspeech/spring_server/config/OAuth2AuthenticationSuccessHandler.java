@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -34,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-	public static final String REFRESH_TOKEN_COOKIE_NAME = HttpHeaders.SET_COOKIE;
+	public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh-token";
 	public static final String REDIRECT_PATH = "/articles";
 	private final JwtTokenProvider jwtTokenProvider;
 	// private final JwtCookieProvider jwtCookieProvider;
@@ -125,7 +124,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	private String getTargetUrl(String token) {
 		return UriComponentsBuilder.fromUriString(frontendUrl)
 			.path("/user/regist/information")
-			.queryParam("token", token)
+			.queryParam("accessToken", token)
 			.build().toUriString();
 	}
 }
