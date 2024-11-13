@@ -8,6 +8,8 @@ import usePronounceScoreStore from "../../store/pronounceScoreStore";
 import FinishModal from '../PracticePronounce/FinishModal'
 import { audioPost } from "../../services/AnnouncerPractice/AnnouncerPracticePost";
 import useModalStore from "../../store/modalStore";
+import useGraphStore from "../../store/graphStore";
+
 
 interface PronounceExampleProps {
     color: string; // color prop의 타입 정의
@@ -23,7 +25,8 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
     const [example, setExample] = useState<string>('')
     const [showModal, setShowModal] = useState<boolean>(false)
     const [announcerUrl, setAnnouncerUrl] = useState<string>('')
-
+    const {setUser, setAnnouncer} = useGraphStore();
+   
     const navigate = useNavigate();
 
     const handlePlayAudio = () => {
@@ -38,7 +41,6 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
           }
       };
 
-    
 
     // 연습 문제 가져오기
     const getExample = async () => {
@@ -73,6 +75,9 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
       try{
         const response = await audioPost(data)
         console.log(response.data)
+        setUser(response.data.user_f0_data)      
+        setAnnouncer(response.data.announcer_f0_data)                                          
+
       } catch (e) {
         console.log(e)
       }
@@ -125,7 +130,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
             )}
            </div>
 
-            <div className="text-[#B18CFE] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
+            <div className="text-[#B18CFE] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20 ">
               {example}
             </div>
             
@@ -138,7 +143,6 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
 
             {/* isNumber가 11일 때 FinishModal이 자동으로 표시 */}
             <FinishModal isOpen={showModal} onClose={closeModal} />
-            
         </>
     )
 }
