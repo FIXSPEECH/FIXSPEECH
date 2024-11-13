@@ -45,7 +45,7 @@ function VoiceAnalysisListPage() {
       {analysisData?.content.length ? (
         <>
           <div className="analysis-items bg-white/10 backdrop-blur-sm rounded-lg p-6 space-y-4">
-            {analysisData.content.map((item, index) => (
+            {analysisData.content.map((item) => (
               <div
                 key={item.recordId}
                 className="p-4 border-b border-white/30 hover:bg-white/10 transition-colors cursor-pointer"
