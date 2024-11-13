@@ -40,7 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			if (jwt != null && jwtTokenProvider.validateToken(jwt)) {
 				log.info("jwt={}", jwt);
 				Authentication auth = jwtTokenProvider.getAuthentication(jwt);
-				log.info("auth={}", auth);
 				SecurityContextHolder.getContext().setAuthentication(auth);
 			}
 		} catch (CustomException e) {

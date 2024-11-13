@@ -14,11 +14,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.fixspeech.spring_server.domain.announcer.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.fixspeech.spring_server.filter.JwtAuthenticationFilter;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.oauth.service.CustomOAuth2UserService;
 
@@ -70,10 +72,9 @@ public class SecurityConfig {
 			// 	return config;
 			// }))
 			.csrf(AbstractHttpConfigurer::disable)
-			// .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests(requests -> requests
-				.requestMatchers("/login", "/login/**", "/api/user", "/api/oauth/public/**",
-					"/api/user/public/**")
+				.requestMatchers("/login")
 				// .requestMatchers("*/*", "*", "**", "**/**")
 				.permitAll()
 				.anyRequest()
