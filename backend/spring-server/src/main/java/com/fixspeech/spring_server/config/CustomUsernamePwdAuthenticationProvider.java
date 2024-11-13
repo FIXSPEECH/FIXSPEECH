@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.config;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class CustomUsernamePwdAuthenticationProvider implements AuthenticationProvider {
 
 	private final UserDetailsService userDetailsService;
+	@Lazy
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
