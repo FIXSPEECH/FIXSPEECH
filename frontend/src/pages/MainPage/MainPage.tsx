@@ -1,9 +1,9 @@
-import Buttons from "../components/MainPage/Buttons";
-import UserInfo from "../components/MainPage/UserInfo";
-import History from "../components/MainPage/History";
+import Buttons from "./components/Buttons";
+import UserInfo from "./components/UserInfo";
+import History from "./components/History";
 import { useEffect } from "react";
 
-import { tokenRefresh } from "../services/axiosInstance";
+import { tokenRefresh } from "../../services/axiosInstance";
 
 function MainPage() {
   useEffect(() => {

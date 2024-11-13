@@ -8,19 +8,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
-import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
 import com.fixspeech.spring_server.domain.user.model.Users;
 
 public interface UserVoiceService {
-	Long saveFile(UserVoiceRequestDto userVoiceRequestDto, String fileUrl, Long userId);
+	// Long saveFile(UserVoiceRequestDto userVoiceRequestDto, String fileUrl, Long userId);
+	//
+	// void saveResult(UserVoiceRequestDto userVoiceRequestDto, Long userId, Long recordId);
 
-	void saveResult(UserVoiceRequestDto userVoiceRequestDto, Long userId, Long recordId);
-
-	UserVoiceListResponseDto getUserRecordDetail(Users users, Long resultId);
+	UserVoiceListResponseDto getUserRecordDetail(Users users, Long recordId);
 
 	AnalyzeResultResponseDto getUserOneAnalyzeResult(Long resultId);
 
 	Page<UserVoiceListResponseDto> getUserRecordList(int page, int size, Long id);
 
 	ResponseEntity<Map> analyze(Users users, MultipartFile file);
+
+	Map<String, Object> analyzeAndSave(Users users, MultipartFile file);
+
+	void deleteRecord(Users users, Long recordId);
 }

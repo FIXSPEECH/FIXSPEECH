@@ -7,4 +7,6 @@ public interface TrainingService {
 	String getSentence(Users user, Long trainingId);
 
 	TrainingResponseDto checkClarity(Users users, String s);
+
+	void deleteRedis(Users users);
 }

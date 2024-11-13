@@ -1,5 +1,7 @@
 package com.fixspeech.spring_server.domain.record.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,10 +21,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.fixspeech.spring_server.config.s3.S3Service;
 import com.fixspeech.spring_server.domain.record.conotroller.UserVoiceController;
 import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
-import com.fixspeech.spring_server.domain.record.dto.UserVoiceRequestDto;
 import com.fixspeech.spring_server.domain.record.model.AnalyzeJsonResult;
 import com.fixspeech.spring_server.domain.record.model.AnalyzeResult;
 import com.fixspeech.spring_server.domain.record.model.UserVoiceFile;
@@ -43,46 +46,95 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 	private final UserVoiceRepository userVoiceRepository;
 	private final AnalyzeJsonResultRepository analyzeJsonResultRepository;
 	private final AnalyzeResultRepository analyzeResultRepository;
+	private final S3Service s3Service;
+	private final AmazonS3 amazonS3;
 
 	@Transactional
 	@Override
-	public Long saveFile(UserVoiceRequestDto userVoiceRequestDto, String fileUrl, Long userId) {
+	public Map<String, Object> analyzeAndSave(Users users, MultipartFile file) {
+
 		try {
+			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+			body.add("file", new UserVoiceController.MultipartInputStreamFileResource(file.getInputStream(),
+				file.getOriginalFilename()));
+			body.add("gender", users.getGender());
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<Map> response = restTemplate.exchange(
+				"https://k11d206.p.ssafy.io/fastapi/analyze/full",
+				HttpMethod.POST,
+				requestEntity,
+				Map.class
+			);
+			Map<String, Object> analysisData = response.getBody();
+			Map<String, Object> metrics = (Map<String, Object>)analysisData.get("data");
+			String fileUrl = s3Service.upload(file);
+			String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+
 			UserVoiceFile userVoiceFile = UserVoiceFile.builder()
-				.userId(userId)
-				.recordTitle(userVoiceRequestDto.getRecordTitle())
+				.userId(users.getId())
+				.recordTitle(timestamp)
 				.recordAddress(fileUrl)
 				.build();
 			userVoiceRepository.save(userVoiceFile);
-			UserVoiceFile newUserVoiceFile = userVoiceRepository.findTopByUserIdOrderByCreatedAtDesc(userId);
-			return newUserVoiceFile.getId();
+
+			AnalyzeJsonResult analyzeResult = AnalyzeJsonResult.builder()
+				.userVoiceFile(userVoiceFile)
+				.data(metrics)
+				.build();
+			analyzeJsonResultRepository.save(analyzeResult);
+
+			return metrics;
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
 		}
 	}
 
+	@Transactional
 	@Override
-	public void saveResult(UserVoiceRequestDto userVoiceRequestDto, Long userId, Long recordId) {
+	public void deleteRecord(Users users, Long recordId) {
 		UserVoiceFile userVoiceFile = userVoiceRepository.findById(recordId)
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-		Map<String, Object> data = userVoiceRequestDto.getData();
-		Map<String, Object> metrics = (Map<String, Object>)data.get("metrics");
-		AnalyzeJsonResult analyzeResult = AnalyzeJsonResult.builder()
-			.userVoiceFile(userVoiceFile)
-			.data(userVoiceRequestDto.getAnalyzeResult())
-			.build();
+			.orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+		if (!Objects.equals(users.getId(), userVoiceFile.getUserId()))
+			throw new CustomException(ErrorCode.AUTHENTICATION_FAIL_ERROR);
+		try {
+			// Delete file from S3
+			String fileUrl = userVoiceFile.getRecordAddress();
+			String key = fileUrl.replace(amazonS3.getUrl(s3Service.getBucket(), "").toString(), "");
+			amazonS3.deleteObject(s3Service.getBucket(), key);
 
-		analyzeJsonResultRepository.save(analyzeResult);
+			// Delete record from database
+			userVoiceRepository.deleteById(recordId);
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_DELETE_RECORD);
+		}
 	}
 
-	@Override
-	public UserVoiceListResponseDto getUserRecordDetail(Users users, Long resultId) {
+	// @Override
+	// public void saveResult(UserVoiceRequestDto userVoiceRequestDto, Long userId, Long recordId) {
+	// 	UserVoiceFile userVoiceFile = userVoiceRepository.findById(recordId)
+	// 		.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+	// 	Map<String, Object> data = userVoiceRequestDto.getData();
+	// 	Map<String, Object> metrics = (Map<String, Object>)data.get("metrics");
+	// 	AnalyzeJsonResult analyzeResult = AnalyzeJsonResult.builder()
+	// 		.userVoiceFile(userVoiceFile)
+	// 		.data(userVoiceRequestDto.getAnalyzeResult())
+	// 		.build();
+	//
+	// 	analyzeJsonResultRepository.save(analyzeResult);
+	// }
 
-		AnalyzeJsonResult analyzeResult = analyzeJsonResultRepository.findById(resultId)
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+	@Override
+	public UserVoiceListResponseDto getUserRecordDetail(Users users, Long recordId) {
+
+		UserVoiceFile userVoiceFile = userVoiceRepository.findById(recordId)
+			.orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+		AnalyzeJsonResult analyzeResult = analyzeJsonResultRepository.findTopByUserVoiceFile(userVoiceFile);
 		if (!Objects.equals(analyzeResult.getUserVoiceFile().getUserId(), users.getId()))
 			throw new CustomException(ErrorCode.AUTHENTICATION_FAIL_ERROR);
-		return convertToUserVoiceDto(analyzeResult, resultId);
+		return convertToUserVoiceDto(analyzeResult, userVoiceFile.getId());
 	}
 
 	/**
@@ -112,6 +164,7 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 			responseData,
 			userVoiceFile.getRecordTitle(),
 			userVoiceFile.getRecordAddress(),
+			userVoiceFile.getId(),
 			userVoiceFile.getCreatedAt().toLocalDate()
 		);
 		return userVoiceListResponseDto;
@@ -141,6 +194,7 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 						responseData,
 						userVoiceFile.getRecordTitle(),
 						userVoiceFile.getRecordAddress(),
+						userVoiceFile.getId(),
 						userVoiceFile.getCreatedAt().toLocalDate()
 					);
 				})

@@ -66,7 +66,7 @@ public class UserController implements UserApi {
 	 * @return
 	 */
 	@PostMapping("/public/reissue")
-	public ApiResponse<?> reissueToken(HttpServletRequest httpServletRequest, @CookieValue String refreshToken,
+	public ApiResponse<?> reissueToken(HttpServletRequest httpServletRequest, @CookieValue("refresh-token") String refreshToken,
 		HttpServletResponse response) {
 
 		log.info("refreshToken = {}", refreshToken);
@@ -90,6 +90,7 @@ public class UserController implements UserApi {
 			response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 			return ApiResponse.createSuccess(newAccessToken, "토큰 재발급 성공");
 		} catch (Exception e) {
+			log.info("e={}",e);
 			return ApiResponse.createError(ErrorCode.INVALID_JWT_TOKEN);
 		}
 	}
