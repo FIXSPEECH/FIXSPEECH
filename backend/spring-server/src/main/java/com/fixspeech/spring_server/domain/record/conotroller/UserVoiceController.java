@@ -81,15 +81,15 @@ public class UserVoiceController implements UserVoiceApi {
 	}
 
 	//음성 분석 단일 조회
-	@GetMapping("/{resultId}")
+	@GetMapping("/{recordId}")
 	public ApiResponse<?> getUserRecordDetail(
 		@AuthenticationPrincipal UserDetails userDetails,
-		@PathVariable Long resultId
+		@PathVariable Long recordId
 	) {
 		Users users = userService.findByEmail(userDetails.getUsername())
 			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-		UserVoiceListResponseDto result = userVoiceService.getUserRecordDetail(users, resultId);
+		UserVoiceListResponseDto result = userVoiceService.getUserRecordDetail(users, recordId);
 		return ApiResponse.createSuccess(result, "음성분석 상세 조회");
 	}
 

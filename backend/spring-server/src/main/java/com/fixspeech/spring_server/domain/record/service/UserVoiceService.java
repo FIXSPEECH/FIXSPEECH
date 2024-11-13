@@ -15,7 +15,7 @@ public interface UserVoiceService {
 	//
 	// void saveResult(UserVoiceRequestDto userVoiceRequestDto, Long userId, Long recordId);
 
-	UserVoiceListResponseDto getUserRecordDetail(Users users, Long resultId);
+	UserVoiceListResponseDto getUserRecordDetail(Users users, Long recordId);
 
 	AnalyzeResultResponseDto getUserOneAnalyzeResult(Long resultId);
 

@@ -21,6 +21,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.fixspeech.spring_server.config.s3.S3Service;
 import com.fixspeech.spring_server.domain.record.conotroller.UserVoiceController;
 import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
@@ -46,6 +47,7 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 	private final AnalyzeJsonResultRepository analyzeJsonResultRepository;
 	private final AnalyzeResultRepository analyzeResultRepository;
 	private final S3Service s3Service;
+	private final AmazonS3 amazonS3;
 
 	@Transactional
 	@Override
@@ -94,10 +96,20 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 	@Override
 	public void deleteRecord(Users users, Long recordId) {
 		UserVoiceFile userVoiceFile = userVoiceRepository.findById(recordId)
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+			.orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
 		if (!Objects.equals(users.getId(), userVoiceFile.getUserId()))
 			throw new CustomException(ErrorCode.AUTHENTICATION_FAIL_ERROR);
-		userVoiceRepository.deleteById(recordId);
+		try {
+			// Delete file from S3
+			String fileUrl = userVoiceFile.getRecordAddress();
+			String key = fileUrl.replace(amazonS3.getUrl(s3Service.getBucket(), "").toString(), "");
+			amazonS3.deleteObject(s3Service.getBucket(), key);
+
+			// Delete record from database
+			userVoiceRepository.deleteById(recordId);
+		} catch (Exception e) {
+			throw new CustomException(ErrorCode.FAIL_TO_DELETE_RECORD);
+		}
 	}
 
 	// @Override
@@ -115,13 +127,14 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 	// }
 
 	@Override
-	public UserVoiceListResponseDto getUserRecordDetail(Users users, Long resultId) {
+	public UserVoiceListResponseDto getUserRecordDetail(Users users, Long recordId) {
 
-		AnalyzeJsonResult analyzeResult = analyzeJsonResultRepository.findById(resultId)
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		UserVoiceFile userVoiceFile = userVoiceRepository.findById(recordId)
+			.orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+		AnalyzeJsonResult analyzeResult = analyzeJsonResultRepository.findTopByUserVoiceFile(userVoiceFile);
 		if (!Objects.equals(analyzeResult.getUserVoiceFile().getUserId(), users.getId()))
 			throw new CustomException(ErrorCode.AUTHENTICATION_FAIL_ERROR);
-		return convertToUserVoiceDto(analyzeResult, resultId);
+		return convertToUserVoiceDto(analyzeResult, userVoiceFile.getId());
 	}
 
 	/**
