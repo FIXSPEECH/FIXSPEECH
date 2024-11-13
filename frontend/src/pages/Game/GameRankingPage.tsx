@@ -47,7 +47,7 @@ export default function GameRanking() {
 
   return (
     <div className="flex flex-col items-center min-h-[70vh]">
-      <div className="text-5xl font-bold text-[#FFAB01] mb-4">랭킹</div>
+      <div className="text-5xl font-bold text-[#FFAB01] mb-4">RANK</div>
       <div className="flex space-x-4 mb-8">
         <DifficultyButton level={1} label="Easy" />
         <DifficultyButton level={2} label="Normal" />
