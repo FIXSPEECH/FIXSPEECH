@@ -38,6 +38,7 @@ public class CookieUtil {
 		// 만료 시간을 0으로 설정해 쿠키가 재생성 되자마자 만료 처리한다.
 		for (Cookie cookie : cookies) {
 			if (name.equals(cookie.getName())) {
+				cookie.setDomain(cookieDomain);
 				cookie.setValue("");
 				cookie.setPath("/");
 				cookie.setMaxAge(0);
