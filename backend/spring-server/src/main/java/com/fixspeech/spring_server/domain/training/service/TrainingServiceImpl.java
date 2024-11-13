@@ -65,4 +65,10 @@ public class TrainingServiceImpl implements TrainingService {
 		);
 		return trainingResponseDto;
 	}
+
+	@Override
+	public void deleteRedis(Users users) {
+		String redisKey = "training_sentence:" + users.getId();
+		redisTemplate.delete(redisKey);
+	}
 }
