@@ -2,6 +2,7 @@ package com.fixspeech.spring_server.utils;
 
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.SerializationUtils;
 
 import jakarta.servlet.http.Cookie;
@@ -10,10 +11,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
 
+	@Value("${jwt.oauth.refresh-token.cookie.domain}")
+	private static String cookieDomain;
+
 	// 요청값(이름, 값, 만료 기간)을 바탕으로 HTTP 응답에 쿠키 추가
 	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
 		Cookie cookie = new Cookie(name, value);
-		cookie.setDomain("localhost");
+		cookie.setDomain(cookieDomain);
 		cookie.setMaxAge(maxAge); // 쿠키 만료 시간 설정
 		cookie.setPath("/"); // 모든 경로에 대해 적용
 		cookie.setSecure(true); // HTTPS 연결에서만 쿠키 전송

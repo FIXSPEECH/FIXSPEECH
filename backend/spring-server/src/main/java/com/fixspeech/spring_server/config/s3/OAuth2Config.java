@@ -1,6 +1,5 @@
 package com.fixspeech.spring_server.config.s3;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,6 +8,7 @@ import com.fixspeech.spring_server.domain.announcer.repository.OAuth2Authorizati
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
 import com.fixspeech.spring_server.domain.user.repository.redis.RefreshTokenRepository;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
+import com.fixspeech.spring_server.oauth.repository.OAuthRefreshRepository;
 
 @Configuration
 public class OAuth2Config {
@@ -21,15 +21,16 @@ public class OAuth2Config {
 	public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler(
 		JwtTokenProvider jwtTokenProvider,
 		UserRepository userRepository,
-		RefreshTokenRepository refreshTokenRepository,
 		OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository,
-		@Value("${frontend.url}") String frontendUrl
+		OAuthRefreshRepository oAuthRefreshRepository,
+		RefreshTokenRepository refreshTokenRepository
 	) {
 		return new OAuth2AuthenticationSuccessHandler(
 			jwtTokenProvider,
 			userRepository,
-			refreshTokenRepository,
-			authorizationRequestRepository
+			authorizationRequestRepository,
+			oAuthRefreshRepository,
+			refreshTokenRepository
 		);
 	}
 }

@@ -13,13 +13,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fixspeech.spring_server.domain.announcer.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
-import com.fixspeech.spring_server.domain.user.model.RefreshToken;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
 import com.fixspeech.spring_server.domain.user.repository.redis.RefreshTokenRepository;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.global.exception.CustomException;
 import com.fixspeech.spring_server.global.exception.ErrorCode;
+import com.fixspeech.spring_server.oauth.model.OAuthRefreshToken;
+import com.fixspeech.spring_server.oauth.repository.OAuthRefreshRepository;
 import com.fixspeech.spring_server.utils.CookieUtil;
 
 import jakarta.servlet.ServletException;
@@ -39,8 +40,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	// private final JwtCookieProvider jwtCookieProvider;
 	// private final TokenService tokenService;
 	private final UserRepository userRepository;
-	private final RefreshTokenRepository refreshTokenRepository;
 	private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
+	private final OAuthRefreshRepository oAuthRefreshRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	@Value("${frontend.url}")
 	private String frontendUrl;
@@ -79,10 +81,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	}
 
 	private void saveRefreshToken(Users user, String newRefreshToken) {
-		RefreshToken refreshToken = refreshTokenRepository.findById(user.getEmail())
-			.map(entity -> entity.update(newRefreshToken))
-			.orElse(new RefreshToken(newRefreshToken));
-		refreshTokenRepository.save(refreshToken);
+		OAuthRefreshToken refreshToken = oAuthRefreshRepository.findById(user.getEmail())
+			.map(entity -> {
+				entity.update(newRefreshToken);
+				return entity;
+			})
+			.orElse(new OAuthRefreshToken(user.getEmail(), newRefreshToken));
+		oAuthRefreshRepository.save(refreshToken);
 	}
 
 	private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
