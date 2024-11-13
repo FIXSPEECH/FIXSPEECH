@@ -4,6 +4,7 @@ import ParticleBackground from "./components/Visualizer/ParticleBackground";
 import Header from "./components/Header/Header";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
+import NotificationListener from "./components/NotificationListener";
 
 // Lazy imports
 const LoginPage = lazy(() => import("./pages/Login/LoginPage"));
@@ -53,6 +54,7 @@ const Layout = () => {
   return (
     <>
       <ParticleBackground />
+      <NotificationListener/>
       <Header />
       <Suspense fallback={<div></div>}>
         <Outlet />
