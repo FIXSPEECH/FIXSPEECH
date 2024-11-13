@@ -21,7 +21,7 @@ import AnnouncerPractice from "./pages/AnnouncerPracticePage";
 import Game from "./pages/Game/GamePage";
 import MyVoice from "./pages/MyVoicePage";
 import ErrorPage from "./pages/ErrorPage";
-import GameRanking from "./pages/Game/GameRanking";
+import GameRanking from "./pages/Game/GameRankingPage";
 import SelectResult from "./pages/SituationPractice/SelectResultPage";
 import VoiceList from "./pages/SituationPractice/VoiceListPage";
 // 레이아웃 컴포넌트 생성
