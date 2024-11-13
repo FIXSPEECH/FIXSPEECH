@@ -174,7 +174,8 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 	public Page<UserVoiceListResponseDto> getUserRecordList(int page, int size, Long userId) {
 		try {
 			Pageable pageable = PageRequest.of(page, size);
-			Page<AnalyzeJsonResult> analyzePages = analyzeJsonResultRepository.findAllByUserVoiceFile_UserId(userId,
+			Page<AnalyzeJsonResult> analyzePages = analyzeJsonResultRepository.findAllByUserVoiceFile_UserIdOrderByCreatedAtDesc(
+				userId,
 				pageable);
 
 			List<UserVoiceListResponseDto> userVoiceListResponseDtos = analyzePages.stream()
