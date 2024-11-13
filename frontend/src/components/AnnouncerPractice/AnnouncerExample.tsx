@@ -152,7 +152,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
             )}
            </div>
 
-            <div className="text-[#B18CFE] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20 ">
+            <div className="text-[#B18CFE] break-words mt-10 sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl text-center mr-20 ">
               {example}
             </div>
             
