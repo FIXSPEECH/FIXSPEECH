@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final String[] WHITE_LIST = {
-		"/", "/**", "/favicon.ico", "/login", "/user/login", "/api/user/public/refreshToken", "/api/user/set-cookie"
+		"/login"
 	};
 
 	@Override

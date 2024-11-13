@@ -49,11 +49,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException, ServletException {
-		OAuth2User oAuth2User = (OAuth2User)authentication.getPrincipal();
+		OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 		log.info("OAUTH2USER={}", oAuth2User.getAttributes());
+
 		String providerType = determineProviderType(request);
 		log.info("ProviderType={}", providerType);
 
+
+		String tempToken = oAuth2User.getAttribute("tempToken");
+		log.info("tempToken={}", tempToken);
 		String email = extractEmail(oAuth2User, providerType);
 
 		Users user = userRepository.findByEmail(email)
@@ -66,6 +70,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		addRefreshTokenToCookie(request, response, refreshToken);
 
 		String accessToken = jwtTokenProvider.generateAccessToken(jwtUserClaims);
+		log.info("accessToken={}", accessToken);
 		String targetUrl = getTargetUrl(accessToken);
 
 		clearAuthenticationAttributes(request, response);

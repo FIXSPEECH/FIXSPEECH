@@ -43,7 +43,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 		OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName,
 			oAuth2User.getAttributes());
-		
+
 		// 사용자 정보 불러오기
 		Users user = userRepository.findByEmail(attributes.getEmail())
 			.map(entity -> entity.updateOAuthInfo(
