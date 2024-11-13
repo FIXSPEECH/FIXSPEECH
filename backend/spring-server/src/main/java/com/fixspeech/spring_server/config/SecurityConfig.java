@@ -15,8 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.fixspeech.spring_server.domain.announcer.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
@@ -41,34 +39,34 @@ public class SecurityConfig {
 	@Value("${cors.allowed-methods}")
 	private String[] allowedMethods;
 
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(Arrays.asList(allowedOrigins));
-		config.setAllowedMethods(Arrays.asList(allowedMethods));
-		config.setAllowCredentials(true);
-		config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-		config.setExposedHeaders(List.of("Authorization"));
-		config.setMaxAge(3600L);
-
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", config);
-		return source;
-	}
+	// @Bean
+	// public CorsConfigurationSource corsConfigurationSource() {
+	// 	CorsConfiguration config = new CorsConfiguration();
+	// 	config.setAllowedOrigins(Arrays.asList(allowedOrigins));
+	// 	config.setAllowedMethods(Arrays.asList(allowedMethods));
+	// 	config.setAllowCredentials(true);
+	// 	config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+	// 	config.setExposedHeaders(List.of("Authorization"));
+	// 	config.setMaxAge(3600L);
+	//
+	// 	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	// 	source.registerCorsConfiguration("/**", config);
+	// 	return source;
+	// }
 
 	@Bean
 	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			// .cors(cors -> cors.configurationSource(request -> {
-			// 	CorsConfiguration config = new CorsConfiguration();
-			// 	config.setAllowedOrigins(Arrays.asList(allowedOrigins));
-			// 	config.setAllowedMethods(Arrays.asList(allowedMethods));
-			// 	config.setAllowCredentials(true);
-			// 	config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-			// 	config.setExposedHeaders(List.of("Authorization"));
-			// 	config.setMaxAge(3600L);
-			// 	return config;
-			// }))
+			.cors(cors -> cors.configurationSource(request -> {
+				CorsConfiguration config = new CorsConfiguration();
+				config.setAllowedOrigins(Arrays.asList(allowedOrigins));
+				config.setAllowedMethods(Arrays.asList(allowedMethods));
+				config.setAllowCredentials(true);
+				config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+				config.setExposedHeaders(List.of("Authorization"));
+				config.setMaxAge(3600L);
+				return config;
+			}))
 			.csrf(AbstractHttpConfigurer::disable)
 			// .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests(requests -> requests
@@ -86,7 +84,7 @@ public class SecurityConfig {
 				)
 				.successHandler(oAuth2AuthenticationSuccessHandler)
 			)
-			// .cors(AbstractHttpConfigurer::disable)
+			.cors(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
 			.exceptionHandling(exception -> exception
 			.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
