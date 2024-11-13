@@ -56,8 +56,17 @@ function Buttons() {
     },
   ];
 
+  const handleKeyPress = (e: React.KeyboardEvent, url: string) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate(url);
+    }
+  };
+
   return (
     <Box
+      component="nav"
+      aria-label="메인 메뉴"
       sx={{
         flexGrow: 1,
         marginRight: "3%",
@@ -68,8 +77,14 @@ function Buttons() {
       <Grid container spacing={2}>
         {gridItems.map((item, index) => (
           <Grid
-            size={{ xs: 6, sm: 4, md: 2 }}
+            component="div"
+            role="button"
+            tabIndex={0}
             key={index}
+            size={{ xs: 6, sm: 4, md: 2 }}
+            onClick={() => navigate(item.url)}
+            onKeyDown={(e) => handleKeyPress(e, item.url)}
+            aria-label={item.label}
             sx={{
               backgroundColor: item.color,
               padding: 2,
@@ -78,12 +93,12 @@ function Buttons() {
               position: "relative",
               overflow: "hidden",
               cursor: "pointer",
-              transition: "transform 0.3s ease", // 부드러운 애니메이션 
+              transition: "transform 0.3s ease", // 부드러운 애니메이션
               "&:hover": {
                 transform: "translateY(-10px)", // 호버 시 위로 팝업
+                outline: "3px solid #000",
               },
             }}
-            onClick={() => navigate(item.url)}
           >
             <div
               style={{
