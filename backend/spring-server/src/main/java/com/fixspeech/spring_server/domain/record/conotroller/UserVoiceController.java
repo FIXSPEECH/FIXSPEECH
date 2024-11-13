@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fixspeech.spring_server.config.s3.S3Service;
+import com.fixspeech.spring_server.domain.grass.service.GrassService;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
 import com.fixspeech.spring_server.domain.record.service.UserVoiceService;
 import com.fixspeech.spring_server.domain.user.model.Users;
@@ -32,9 +32,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/record")
 public class UserVoiceController implements UserVoiceApi {
-	private final S3Service s3Service;
 	private final UserVoiceService userVoiceService;
 	private final UserService userService;
+	private final GrassService grassService;
 
 	@PostMapping
 	public ApiResponse<?> analyze(
@@ -45,26 +45,10 @@ public class UserVoiceController implements UserVoiceApi {
 		Users users = userService.findByEmail(userDetails.getUsername())
 			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 		Map<String, Object> result = userVoiceService.analyzeAndSave(users, file);
+		grassService.addGrassRecord(users.getId());
 		return ApiResponse.createSuccess(result, "사용자 녹음 파일 분석 성공");
 
 	}
-	//
-	// @PostMapping("/save")
-	// public ApiResponse<?> upload(
-	// 	@AuthenticationPrincipal UserDetails userDetails,
-	// 	@RequestPart(value = "record", required = false) MultipartFile file,
-	// 	@RequestPart(value = "data") UserVoiceRequestDto userVoiceRequestDto
-	// ) throws IOException {
-	// 	Users users = userService.findByEmail(userDetails.getUsername())
-	// 		.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-	// 	String fileUrl = s3Service.upload(file);
-	// 	Long recordId = userVoiceService.saveFile(userVoiceRequestDto, fileUrl, users.getId());
-	// 	System.out.println("controller: " + fileUrl);
-	//
-	// 	userVoiceService.saveResult(userVoiceRequestDto, users.getId(), recordId);
-	// 	return ApiResponse.success("사용자 녹음 파일 및 분석 결과 저장 성공");
-	//
-	// }
 
 	//리스트 목록
 	@GetMapping
