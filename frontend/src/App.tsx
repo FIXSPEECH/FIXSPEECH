@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import ParticleBackground from "./components/Visualizer/ParticleBackground";
 import Header from "./components/Header/Header";
 import LoginPage from "./pages/Login/LoginPage";
-import MainPage from "./pages/MainPage";
+import MainPage from "./pages/MainPage/MainPage";
 import AccessPage from "./pages/Login/AccessPage";
 import VoiceRecord from "./pages/VoiceAnalysis/VoiceRecordPage";
 import VoiceRecordResult from "./pages/VoiceAnalysis/VoiceRecordResultPage";
