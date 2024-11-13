@@ -55,6 +55,9 @@ public class CookieUtil {
 
 	// 쿠키를 역직렬화해서 객체로 변환
 	public static <T> T deserialize(Cookie cookie, Class<T> cls) {
+		if (cookie == null) {
+			return null;
+		}
 		return cls.cast(
 			SerializationUtils.deserialize(
 				Base64.getUrlDecoder().decode(cookie.getValue())
