@@ -3,7 +3,6 @@ import MicNoneIcon from "@mui/icons-material/MicNone";
 import MicIcon from "@mui/icons-material/Mic";
 import useVoiceStore from "../../store/voiceStore";
 import { LiveAudioVisualizer } from "react-audio-visualize";
-import { sttPost } from "../../services/PronouncePractice/PronouncePracticePost";
 
 interface MicrophoneProps {
   color: string; // color prop의 타입 정의
