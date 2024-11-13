@@ -13,7 +13,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.config.s3.S3Service;
+import com.fixspeech.spring_server.domain.grass.service.GrassService;
 import com.fixspeech.spring_server.domain.notification.service.EmitterService;
 import com.fixspeech.spring_server.domain.script.dto.ScriptAnalyzeResponseDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptListDto;
@@ -60,7 +60,7 @@ public class ScriptController implements ScriptApi {
 	private final UserService userService;
 	private final RestTemplate restTemplate;
 	private final RedisTemplate<String, byte[]> redisTemplate;
-	private final KafkaTemplate<String, VoiceAnalysisMessage> kafkaTemplate;
+	private final GrassService grassService;
 
 	//대본 저장
 	@PostMapping
@@ -171,6 +171,7 @@ public class ScriptController implements ScriptApi {
 				put("data", responseBody);
 				put("message", "음성 분석이 완료되었습니다");
 			}});
+			grassService.addGrassRecord(message.userId());
 
 		} catch (Exception e) {
 
