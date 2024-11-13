@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fixspeech.spring_server.domain.grass.service.GrassService;
 import com.fixspeech.spring_server.domain.training.dto.TrainingRequestDto;
 import com.fixspeech.spring_server.domain.training.dto.TrainingResponseDto;
 import com.fixspeech.spring_server.domain.training.service.TrainingService;
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class TrainingController implements TrainingApi {
 	private final TrainingService trainingService;
 	private final UserService userService;
+	private final GrassService grassService;
 
 	@GetMapping("/{trainingId}/start")
 	public ApiResponse<?> start(
@@ -45,6 +47,17 @@ public class TrainingController implements TrainingApi {
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.FAIL_TO_UPLOAD_RECORD);
 		}
+	}
+
+	@PostMapping("/end")
+	public ApiResponse<?> end(
+		@AuthenticationPrincipal UserDetails userDetails
+	) {
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		trainingService.deleteRedis(users);
+		grassService.addGrassRecord(users.getId());
+		return ApiResponse.success("훈련 종료 완료");
 	}
 
 	@PostMapping("/answer")
