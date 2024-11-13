@@ -9,7 +9,7 @@ import FinishModal from '../PracticePronounce/FinishModal'
 import { audioPost } from "../../services/AnnouncerPractice/AnnouncerPracticePost";
 import useModalStore from "../../store/modalStore";
 import useGraphStore from "../../store/graphStore";
-
+import SpinnerOrbits from "../Loader/SpinnerOrbits";
 
 interface PronounceExampleProps {
     color: string; // color prop의 타입 정의
@@ -26,6 +26,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
     const [showModal, setShowModal] = useState<boolean>(false)
     const [announcerUrl, setAnnouncerUrl] = useState<string>('')
     const {setUser, setAnnouncer} = useGraphStore();
+    const [isLoading, setIsLoading] = useState<boolean>(false)
    
     const navigate = useNavigate();
 
@@ -72,6 +73,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
 
       data.append('user_file', audioBlob)
       data.append('announcer_url', announcerUrl)
+      setIsLoading(true);
 
       console.log('data', data)
       try{
@@ -82,6 +84,8 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
 
       } catch (e) {
         console.log(e)
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -142,6 +146,11 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
             <div className="ml-auto mr-10 flex">
             <ArrowRight  onClick={getExample} color='#B18CFE'/>
             </div>     
+
+            <div className="flex justify-center">
+              {isLoading && <SpinnerOrbits size={100}/>}
+            </div>
+            
 
             {/* isNumber가 11일 때 FinishModal이 자동으로 표시 */}
             <FinishModal isOpen={showModal} onClose={closeModal} />
