@@ -55,8 +55,6 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
         } catch(e) {
             console.log(e)
         }
-
-        setIsNumber();
         setIsRecording(false);
         setAudioURL(null);
     }
@@ -74,6 +72,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
       data.append('user_file', audioBlob)
       data.append('announcer_url', announcerUrl)
       setIsLoading(true);
+      setIsNumber();
 
       console.log('data', data)
       try{
