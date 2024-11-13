@@ -1,4 +1,5 @@
 import fastApiInstance from "../axiosFastInstance";
+import { AxiosRequestConfig } from 'axios';
 
 // interface Audio{
 //     user_file: Blob | null;
@@ -7,9 +8,9 @@ import fastApiInstance from "../axiosFastInstance";
 
 
 // AnnouncerExample.tsx 컴포넌트에서 post 
-export function audioPost(payload: FormData) {
+export function audioPost(payload: FormData, config?: AxiosRequestConfig) {
     return fastApiInstance
-        .post('/analyze/mimic', payload)
+        .post('/analyze/mimic', payload, config)
         .then((response) => {
             return Promise.resolve(response.data)
         })

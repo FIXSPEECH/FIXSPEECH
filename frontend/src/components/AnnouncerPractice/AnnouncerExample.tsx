@@ -27,6 +27,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
     const [announcerUrl, setAnnouncerUrl] = useState<string>('')
     const {setUser, setAnnouncer} = useGraphStore();
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const controllerRef = useRef<AbortController | null> (null);
    
     const navigate = useNavigate();
 
@@ -72,11 +73,16 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
       data.append('user_file', audioBlob)
       data.append('announcer_url', announcerUrl)
       setIsLoading(true);
-      setIsNumber();
+
+
+      // const controller = new AbortController();
+      // const {signal} = controller;
+
+      controllerRef.current = new AbortController();
 
       console.log('data', data)
       try{
-        const response = await audioPost(data)
+        const response = await audioPost(data, {signal: controllerRef.current.signal})
         console.log(response.data)
         setUser(response.data.user_f0_data)      
         setAnnouncer(response.data.announcer_f0_data)                                          
@@ -84,7 +90,11 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
       } catch (e) {
         console.log(e)
       } finally {
+        if(controllerRef.current) {
+          setIsLoading(false)
+        }
         setIsLoading(false);
+        setIsNumber();
       }
     }
 
@@ -100,6 +110,13 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
     useEffect(() => {
         setIsNumberZero();
         getExample();
+
+        return () => {
+          if(controllerRef.current) {
+            controllerRef.current.abort();
+            controllerRef.current = null;
+          }
+        }
     },[])
 
     // isNumber가 11이 되면 모달을 표시하도록 설정
