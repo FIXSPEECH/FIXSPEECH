@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.fixspeech.spring_server.config.s3.S3Service;
+import com.fixspeech.spring_server.domain.record.repository.UserVoiceRepository;
 import com.fixspeech.spring_server.domain.script.dto.ScriptAnalyzeResponseDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptListDto;
 import com.fixspeech.spring_server.domain.script.dto.ScriptRequestDto;
@@ -40,8 +43,11 @@ public class ScriptServiceImpl implements ScriptService {
 	private final ScriptRepository scriptRepository;
 	private final ScriptAnalyzeResultRepository scriptAnalyzeResultRepository;
 	private final RestTemplate restTemplate;
+	private final UserVoiceRepository userVoiceRepository;
 	private final RedisTemplate<String, byte[]> redisTemplate;
 	private final KafkaTemplate<String, VoiceAnalysisMessage> kafkaTemplate;
+	private final S3Service s3Service;
+	private final AmazonS3 amazonS3;
 
 	@Override
 	public Long uploadScript(ScriptRequestDto scriptRequestDto, Users users) {
@@ -110,6 +116,7 @@ public class ScriptServiceImpl implements ScriptService {
 		Script script = findScript(scriptId);
 		if (!findUser(script).equals(users.getId()))
 			throw new CustomException(ErrorCode.FAIL_TO_DELETE_SCRIPT);
+
 		scriptRepository.deleteById(scriptId);
 	}
 
@@ -161,10 +168,18 @@ public class ScriptServiceImpl implements ScriptService {
 		if (!Objects.equals(findUser(findScript(findResult(resultId).getScript().getId())), users.getId())) {
 			throw new CustomException(ErrorCode.AUTHENTICATION_FAIL_ERROR);
 		}
+		ScriptAnalyzeResult result = scriptAnalyzeResultRepository.findById(resultId)
+			.orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND_ERROR));
 		try {
+			// Delete file from S3
+			String fileUrl = result.getRecordAddress();
+			String key = fileUrl.replace(amazonS3.getUrl(s3Service.getBucket(), "").toString(), "");
+			amazonS3.deleteObject(s3Service.getBucket(), key);
+
+			// Delete record from database
 			scriptAnalyzeResultRepository.deleteById(resultId);
 		} catch (Exception e) {
-			throw new CustomException(ErrorCode.FAIL_TO_DELETE_SCRIPT);
+			throw new CustomException(ErrorCode.FAIL_TO_DELETE_RECORD);
 		}
 	}
 
