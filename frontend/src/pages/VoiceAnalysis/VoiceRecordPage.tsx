@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
-import AudioSphereVisualizer from "../../components/Visualizer/AudioSphereVisualizer";
-import AudioRecorder from "../../components/VoiceQuality/AudioRecorder";
-import useVoiceStore from "../../store/voiceStore";
-import useAuthStore from "../../store/authStore";
+import AudioSphereVisualizer from "../../shared/components/Visualizer/AudioSphereVisualizer";
+import AudioRecorder from "../../shared/components/VoiceQuality/AudioRecorder";
+import useVoiceStore from "../../shared/stores/voiceStore";
+import useAuthStore from "../../shared/stores/authStore";
 import axiosInstance from "../../services/axiosInstance";
 
 function VoiceRecord() {

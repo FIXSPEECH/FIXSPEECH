@@ -42,6 +42,7 @@ export default defineConfig({
       },
       // Service Worker 상세 설정
       workbox: {
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 캐시할 파일 최대 크기 설정
         navigateFallback: "/index.html", // SPA를 위한 폴백 페이지 설정
         // API 요청에 대한 캐싱 전략 설정
         runtimeCaching: [
