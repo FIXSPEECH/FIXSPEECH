@@ -44,6 +44,8 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
 
     // 연습 문제 가져오기
     const getExample = async () => {
+        setUser([]);
+        setAnnouncer([]);
         try {
             const response = await AnnouncerExampleGet();
             console.log(response.data)

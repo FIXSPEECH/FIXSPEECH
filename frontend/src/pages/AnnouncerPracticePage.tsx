@@ -8,6 +8,7 @@ import FinishModal from '../components/PracticePronounce/FinishModal'
 import useGraphStore from "../store/graphStore";
 import VoiceComparisonChart from "../components/AnnouncerPractice/VoiceChart";
 
+
 function AnnouncerPractice() {
   const [showModal, setShowModal] = useState<boolean>(false)
   const {setIsNumberZero} = usePronounceScoreStore();
@@ -50,12 +51,19 @@ function AnnouncerPractice() {
        {/* 수평 배치를 위한 flex-row 추가 */}
        <div className="flex flex-row justify-center items-center space-x-4">
             <Recorder color={"#D5C6F5"} barColor={"rgb(177,140,254)"} width={300} height={75} visualizeWidth="300px" modalType="record" />
-            <div style={{ width: '600px' }}>
-              <VoiceComparisonChart userF0Data={user} announcerF0Data={announcer} />
-            </div>
+            
+            {user && announcer && user.length > 0 && announcer.length > 0 ? (
+                <div style={{ width: '600px' }}>
+                  <VoiceComparisonChart userF0Data={user} announcerF0Data={announcer} />
+                </div>
+              ) : null}
+
+
+
+            
           </div>
 
-          
+
     </div>
     </div>
 
