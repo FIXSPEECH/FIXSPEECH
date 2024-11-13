@@ -61,7 +61,8 @@ function History() {
             return "color-empty";
           }
           const color = "green";
-          return `color-scale-${color}-${value.count}`;
+          const count = value.count >= 5 ? 5 : value.count;
+          return `color-scale-${color}-${count}`;
         }}
         tooltipDataAttrs={(value: GrassData) => {
           if (!value || !value.count) {
