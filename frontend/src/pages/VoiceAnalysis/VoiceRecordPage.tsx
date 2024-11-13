@@ -4,22 +4,42 @@ import AudioSphereVisualizer from "../../components/Visualizer/AudioSphereVisual
 import AudioRecorder from "../../components/VoiceQuality/AudioRecorder";
 import useVoiceStore from "../../store/voiceStore";
 import useAuthStore from "../../store/authStore";
+import axiosInstance from "../../services/axiosInstance";
 
 function VoiceRecord() {
   const navigate = useNavigate();
   const { setAudioBlob } = useVoiceStore();
   const userGender = useAuthStore((state) => state.userProfile?.gender);
 
-  const handleRecordingComplete = (audioFile: File) => {
+  const handleRecordingComplete = async (audioFile: File) => {
     console.log("녹음 완료:", audioFile);
 
-    // Blob 형태로 저장
-    const blob = new Blob([audioFile], { type: audioFile.type });
-    setAudioBlob(blob);
+    try {
+      // FormData 생성
+      const formData = new FormData();
+      formData.append("record", audioFile);
 
-    // 녹음 완료 시 바로 분석 페이지로 이동
-    if (userGender) {
-      navigate("/record/result", { state: { fromRecordPage: true } });
+      // Spring Boot 서버로 전송
+      const response = await axiosInstance.post("/record", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.status === "C000") {
+        // Blob 형태로 저장
+        const blob = new Blob([audioFile], { type: audioFile.type });
+        setAudioBlob(blob);
+
+        // 녹음 완료 시 바로 분석 페이지로 이동
+        if (userGender) {
+          navigate("/record/result", { state: { fromRecordPage: true } });
+        }
+      } else {
+        console.error("음성 분석 실패:", response.data.message);
+      }
+    } catch (error) {
+      console.error("음성 파일 전송 실패:", error);
     }
   };
 

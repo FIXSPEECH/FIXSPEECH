@@ -19,7 +19,7 @@ export default function FallingLetter({ letter, left, onRemove }: FallingLetterP
                     onRemove(); // 한 번만 호출
                     return prevTop;
                 }
-                return prevTop + 2;
+                return prevTop + 1.3;
             });
         }, 50);
 

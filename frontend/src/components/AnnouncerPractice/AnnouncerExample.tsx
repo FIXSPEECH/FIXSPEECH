@@ -8,6 +8,8 @@ import usePronounceScoreStore from "../../store/pronounceScoreStore";
 import FinishModal from '../PracticePronounce/FinishModal'
 import { audioPost } from "../../services/AnnouncerPractice/AnnouncerPracticePost";
 import useModalStore from "../../store/modalStore";
+import useGraphStore from "../../store/graphStore";
+import SpinnerOrbits from "../Loader/SpinnerOrbits";
 
 interface PronounceExampleProps {
     color: string; // color prop의 타입 정의
@@ -23,7 +25,10 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
     const [example, setExample] = useState<string>('')
     const [showModal, setShowModal] = useState<boolean>(false)
     const [announcerUrl, setAnnouncerUrl] = useState<string>('')
-
+    const {setUser, setAnnouncer} = useGraphStore();
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const controllerRef = useRef<AbortController | null> (null);
+   
     const navigate = useNavigate();
 
     const handlePlayAudio = () => {
@@ -38,10 +43,11 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
           }
       };
 
-    
 
     // 연습 문제 가져오기
     const getExample = async () => {
+        setUser([]);
+        setAnnouncer([]);
         try {
             const response = await AnnouncerExampleGet();
             console.log(response.data)
@@ -50,8 +56,6 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
         } catch(e) {
             console.log(e)
         }
-
-        setIsNumber();
         setIsRecording(false);
         setAudioURL(null);
     }
@@ -68,13 +72,29 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
 
       data.append('user_file', audioBlob)
       data.append('announcer_url', announcerUrl)
+      setIsLoading(true);
+
+
+      // const controller = new AbortController();
+      // const {signal} = controller;
+
+      controllerRef.current = new AbortController();
 
       console.log('data', data)
       try{
-        const response = await audioPost(data)
+        const response = await audioPost(data, {signal: controllerRef.current.signal})
         console.log(response.data)
+        setUser(response.data.user_f0_data)      
+        setAnnouncer(response.data.announcer_f0_data)                                          
+
       } catch (e) {
         console.log(e)
+      } finally {
+        if(controllerRef.current) {
+          setIsLoading(false)
+        }
+        setIsLoading(false);
+        setIsNumber();
       }
     }
 
@@ -90,6 +110,13 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
     useEffect(() => {
         setIsNumberZero();
         getExample();
+
+        return () => {
+          if(controllerRef.current) {
+            controllerRef.current.abort();
+            controllerRef.current = null;
+          }
+        }
     },[])
 
     // isNumber가 11이 되면 모달을 표시하도록 설정
@@ -125,7 +152,7 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
             )}
            </div>
 
-            <div className="text-[#B18CFE] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
+            <div className="text-[#B18CFE] break-words mt-10 sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl text-center mr-20 ">
               {example}
             </div>
             
@@ -136,9 +163,13 @@ function AnnouncerExample({color, size}: PronounceExampleProps) {
             <ArrowRight  onClick={getExample} color='#B18CFE'/>
             </div>     
 
+            <div className="flex justify-center">
+              {isLoading && <SpinnerOrbits size={100}/>}
+            </div>
+            
+
             {/* isNumber가 11일 때 FinishModal이 자동으로 표시 */}
             <FinishModal isOpen={showModal} onClose={closeModal} />
-            
         </>
     )
 }

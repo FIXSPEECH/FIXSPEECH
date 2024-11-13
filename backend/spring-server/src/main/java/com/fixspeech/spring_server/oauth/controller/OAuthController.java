@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseLoginDTO;
@@ -43,6 +45,7 @@ public class OAuthController {
 	private final JwtCookieProvider jwtCookieProvider;
 	private final TempUserRepository tempUserRepository;
 	private final OAuthCodeTokenRepository oAuthCodeTokenRepository;
+	private final RestTemplate restTemplate;
 
 	@Value("${spring.security.oauth2.base-url}")
 	private String oauth2BaseUrl;
@@ -50,10 +53,50 @@ public class OAuthController {
 	@GetMapping("/login/{provider}")
 	public void getOAuthLoginUrl(@PathVariable String provider , HttpServletRequest request, HttpServletResponse response) throws
 		IOException {
+		// http://k11d206.p.ssafy.io:8081/oauth2/authorization/kakao
 		String redirectUrl = oauth2BaseUrl + "/oauth2/authorization/" + provider;
 		log.info("provider 조회: {}", provider);
 
 		response.sendRedirect(redirectUrl);
+	}
+
+
+	// @GetMapping("/logout")
+	// public ResponseEntity<String> logout() {
+	// 	String accessToken = "_9KUa_lnKD03d2sUbc2xR_0TJ5LxYmgGAAAAAQopyWAAAAGTI62tr8YNwJ_muSR4";
+	// 	String logoutEndpoint = "https://kapi.kakao.com/v1/user/logout";
+	// 	log.info("init");
+	// 	HttpHeaders headers = new HttpHeaders();
+	// 	headers.set("Authorization", accessToken);
+	//
+	// 	HttpEntity<String> request = new HttpEntity<>(headers);
+	// 	try {
+	// 		ResponseEntity<String> response = restTemplate.exchange(
+	// 			logoutEndpoint,
+	// 			HttpMethod.POST,
+	// 			request,
+	// 			String.class
+	// 		);
+	//
+	// 		if (response.getStatusCode().is2xxSuccessful()) {
+	// 			log.info("카카오 로그아웃 성공");
+	// 			return ResponseEntity.ok("카카오 로그아웃 성공");
+	// 		} else {
+	// 			log.error("카카오 로그아웃 실패: " + response.getStatusCode());
+	// 			return ResponseEntity.status(response.getStatusCode()).body("카카오 로그아웃 실패");
+	// 		}
+	// 	} catch (Exception e) {
+	// 		log.error("예외 발생: ", e);
+	// 		return ResponseEntity.status(500).body("서버 오류로 인해 로그아웃 실패");
+	// 	}
+	// }
+
+	@GetMapping("/logout")
+	public RedirectView logout() {
+		String clientId = "33b6d872f75249281632df8ee5942cd3";
+		String redirectUri = "http://localhost:8081/logout";
+		String logoutUrl = "https://kauth.kakao.com/oauth/logout?client_id=" + clientId + "&logout_redirect_uri=" + redirectUri;
+		return new RedirectView(logoutUrl);
 	}
 
 	@GetMapping("/get-oauth-info")

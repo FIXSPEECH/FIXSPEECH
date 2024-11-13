@@ -55,7 +55,8 @@ const MetricsVisualizer = ({ metrics }: MetricsVisualizerProps) => {
 
   // 차트 데이터 구성
   const chartData = {
-    labels: Object.keys(metrics),
+    // response에서 메트릭 이름을 한글만 표시
+    labels: Object.keys(metrics).map((label) => label.replace(/\s*\(.*\)/, "")),
     datasets: [
       {
         label: "성능 지표",
@@ -81,7 +82,7 @@ const MetricsVisualizer = ({ metrics }: MetricsVisualizerProps) => {
           color: "rgba(255, 255, 255, 0.1)",
         },
         pointLabels: {
-          display: false,
+          display: true,
         },
         min: 0,
         max: 1,

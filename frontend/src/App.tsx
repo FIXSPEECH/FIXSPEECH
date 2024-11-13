@@ -1,36 +1,62 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import ParticleBackground from "./components/Visualizer/ParticleBackground";
 import Header from "./components/Header/Header";
-import LoginPage from "./pages/Login/LoginPage";
-import MainPage from "./pages/MainPage";
-import AccessPage from "./pages/Login/AccessPage";
-import VoiceRecord from "./pages/VoiceAnalysis/VoiceRecordPage";
-import VoiceRecordResult from "./pages/VoiceAnalysis/VoiceRecordResultPage";
-import VoiceAnalysisList from "./pages/VoiceAnalysis/VoiceAnalysisListPage";
-import VoiceAnalysisDetail from "./pages/VoiceAnalysis/VoiceAnalysisDetailPage";
-import TrainSelect from "./pages/PronounceTraining/TrainSelectPage";
-import TrainPronounce from "./pages/PronounceTraining/TrainPronouncePage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
-import Lecture from "./pages/LecturePage";
-import SelectOptions from "./pages/SituationPractice/SelectOptionsPage";
-import RegistScript from "./pages/SituationPractice/RegistScriptPage";
-import SelectScript from "./pages/SituationPractice/SelectScriptPage";
-import SituationPractice from "./pages/SituationPractice/SituationPracticePage";
-import AnnouncerPractice from "./pages/AnnouncerPracticePage";
-import Game from "./pages/Game/GamePage";
-import MyVoice from "./pages/MyVoicePage";
-import ErrorPage from "./pages/ErrorPage";
-import GameRanking from "./pages/Game/GameRanking";
-import SelectResult from "./pages/SituationPractice/SelectResultPage";
-import VoiceList from "./pages/SituationPractice/VoiceListPage";
+
+// Lazy imports
+const LoginPage = lazy(() => import("./pages/Login/LoginPage"));
+const MainPage = lazy(() => import("./pages/MainPage/MainPage"));
+const AccessPage = lazy(() => import("./pages/Login/AccessPage"));
+const VoiceRecord = lazy(() => import("./pages/VoiceAnalysis/VoiceRecordPage"));
+const VoiceRecordResult = lazy(
+  () => import("./pages/VoiceAnalysis/VoiceRecordResultPage")
+);
+const VoiceAnalysisList = lazy(
+  () => import("./pages/VoiceAnalysis/VoiceAnalysisListPage")
+);
+const VoiceAnalysisDetail = lazy(
+  () => import("./pages/VoiceAnalysis/VoiceAnalysisDetailPage")
+);
+const TrainSelect = lazy(
+  () => import("./pages/PronounceTraining/TrainSelectPage")
+);
+const TrainPronounce = lazy(
+  () => import("./pages/PronounceTraining/TrainPronouncePage")
+);
+const Lecture = lazy(() => import("./pages/LecturePage"));
+const SelectOptions = lazy(
+  () => import("./pages/SituationPractice/SelectOptionsPage")
+);
+const RegistScript = lazy(
+  () => import("./pages/SituationPractice/RegistScriptPage")
+);
+const SelectScript = lazy(
+  () => import("./pages/SituationPractice/SelectScriptPage")
+);
+const SituationPractice = lazy(
+  () => import("./pages/SituationPractice/SituationPracticePage")
+);
+const AnnouncerPractice = lazy(() => import("./pages/AnnouncerPracticePage"));
+const Game = lazy(() => import("./pages/Game/GamePage"));
+const MyVoice = lazy(() => import("./pages/MyVoicePage"));
+const ErrorPage = lazy(() => import("./pages/ErrorPage"));
+const GameRanking = lazy(() => import("./pages/Game/GameRankingPage"));
+const SelectResult = lazy(
+  () => import("./pages/SituationPractice/SelectResultPage")
+);
+const VoiceList = lazy(() => import("./pages/SituationPractice/VoiceListPage"));
+
 // 레이아웃 컴포넌트 생성
 const Layout = () => {
   return (
     <>
       <ParticleBackground />
       <Header />
-      <Outlet />
+      <Suspense fallback={<div></div>}>
+        <Outlet />
+      </Suspense>
     </>
   );
 };

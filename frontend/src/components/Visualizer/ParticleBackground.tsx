@@ -1,31 +1,47 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 const ParticleBackground = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [hasWebGL, setHasWebGL] = useState(true);
 
   useEffect(() => {
     if (!containerRef.current) return;
+
+    // WebGL 지원 여부 확인
+    try {
+      const canvas = document.createElement("canvas");
+      const gl =
+        canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+      if (!gl) {
+        setHasWebGL(false);
+        return;
+      }
+    } catch (e) {
+      setHasWebGL(false);
+      return;
+    }
 
     // Three.js 설정
     const scene = new THREE.Scene();
 
     // Renderer 설정
-    const renderer = new THREE.WebGLRenderer({
-      antialias: false,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
-    renderer.setPixelRatio(1);
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: false,
+        alpha: true,
+        powerPreference: "high-performance",
+        canvas: containerRef.current.children[0] as HTMLCanvasElement,
+      });
+    } catch (e) {
+      setHasWebGL(false);
+      return;
+    }
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 1);
-
-    // 컨테이너 스타일 설정
-    containerRef.current.style.position = "fixed";
-    containerRef.current.style.top = "0";
-    containerRef.current.style.left = "0";
-    containerRef.current.style.zIndex = "-1";
-    containerRef.current.appendChild(renderer.domElement);
 
     // 카메라 설정
     const camera = new THREE.PerspectiveCamera(
@@ -123,8 +139,9 @@ const ParticleBackground = () => {
     };
 
     // 애니메이션 루프
+    let animationFrameId: number;
     const animate = () => {
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
 
       // 스프링 물리 시뮬레이션
       const springForceX = (motion.targetX - motion.x) * spring.tension;
@@ -179,14 +196,28 @@ const ParticleBackground = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("deviceorientation", handleDeviceOrientation);
-      if (containerRef.current) {
-        containerRef.current.removeChild(renderer.domElement);
-      }
+      cancelAnimationFrame(animationFrameId);
       renderer.dispose();
       particleGeometry.dispose();
       particleMaterial.dispose();
     };
   }, []);
+
+  if (!hasWebGL) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          background: "linear-gradient(to bottom right, #000000, #1a1a1a)",
+          zIndex: -1,
+        }}
+      />
+    );
+  }
 
   return (
     <div
@@ -200,7 +231,9 @@ const ParticleBackground = () => {
         zIndex: -1,
         pointerEvents: "none",
       }}
-    />
+    >
+      <canvas />
+    </div>
   );
 };
 

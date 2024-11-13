@@ -1,8 +1,8 @@
 // @ts-ignore
 import CalendarHeatmap from "react-calendar-heatmap";
-import "../../styles/MainPage/History.css";
+import "../../../styles/MainPage/History.css";
 import { useEffect, useState } from "react";
-import axiosInstance from "../../services/axiosInstance";
+import axiosInstance from "../../../services/axiosInstance";
 import { Tooltip } from "react-tooltip";
 
 interface GrassData {
@@ -46,8 +46,13 @@ function History() {
   }, []);
 
   return (
-    <div style={{ marginLeft: "3%", marginRight: "3%" }} className="mt-5 mb-10">
+    <div
+      style={{ marginLeft: "3%", marginRight: "3%" }}
+      className="mt-5 mb-10"
+      aria-hidden="true" // 스크린 리더가 읽지 않도록 설정
+    >
       <CalendarHeatmap
+        tabIndex={-1}
         startDate={new Date(new Date().setMonth(new Date().getMonth() - 4))}
         endDate={new Date(new Date().setMonth(new Date().getMonth()))}
         values={grassValues}

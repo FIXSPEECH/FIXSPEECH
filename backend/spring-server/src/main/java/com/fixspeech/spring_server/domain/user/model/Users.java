@@ -26,10 +26,12 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "users")
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -81,9 +83,10 @@ public class Users extends BaseTimeEntity {
 	@JoinColumn(name = "user_id") // 외래키
 	private List<UserVoiceFile> userVoiceFiles = new ArrayList<>();
 
-	public void updateOAuthInfo(String provider, String providerId, String image) {
+	public Users updateOAuthInfo(String provider, String providerId, String image) {
 		this.provider = provider;
 		this.providerId = providerId;
 		this.image = image;
+		return this;
 	}
 }

@@ -34,7 +34,7 @@ const gradeColors = {
 
 // 음성 메트릭 카드 컴포넌트
 const VoiceMetricCard = ({ name, data, criteria }: VoiceMetricCardProps) => {
-  const [showCriteria, setShowCriteria] = useState(false);
+  const [showCriteria, setShowCriteria] = useState(true);
 
   return (
     <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 hover:border-cyan-500/50">
