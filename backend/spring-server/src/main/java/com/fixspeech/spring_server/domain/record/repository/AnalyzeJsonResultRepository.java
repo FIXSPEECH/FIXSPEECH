@@ -8,7 +8,9 @@ import com.fixspeech.spring_server.domain.record.model.AnalyzeJsonResult;
 import com.fixspeech.spring_server.domain.record.model.UserVoiceFile;
 
 public interface AnalyzeJsonResultRepository extends JpaRepository<AnalyzeJsonResult, Long> {
-	Page<AnalyzeJsonResult> findAllByUserVoiceFile_UserId(Long userId, Pageable pageable);
+	// Page<AnalyzeJsonResult> findAllByUserVoiceFile_UserId(Long userId, Pageable pageable);
 
 	AnalyzeJsonResult findTopByUserVoiceFile(UserVoiceFile userVoiceFile);
+
+	Page<AnalyzeJsonResult> findAllByUserVoiceFile_UserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 }
