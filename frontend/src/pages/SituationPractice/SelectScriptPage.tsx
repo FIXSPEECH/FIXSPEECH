@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ScriptListGet } from "../../services/SituationPractice/SituationPracticeGet";
-import  {DeleteIcon}  from "../../Icons/DeleteIcon";
+import { DeleteIcon } from "../../components/Icons/DeleteIcon";
 import { ScriptDelte } from "../../services/SituationPractice/SituationPracticePost";
-import Swal from 'sweetalert2';
-import '../../styles/SituationPractice/SwalStyles.css'
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
-
+import Swal from "sweetalert2";
+import "../../styles/SituationPractice/SwalStyles.css";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
 function SelectScript() {
   const [scripts, setScripts] = useState<any>([]);
@@ -16,37 +15,34 @@ function SelectScript() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getScript = async() => {
-      try{
+    const getScript = async () => {
+      try {
         const response = await ScriptListGet();
-        console.log(response)
-        setScripts(response)
+        console.log(response);
+        setScripts(response);
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
-    }
-
-    getScript();
-
-  }, [])
-
-    // 현재 페이지에 해당하는 스크립트 목록 계산
-    const indexOfLastScript = currentPage * scriptsPerPage;
-    const indexOfFirstScript = indexOfLastScript - scriptsPerPage;
-    const currentScripts = scripts.slice(indexOfFirstScript, indexOfLastScript);
-  
-    // 페이지 변경 시 호출되는 함수
-    const paginate = (_: React.ChangeEvent<unknown>, value: number) => {
-      setCurrentPage(value);
     };
 
+    getScript();
+  }, []);
 
-  const handleClick =(scriptId: number) =>{
-    navigate(`/situation/practice/${scriptId}`)
-  }
+  // 현재 페이지에 해당하는 스크립트 목록 계산
+  const indexOfLastScript = currentPage * scriptsPerPage;
+  const indexOfFirstScript = indexOfLastScript - scriptsPerPage;
+  const currentScripts = scripts.slice(indexOfFirstScript, indexOfLastScript);
+
+  // 페이지 변경 시 호출되는 함수
+  const paginate = (_: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+  };
+
+  const handleClick = (scriptId: number) => {
+    navigate(`/situation/practice/${scriptId}`);
+  };
 
   const handleDelete = (scriptId: number) => {
-
     Swal.fire({
       title: "대본을 삭제하시겠습니까?",
       showDenyButton: true,
@@ -54,34 +50,27 @@ function SelectScript() {
       denyButtonText: `취소`,
       customClass: {
         confirmButton: "swal2-confirm-btn", // 삭제 버튼
-        denyButton: "swal2-deny-btn",       // 취소 버튼
+        denyButton: "swal2-deny-btn", // 취소 버튼
       },
-      buttonsStyling: false
+      buttonsStyling: false,
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        try{
-          const response = await ScriptDelte(scriptId)
-          console.log(response)
-  
+        try {
+          const response = await ScriptDelte(scriptId);
+          console.log(response);
+
           // 삭제 후 scripts 상태 업데이트 (삭제된 스크립트를 배열에서 제거)
           setScripts((prevScripts: any) =>
             prevScripts.filter((script: any) => script.scriptId !== scriptId)
           );
-  
-        } catch(e) {
-          console.log(e)
+        } catch (e) {
+          console.log(e);
         }
-
-        
       } else if (result.isDenied) {
-        
       }
     });
-
-  }
-
-  
+  };
 
   return (
     <div className="h-screen p-8">
@@ -102,7 +91,9 @@ function SelectScript() {
                 <div className="flex justify-between items-center">
                   <div className="text-white text-xl">{script.title}</div>
                   <div className="flex items-center">
-                    <div className="text-[#FFAB01] text-sm mr-2">등록일: {script.createdAt}</div>
+                    <div className="text-[#FFAB01] text-sm mr-2">
+                      등록일: {script.createdAt}
+                    </div>
                     <DeleteIcon onClick={() => handleDelete(script.scriptId)} />
                   </div>
                 </div>
@@ -112,11 +103,11 @@ function SelectScript() {
           <Stack
             spacing={2}
             sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              width: 'fit-content',
-              margin: '0 auto',
-              marginTop: '2%',
+              display: "flex",
+              justifyContent: "center",
+              width: "fit-content",
+              margin: "0 auto",
+              marginTop: "2%",
             }}
           >
             <Pagination
