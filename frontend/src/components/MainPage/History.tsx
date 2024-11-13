@@ -80,7 +80,7 @@ function History() {
           };
         }}
       />
-      <Tooltip id="grass-tooltip" tabIndex={-1} />
+      <Tooltip id="grass-tooltip" />
     </div>
   );
 }
