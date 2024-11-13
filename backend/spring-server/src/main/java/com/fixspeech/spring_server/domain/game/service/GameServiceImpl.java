@@ -64,19 +64,37 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public void saveResult(Users user, ResultRequestDto resultRequestDto) {
 		try {
-
 			Game game = gameRepository.findTopByLevel(resultRequestDto.level());
+
 			if (gameResultRepository.existsByGameIdAndUsers_Id(game.getId(), user.getId())) {
-				gameResultRepository.deleteAllByGameIdAndUsers_Id(game.getId(), user.getId());
+				GameResult originResult = gameResultRepository.findByGameIdAndUsers_Id(game.getId(), user.getId());
+
+				if (resultRequestDto.playtime() > originResult.getPlaytime() ||
+					(resultRequestDto.playtime() == originResult.getPlaytime() &&
+						resultRequestDto.correctNumber() > originResult.getCorrectNumber())) {
+
+					gameResultRepository.deleteAllByGameIdAndUsers_Id(game.getId(), user.getId());
+
+					GameResult gameResult = GameResult.builder()
+						.users(user)
+						.game(game)
+						.correctNumber(resultRequestDto.correctNumber())
+						.playtime(resultRequestDto.playtime())
+						.build();
+
+					gameResultRepository.save(gameResult);
+				}
+
+			} else {
+				GameResult gameResult = GameResult.builder()
+					.users(user)
+					.game(game)
+					.correctNumber(resultRequestDto.correctNumber())
+					.playtime(resultRequestDto.playtime())
+					.build();
+
+				gameResultRepository.save(gameResult);
 			}
-			;
-			GameResult gameResult = GameResult.builder()
-				.users(user)
-				.game(game)
-				.correctNumber(resultRequestDto.correctNumber())
-				.playtime(resultRequestDto.playtime())
-				.build();
-			gameResultRepository.save(gameResult);
 		} catch (Exception e) {
 			throw new CustomException(ErrorCode.FAIL_TO_SAVE_RESULT);
 		}

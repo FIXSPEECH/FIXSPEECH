@@ -12,8 +12,10 @@ public interface GameResultRepository extends JpaRepository<GameResult, Long> {
 	Page<GameResult> findAllByGameId(Long level, Pageable pageable);
 
 	Page<GameResult> findAllByGameIdOrderByPlaytimeDesc(Long id, Pageable pageable);
-	
+
 	boolean existsByGameIdAndUsers_Id(Long gameId, Long userId);
 
 	void deleteAllByGameIdAndUsers_Id(Long gameId, Long userId);
+
+	GameResult findByGameIdAndUsers_Id(Long id, Long id1);
 }

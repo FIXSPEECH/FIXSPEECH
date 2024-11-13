@@ -128,6 +128,7 @@ public class ScriptController implements ScriptApi {
 
 	@KafkaListener(topics = "voice-analysis-topic", groupId = "voice-analysis-group", concurrency = "5")
 	public void processVoiceAnalysis(VoiceAnalysisMessage message) {
+		System.out.println("분석 시작");
 		try {
 			byte[] fileData = redisTemplate.opsForValue().get(message.redisKey());
 			if (fileData == null) {
@@ -163,7 +164,7 @@ public class ScriptController implements ScriptApi {
 
 			scriptService.save(s3Url, message.scriptId(), responseBody);
 
-			System.out.println(response.getBody());
+			System.out.println(response.getBody() + "ㄴㅇㄴㅇ");
 
 			//분석 완료 알림
 			emitterService.notify(message.userId(), new HashMap<String, Object>() {{
