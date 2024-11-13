@@ -3,6 +3,7 @@ import MicNoneIcon from "@mui/icons-material/MicNone";
 import MicIcon from "@mui/icons-material/Mic";
 import useVoiceStore from "../../store/voiceStore";
 import { LiveAudioVisualizer } from "react-audio-visualize";
+import { sttPost } from "../../services/PronouncePractice/PronouncePracticePost";
 
 interface MicrophoneProps {
   color: string; // color prop의 타입 정의
@@ -27,6 +28,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
     null
   );
   const [interimTranscript, setInterimTranscript] = useState("");
+  const [finalTranscript, setFinalTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
   
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -39,19 +41,20 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       recognition.lang = "ko-KR";
 
       recognition.onresult = (event: any) => {
-        let finalTranscript = "";
+        let newFinalTranscript = "";
         let interimTranscript = "";
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript;
           if (event.results[i].isFinal) {
-            finalTranscript += transcript;
+            newFinalTranscript += transcript;
           } else {
             interimTranscript += transcript;
           }
         }
 
         setInterimTranscript(interimTranscript);
+        setFinalTranscript(newFinalTranscript)
       };
 
       recognition.onerror = (event: any) => {
@@ -146,6 +149,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       setAudioURL(null);
     }
   };
+
 
   const handleStartStop = () => {
     if (!isRecording) {
@@ -282,7 +286,16 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       </div>
 
 
-      <div className="text-white">{interimTranscript}</div>
+
+      {/* 녹음된 오디오를 재생할 수 있는 오디오 플레이어 */}
+      {/* {audioURL && (
+        <audio controls src={audioURL} className="mt-4">
+          Your browser does not support the audio element.
+        </audio>
+      )} */}
+
+      <div className="text-white">(중간) {interimTranscript}</div>
+      <div className="text-white">(파이널) {finalTranscript}</div>
       {/* stt 결과 post 보내고 나면
           // setInterimTranscript("")를 통해 초기화
       */}
