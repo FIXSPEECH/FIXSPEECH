@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fixspeech.spring_server.domain.game.dto.ResultRequestDto;
 import com.fixspeech.spring_server.domain.game.dto.ResultResponseDto;
 import com.fixspeech.spring_server.domain.game.service.GameService;
+import com.fixspeech.spring_server.domain.grass.service.GrassService;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
 import com.fixspeech.spring_server.global.common.ApiResponse;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class GameController implements GameApi {
 	private final GameService gameService;
 	private final UserService userService;
+	private final GrassService grassService;
 
 	@GetMapping
 	public ApiResponse<?> getGame() {
@@ -50,6 +52,7 @@ public class GameController implements GameApi {
 		Users user = userService.findByEmail(userDetails.getUsername())
 			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 		gameService.saveResult(user, resultRequestDto);
+		grassService.addGrassRecord(user.getId());
 		return ApiResponse.createSuccess(resultRequestDto, "게임 결과 저장 성공");
 
 	}
