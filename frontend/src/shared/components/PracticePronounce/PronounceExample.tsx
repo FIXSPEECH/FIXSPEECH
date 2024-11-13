@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useVoiceStore from "../../store/voiceStore";
+import useVoiceStore from "../../../shared/stores/voiceStore";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
-import { ExampleGet } from "../../services/PronouncePractice/PronouncePracticeGet";
+import { ExampleGet } from "../../../services/PronouncePractice/PronouncePracticeGet";
 import ArrowRight from "../Icons/ArrowRightIcon";
-import usePronounceScoreStore from "../../store/pronounceScoreStore";
+import usePronounceScoreStore from "../../../shared/stores/pronounceScoreStore";
 import FinishModal from "./FinishModal";
 
 interface PronounceExampleProps {

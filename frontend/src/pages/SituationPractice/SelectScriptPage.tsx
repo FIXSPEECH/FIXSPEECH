@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ScriptListGet } from "../../services/SituationPractice/SituationPracticeGet";
-import { DeleteIcon } from "../../components/Icons/DeleteIcon";
+import { DeleteIcon } from "../../shared/components/Icons/DeleteIcon";
 import { ScriptDelte } from "../../services/SituationPractice/SituationPracticePost";
 import Swal from "sweetalert2";
-import "../../styles/SituationPractice/SwalStyles.css";
+import "./SwalStyles.css";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 

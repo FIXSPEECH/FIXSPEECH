@@ -1,6 +1,6 @@
 // @ts-ignore
 import CalendarHeatmap from "react-calendar-heatmap";
-import "../../../styles/MainPage/History.css";
+import "./History.css";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../services/axiosInstance";
 import { Tooltip } from "react-tooltip";

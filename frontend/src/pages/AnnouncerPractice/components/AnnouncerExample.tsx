@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useVoiceStore from "../../store/voiceStore";
+import useVoiceStore from "../../../shared/stores/voiceStore";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
-import { AnnouncerExampleGet } from "../../services/AnnouncerPractice/AnnouncerPracticeGet";
-import ArrowRight from "../Icons/ArrowRightIcon";
-import usePronounceScoreStore from "../../store/pronounceScoreStore";
-import FinishModal from "../PracticePronounce/FinishModal";
-import { audioPost } from "../../services/AnnouncerPractice/AnnouncerPracticePost";
-import useModalStore from "../../store/modalStore";
-import useGraphStore from "../../store/graphStore";
-import SpinnerOrbits from "../Loader/SpinnerOrbits";
+import { AnnouncerExampleGet } from "../../../services/AnnouncerPractice/AnnouncerPracticeGet";
+import ArrowRight from "../../../shared/components/Icons/ArrowRightIcon";
+import usePronounceScoreStore from "../../../shared/stores/pronounceScoreStore";
+import FinishModal from "../../../shared/components/PracticePronounce/FinishModal";
+import { audioPost } from "../../../services/AnnouncerPractice/AnnouncerPracticePost";
+import useModalStore from "../../../shared/stores/modalStore";
+import useGraphStore from "../../../shared/stores/graphStore";
+import SpinnerOrbits from "../../../shared/components/Loader/SpinnerOrbits";
 
 interface PronounceExampleProps {
   color: string; // color prop의 타입 정의

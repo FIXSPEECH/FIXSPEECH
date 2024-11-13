@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import MicNoneIcon from "@mui/icons-material/MicNone";
 import MicIcon from "@mui/icons-material/Mic";
-import useVoiceStore from "../../store/voiceStore";
+import useVoiceStore from "../../../shared/stores/voiceStore";
 import { LiveAudioVisualizer } from "react-audio-visualize";
 
 interface MicrophoneProps {
@@ -17,7 +17,6 @@ declare global {
   }
 }
 
-
 function AudioRecorder({ color, size }: MicrophoneProps) {
   const { isRecording, audioURL, setIsRecording, setAudioURL, setAudioBlob } =
     useVoiceStore();
@@ -29,9 +28,10 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
   const [interimTranscript, setInterimTranscript] = useState("");
   const [finalTranscript, setFinalTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
-  
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  
+
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
   useEffect(() => {
     if ("webkitSpeechRecognition" in window) {
       const recognition = new SpeechRecognition();
@@ -53,7 +53,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
         }
 
         setInterimTranscript(interimTranscript);
-        setFinalTranscript(newFinalTranscript)
+        setFinalTranscript(newFinalTranscript);
       };
 
       recognition.onerror = (event: any) => {
@@ -69,30 +69,30 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
   const isWavFile = async (blob: Blob) => {
     const arrayBuffer = await blob.arrayBuffer();
     const view = new DataView(arrayBuffer);
-    const isWav = view.getUint32(0, false) === 0x52494646 && view.getUint32(8, false) === 0x57415645;
+    const isWav =
+      view.getUint32(0, false) === 0x52494646 &&
+      view.getUint32(8, false) === 0x57415645;
     console.log("isWavFile check: ", isWav);
     return isWav;
   };
 
   const startRecording = async () => {
-
     // 녹음 시작하기 전에 audioURL 결과 초기화
     setAudioURL(null);
-
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
       // 오디오 파일 형식 변환
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
       const source = audioContext.createMediaStreamSource(stream);
-  
+
       // stereo -> mono 변환
       const gainNode = audioContext.createGain();
       gainNode.channelCount = 1; // mono로 설정
-      gainNode.channelCountMode = 'explicit';
+      gainNode.channelCountMode = "explicit";
       source.connect(gainNode);
-
 
       const mediaRecorder = new MediaRecorder(stream);
       setMediaRecorder(mediaRecorder);
@@ -105,7 +105,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
         }
       };
 
-      mediaRecorder.onstop = async() => {
+      mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, {
           type: "audio/wav",
         });
@@ -113,29 +113,26 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
         // const audioUrl = URL.createObjectURL(audioBlob);
         // setAudioURL(audioUrl);
 
-         // WAV 파일로 변환
-         const arrayBuffer = await audioBlob.arrayBuffer();
-         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-         const wavBuffer = audioBufferToWav(audioBuffer);
-         const wavBlob = new Blob([wavBuffer], { type: "audio/wav" });
+        // WAV 파일로 변환
+        const arrayBuffer = await audioBlob.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        const wavBuffer = audioBufferToWav(audioBuffer);
+        const wavBlob = new Blob([wavBuffer], { type: "audio/wav" });
 
-         // WAV 파일인지 확인
-         const isWav = await isWavFile(wavBlob);
-         if (isWav) {
-           console.log("This is a valid WAV file.");
-           setAudioBlob(wavBlob);
-           const audioUrl = URL.createObjectURL(wavBlob);
-           setAudioURL(audioUrl);
-         } else {
-           console.error("The recorded file is not a valid WAV file.");
-         }
-     
-
+        // WAV 파일인지 확인
+        const isWav = await isWavFile(wavBlob);
+        if (isWav) {
+          console.log("This is a valid WAV file.");
+          setAudioBlob(wavBlob);
+          const audioUrl = URL.createObjectURL(wavBlob);
+          setAudioURL(audioUrl);
+        } else {
+          console.error("The recorded file is not a valid WAV file.");
+        }
       };
 
       mediaRecorder.start();
       setIsRecording(true);
-
     } catch (error) {
       console.error("Error accessing microphone", error);
     }
@@ -148,7 +145,6 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
       setAudioURL(null);
     }
   };
-
 
   const handleStartStop = () => {
     if (!isRecording) {
@@ -190,34 +186,32 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
     setUint32(0x61746164); // "data"
     setUint32(length - pos - 4); // chunk length
 
-     // write interleaved data
-  for (i = 0; i < buffer.numberOfChannels; i++)
-    channels.push(buffer.getChannelData(i));
+    // write interleaved data
+    for (i = 0; i < buffer.numberOfChannels; i++)
+      channels.push(buffer.getChannelData(i));
 
-  while (pos < length) {
-    for (i = 0; i < numOfChannels; i++) {
-      sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
-      sample = (0.5 + sample * 32767) | 0; // scale to 16-bit signed int
-      view.setInt16(pos, sample, true); // write 16-bit sample
+    while (pos < length) {
+      for (i = 0; i < numOfChannels; i++) {
+        sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+        sample = (0.5 + sample * 32767) | 0; // scale to 16-bit signed int
+        view.setInt16(pos, sample, true); // write 16-bit sample
+        pos += 2;
+      }
+      offset++;
+    }
+
+    return view;
+
+    function setUint16(data: any) {
+      view.setUint16(pos, data, true);
       pos += 2;
     }
-    offset++;
-  }
 
-  return view;
-
-  function setUint16(data: any) {
-    view.setUint16(pos, data, true);
-    pos += 2;
-  }
-
-  function setUint32(data: any) {
-    view.setUint32(pos, data, true);
-    pos += 4;
-  }
-};
-
-
+    function setUint32(data: any) {
+      view.setUint32(pos, data, true);
+      pos += 4;
+    }
+  };
 
   return (
     <div className="text-center mt-20">
@@ -261,7 +255,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
                   transform: "translate(-50%, -50%)", // 아이콘을 정확히 가운데에 배치
                   color,
                   fontSize: `${size}rem`,
-                  zIndex: 3, // 아이콘을 마스킹 레이어 위에 올리기 위해 z-index 사용                  
+                  zIndex: 3, // 아이콘을 마스킹 레이어 위에 올리기 위해 z-index 사용
                 }}
                 className="cursor-pointer"
                 onClick={handleStartStop}
@@ -275,7 +269,6 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
             onClick={handleStartStop}
           />
         )}
-
       </button>
 
       <div className="text-white break-words mt-2 text-xs sm:text-sm md:text-base lg:text-text-base xl:text-lg">
@@ -283,8 +276,6 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
           ? "*다시 녹음하려면 아이콘을 눌러주세요."
           : "*아이콘을 누르고 제시된 문장을 읽어주세요."}
       </div>
-
-
 
       {/* 녹음된 오디오를 재생할 수 있는 오디오 플레이어 */}
       {/* {audioURL && (
@@ -303,5 +294,3 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
 }
 
 export default AudioRecorder;
-
-
