@@ -120,15 +120,16 @@ public class UserController implements UserApi {
 	 * @return accessToken
 	 */
 	@PostMapping("public/reissue")
-	public ApiResponse<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
+	public ApiResponse<?> reissueToken(@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = request.getHeader("refreshToken");
 		log.info("refreshToken = {}", refreshToken);
 		try {
 			if (refreshToken == null || refreshToken.isEmpty()) {
 				return ApiResponse.createError(ErrorCode.INVALID_TOKEN_ERROR);
 			}
-
-			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
+			Users user = userService.findByEmail(userDetails.getUsername()).orElse(null);
+			if (user == null) return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(user, refreshToken);
 			log.info("responseDTO={}", responseDTO);
 			if (responseDTO == null) {
 				throw new IllegalArgumentException("Refresh Token이 만료되었거나 존재하지 않습니다.");
