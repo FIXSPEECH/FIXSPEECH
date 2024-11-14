@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
-import VoiceMetricCard from "../../components/VoiceQuality/VoiceMetricCard";
-import MetricsVisualizer from "../../components/VoiceQuality/MetricsVisualizer";
-import { METRIC_CRITERIA } from "../../constants/voiceMetrics";
-import GradientCirclePlanes from "../../components/Loader/GradientCirclePlanes";
+import VoiceMetricCard from "../../shared/components/VoiceQuality/VoiceMetricCard";
+import MetricsVisualizer from "../../shared/components/VoiceQuality/MetricsVisualizer";
+import { METRIC_CRITERIA } from "../../shared/constants/voiceMetrics";
+import GradientCirclePlanes from "../../shared/components/Loader/GradientCirclePlanes";
 
 interface AnalysisDetailResponse {
   analyzeResult: {

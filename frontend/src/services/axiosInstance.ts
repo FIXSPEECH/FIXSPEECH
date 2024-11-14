@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
-import useAuthStore from "../store/authStore";
+import useAuthStore from "../shared/stores/authStore";
 
 // axios 인스턴스 생성
 const axiosInstance = axios.create({

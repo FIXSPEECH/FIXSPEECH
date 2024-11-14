@@ -1,12 +1,18 @@
 import { useState, useEffect, useRef } from "react";
-import FallingLetter from "../../components/Game/FallingLetter";
+import FallingLetter from "./components/FallingLetter";
 import { Button } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { getGameList, getGameWords, postGameResult } from "../../services/Game/GameApi";
+import {
+  getGameList,
+  getGameWords,
+  postGameResult,
+} from "../../services/Game/GameApi";
 import { useNavigate } from "react-router-dom";
 
 export default function Game() {
-  const [letters, setLetters] = useState<{ id: number; letter: string; left: number }[]>([]);
+  const [letters, setLetters] = useState<
+    { id: number; letter: string; left: number }[]
+  >([]);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(5);
   const [isGameOver, setIsGameOver] = useState(false);
@@ -25,7 +31,9 @@ export default function Game() {
   // stageList 가져오기
   useEffect(() => {
     getGameList().then((res) => {
-      const idList = res.data.map((item: any) => item?.id).filter((id: number) => id !== undefined);
+      const idList = res.data
+        .map((item: any) => item?.id)
+        .filter((id: number) => id !== undefined);
       setStageList(idList);
     });
     handleStageSelection(stage);
@@ -65,7 +73,9 @@ export default function Game() {
     setLetters([]);
 
     // 게임 시간 (초 단위로 계산)
-    const playtime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+    const playtime = startTime
+      ? Math.floor((Date.now() - startTime) / 1000)
+      : 0;
 
     // API 호출
     postGameResult({ level: stage, playtime, correctNumber: score });
@@ -104,7 +114,8 @@ export default function Game() {
   };
 
   const startRecording = () => {
-    if (!recognitionRef.current) recognitionRef.current = initializeRecognition();
+    if (!recognitionRef.current)
+      recognitionRef.current = initializeRecognition();
     if (!isRecording && recognitionRef.current) recognitionRef.current.start();
     setIsRecording(true);
   };
@@ -116,7 +127,10 @@ export default function Game() {
 
   const handleMatchCheck = () => {
     if (!recognizedText) return;
-    const matchingLetters = letters.filter((letter) => letter.letter.toLowerCase().normalize("NFC") === recognizedText);
+    const matchingLetters = letters.filter(
+      (letter) =>
+        letter.letter.toLowerCase().normalize("NFC") === recognizedText
+    );
     if (matchingLetters.length > 0) {
       const oldestLetter = matchingLetters.reduce((minLetter, currentLetter) =>
         currentLetter.id < minLetter.id ? currentLetter : minLetter
@@ -151,12 +165,18 @@ export default function Game() {
   }, [isGameRunning]);
 
   return (
-    <div className="flex flex-col min-h-[70vh] justify-between" style={{ backgroundColor: "#2C2C2E" }}>
+    <div
+      className="flex flex-col min-h-[70vh] justify-between"
+      style={{ backgroundColor: "#2C2C2E" }}
+    >
       <div className="flex flex-col min-h-[70vh]">
         <div className="flex flex-col justify-start p-4">
           <div className="flex">
             {Array.from({ length: lives }).map((_, index) => (
-              <FavoriteIcon key={index} style={{ color: "red", margin: "0 5px" }} />
+              <FavoriteIcon
+                key={index}
+                style={{ color: "red", margin: "0 5px" }}
+              />
             ))}
           </div>
           <div className="text-colorFE6250 font-bold mt-2">Score: {score}</div>
@@ -196,12 +216,19 @@ export default function Game() {
                 START
               </h1>
 
-              <div className="flex gap-2 mt-4" style={{ pointerEvents: "auto" }}>
+              <div
+                className="flex gap-2 mt-4"
+                style={{ pointerEvents: "auto" }}
+              >
                 {stageList.map((stageId) => (
                   <Button
                     key={stageId}
                     variant="contained"
-                    style={{ backgroundColor: stage === stageId ? "#FE6250" : "#FFAB01", color: "white" }}
+                    style={{
+                      backgroundColor:
+                        stage === stageId ? "#FE6250" : "#FFAB01",
+                      color: "white",
+                    }}
                     onClick={() => handleStageSelection(stageId)}
                     disabled={stage === stageId}
                   >
@@ -214,15 +241,24 @@ export default function Game() {
 
           {isGameOver && (
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <h1 className="text-8xl font-bold text-colorFE6250 mb-4 text-center ">GAME OVER</h1>
+              <h1 className="text-8xl font-bold text-colorFE6250 mb-4 text-center ">
+                GAME OVER
+              </h1>
               <div className="flex gap-4 mt-4 text-white">
-                <Button variant="text" onClick={() => (window.location.href = "/")}>
+                <Button
+                  variant="text"
+                  onClick={() => (window.location.href = "/")}
+                >
                   <p className="text-colorFE6250 font-bold">나가기</p>
                 </Button>
                 <Button variant="text" color="error" onClick={startGame}>
                   <p className="text-colorFE6250 font-bold">다시하기</p>
                 </Button>
-                <Button variant="text" color="error" onClick={()=>navigate("/game/ranking")}>
+                <Button
+                  variant="text"
+                  color="error"
+                  onClick={() => navigate("/game/ranking")}
+                >
                   <p className="text-colorFE6250 font-bold">랭킹보기</p>
                 </Button>
               </div>
@@ -237,7 +273,9 @@ export default function Game() {
           className="flex flex-col items-center justify-center min-h-[10vh]"
           style={{ backgroundColor: "transparent" }} // 투명도 있는 배경
         >
-          <h2 className="text-white bg-opacity-0 p-2 rounded-md">{beforeText}</h2>
+          <h2 className="text-white bg-opacity-0 p-2 rounded-md">
+            {beforeText}
+          </h2>
         </div>
       )}
     </div>

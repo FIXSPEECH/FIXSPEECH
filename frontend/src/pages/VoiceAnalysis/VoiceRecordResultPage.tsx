@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import VoiceMetricCard from "../../components/VoiceQuality/VoiceMetricCard";
-import MetricsVisualizer from "../../components/VoiceQuality/MetricsVisualizer";
-import useAuthStore from "../../store/authStore";
-import useVoiceStore from "../../store/voiceStore";
+import VoiceMetricCard from "../../shared/components/VoiceQuality/VoiceMetricCard";
+import MetricsVisualizer from "../../shared/components/VoiceQuality/MetricsVisualizer";
+import useAuthStore from "../../shared/stores/authStore";
+import useVoiceStore from "../../shared/stores/voiceStore";
 import { useNavigate, useLocation } from "react-router-dom";
-import GradientCirclePlanes from "../../components/Loader/GradientCirclePlanes";
-import { METRIC_CRITERIA } from "../../constants/voiceMetrics";
+import GradientCirclePlanes from "../../shared/components/Loader/GradientCirclePlanes";
+import { METRIC_CRITERIA } from "../../shared/constants/voiceMetrics";
 
 // 음성 분석 메트릭 데이터 타입 정의
 interface MetricData {

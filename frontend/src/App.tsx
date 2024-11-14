@@ -1,10 +1,10 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import ParticleBackground from "./components/Visualizer/ParticleBackground";
-import Header from "./components/Header/Header";
-import ProtectedRoute from "./routes/ProtectedRoute";
-import PublicRoute from "./routes/PublicRoute";
-import NotificationListener from "./components/NotificationListener";
+import ParticleBackground from "./shared/components/Visualizer/ParticleBackground";
+import Header from "./shared/components/Header/Header";
+import ProtectedRoute from "./shared/routes/ProtectedRoute";
+import PublicRoute from "./shared/routes/PublicRoute";
+import NotificationListener from "./shared/components/NotificationListener";
 
 // Lazy imports
 const LoginPage = lazy(() => import("./pages/Login/LoginPage"));
@@ -39,7 +39,9 @@ const SelectScript = lazy(
 const SituationPractice = lazy(
   () => import("./pages/SituationPractice/SituationPracticePage")
 );
-const AnnouncerPractice = lazy(() => import("./pages/AnnouncerPracticePage"));
+const AnnouncerPractice = lazy(
+  () => import("./pages/AnnouncerPractice/AnnouncerPracticePage")
+);
 const Game = lazy(() => import("./pages/Game/GamePage"));
 const MyVoice = lazy(() => import("./pages/MyVoicePage"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));

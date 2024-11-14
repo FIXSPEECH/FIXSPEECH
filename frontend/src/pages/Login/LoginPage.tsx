@@ -1,7 +1,7 @@
-import "../../styles/user/Login.css";
-import useAuthStore from "../../store/authStore";
+import "./Login.css";
+import useAuthStore from "../../shared/stores/authStore";
 import { useNavigate } from "react-router-dom";
-import AudioVertexVisualizer from "../../components/Visualizer/AudioVertexVisualizer";
+import AudioVertexVisualizer from "../../shared/components/Visualizer/AudioVertexVisualizer";
 
 function Login() {
   const setToken = useAuthStore((state) => state.setToken);
