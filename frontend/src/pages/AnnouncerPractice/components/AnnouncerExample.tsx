@@ -140,7 +140,7 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
     setIsNumberZero();
-    navigate("/training");
+    navigate("/");
     finishPost();
   };
 
