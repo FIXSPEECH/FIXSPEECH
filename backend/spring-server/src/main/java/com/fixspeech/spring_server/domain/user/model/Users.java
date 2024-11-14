@@ -42,13 +42,13 @@ public class Users extends BaseTimeEntity {
 	@Column(name = "id")
 	private Long id;
 
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", nullable = true)
 	private String name;
 
-	@Column(name = "gender")
+	@Column(name = "gender", nullable = true)
 	private String gender;
 
-	@Column(name = "nick_name")
+	@Column(name = "nick_name", nullable = false)
 	private String nickName;
 
 	@Column(name = "email", nullable = false, unique = true)
@@ -67,11 +67,11 @@ public class Users extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	@Column(name = "provider")
+	@Column(name = "provider", nullable = false)
 	@ColumnDefault(value = "local")
 	private String provider;
 
-	@Column(name = "provider_id")
+	@Column(name = "provider_id", nullable = false)
 	private String providerId;
 
 	// @Setter
