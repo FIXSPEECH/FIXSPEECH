@@ -40,6 +40,9 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
       const response = await sttPost(data)
       console.log(response.data)
       setDifferences(response.data.differences || [])
+      if (response.data.similarity){
+        setIsCorrect();
+      }
     } catch(e) {
       console.log (e)
     }

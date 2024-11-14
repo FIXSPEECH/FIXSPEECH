@@ -286,9 +286,9 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
           Your browser does not support the audio element.
         </audio>
       )} */}
-
+{/* 
       <div className="text-white">(중간) {interimTranscript}</div>
-      <div className="text-white">(파이널) {finalTranscript}</div>
+      <div className="text-white">(파이널) {finalTranscript}</div> */}
       {/* stt 결과 post 보내고 나면
           // setInterimTranscript("")를 통해 초기화
       */}
