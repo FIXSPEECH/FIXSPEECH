@@ -11,6 +11,7 @@ import useModalStore from "../../../shared/stores/modalStore";
 import useGraphStore from "../../../shared/stores/graphStore";
 import SpinnerOrbits from "../../../shared/components/Loader/SpinnerOrbits";
 import useNextArrowState from "../../../shared/stores/nextArrowStore";
+import { announcerFinishPost } from "../../../services/AnnouncerPractice/AnnouncerPracticePost";
 
 interface PronounceExampleProps {
   color: string; // color prop의 타입 정의
@@ -126,10 +127,21 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
     }
   }, [isNumber]); // isNumber가 변경될 때마다 실행
 
+
+  const finishPost = async() => {
+    try{
+      const response = await announcerFinishPost() 
+      console.log(response)
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
     setIsNumberZero();
     navigate("/training");
+    finishPost();
   };
 
   return (

@@ -5,6 +5,7 @@ import { useState } from "react";
 import Button from "@mui/material/Button";
 import usePronounceScoreStore from "../../shared/stores/pronounceScoreStore";
 import FinishModal from "../../shared/components/PracticePronounce/FinishModal";
+import { pronounceFinishPost } from "../../services/PronouncePractice/PronouncePracticePost";
 
 function TrainPronounce() {
   const { options } = useParams();
@@ -12,9 +13,20 @@ function TrainPronounce() {
   const { setIsNumberZero } = usePronounceScoreStore();
   const navigate = useNavigate();
 
+
+  const finishPost = async() => {
+    try{
+      const response = await pronounceFinishPost() 
+      console.log(response.data)
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
     setIsNumberZero();
+    finishPost();
     navigate("/training");
   };
 
