@@ -5,6 +5,7 @@ import VoiceMetricCard from "../../shared/components/VoiceQuality/VoiceMetricCar
 import MetricsVisualizer from "../../shared/components/VoiceQuality/MetricsVisualizer";
 import { METRIC_CRITERIA } from "../../shared/constants/voiceMetrics";
 import GradientCirclePlanes from "../../shared/components/Loader/GradientCirclePlanes";
+import useHistoryColorStore from "../../shared/stores/historyColorStore";
 
 interface AnalysisDetailResponse {
   analyzeResult: {
@@ -33,6 +34,7 @@ const VoiceAnalysisDetailPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const { selectedColor } = useHistoryColorStore();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -155,7 +157,10 @@ const VoiceAnalysisDetailPage = () => {
             {/* 메트릭 시각화 */}
             <div className="aspect-square w-full bg-gray-800/30 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-gray-700/50">
               <h2 className="text-lg font-bold mb-4">메트릭 시각화</h2>
-              <MetricsVisualizer metrics={analysisData.analyzeResult.metrics} />
+              <MetricsVisualizer
+                metrics={analysisData.analyzeResult.metrics}
+                colorScheme={selectedColor}
+              />
             </div>
           </div>
 

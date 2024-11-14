@@ -6,11 +6,11 @@
  */
 
 /* 화면 크기가 768px 이상일 때 적용 */
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
   .react-calendar-heatmap {
     height: 200px;
   }
-}
+} */
 
 .react-calendar-heatmap text {
   font-size: 5px;
