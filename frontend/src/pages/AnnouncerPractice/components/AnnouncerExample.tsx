@@ -21,7 +21,7 @@ interface PronounceExampleProps {
 function AnnouncerExample({ color, size }: PronounceExampleProps) {
   const { isModal } = useModalStore();
   const { setIsRecording, setAudioURL, audioBlob } = useVoiceStore();
-  const { isNumber, setIsNumber, setIsNumberZero, setIsNumberMinus } =
+  const { isNumber, setIsNumber, setIsNumberZero } =
     usePronounceScoreStore();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
@@ -32,6 +32,7 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const controllerRef = useRef<AbortController | null>(null);
   const {isNext, setIsNext} = useNextArrowState();
+  const [isBefore, setIsBefore] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handlePlayAudio = () => {
@@ -61,6 +62,11 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
     }
     setIsRecording(false);
     setAudioURL(null);
+
+    // 이렇게 수정하면 10개 문장 학습후 다음으로 넘어가기 눌렀을때 모달이 뜨겠지..?
+    if(isNumber === 10) {
+      setShowModal(true);
+    }
   };
 
   const postAudio = async () => {
@@ -88,6 +94,12 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
       console.log(response.data);
       setUser(response.data.user_f0_data);
       setAnnouncer(response.data.announcer_f0_data);
+
+      if (isBefore !== example) {
+        setIsNumber(); // 다른 문장일 때만 카운트 증가
+        setIsBefore(example); // 현재 연습한 문장을 isBefore에 저장
+      }
+      
     } catch (e) {
       console.log(e);
     } finally {
@@ -95,7 +107,7 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
         setIsLoading(false);
       }
       setIsLoading(false);
-      setIsNumber();
+      // setIsNumber();
       setIsNext(true)
     }
   };
@@ -120,12 +132,12 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
   }, []);
 
   // isNumber가 11이 되면 모달을 표시하도록 설정
-  useEffect(() => {
-    if (isNumber === 11) {
-      setIsNumberMinus();
-      setShowModal(true); // 11이 되면 모달을 띄움
-    }
-  }, [isNumber]); // isNumber가 변경될 때마다 실행
+  // useEffect(() => {
+  //   if (isNumber === 11) {
+  //     setIsNumberMinus();
+  //     setShowModal(true); // 11이 되면 모달을 띄움
+  //   }
+  // }, [isNumber]); // isNumber가 변경될 때마다 실행
 
 
   const finishPost = async() => {
@@ -140,7 +152,7 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
     setIsNumberZero();
-    navigate("/training");
+    navigate("/");
     finishPost();
   };
 
