@@ -126,8 +126,8 @@ public class JwtTokenProvider {
 			.claim("gender", jwtUserClaims.getGender())
 			.claim("age", jwtUserClaims.getAge())
 			.issuedAt(new Date())        // 토큰 발행 시간
-			// .expiration(new Date(new Date().getTime() + expiration))
-			.expiration(new Date(new Date().getTime() + Integer.MAX_VALUE))
+			.expiration(new Date(new Date().getTime() + expiration))
+			// .expiration(new Date(new Date().getTime() + Integer.MAX_VALUE))
 			.signWith(secretKey)        // 비밀 키를 사용해 서명
 			.compact();        // JWT 토큰 문자열 생성
 	}

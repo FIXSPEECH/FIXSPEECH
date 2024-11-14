@@ -97,7 +97,7 @@ public class UserController implements UserApi {
 	 * Token 재발급
 	 * @return accessToken
 	 */
-	@PostMapping("/public/reissue")
+	@PostMapping("public/reissue")
 	public ApiResponse<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = request.getHeader("refreshToken");
 		log.info("refreshToken = {}", refreshToken);
