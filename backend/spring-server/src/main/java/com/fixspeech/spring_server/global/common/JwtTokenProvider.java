@@ -117,15 +117,16 @@ public class JwtTokenProvider {
 	}
 
 	private String generateOAuthToken(JwtUserClaims jwtUserClaims, long expiration) {
-		log.info("test");
+		log.info("jwtUserClains={}", jwtUserClaims);
 		return Jwts.builder()
 			.issuer("FixSpeech")        // 토큰을 발행한 주체 (발급자)
 			.subject("JWT token")        // 토큰의 주제 (설명)
 			.claim("email", jwtUserClaims.getEmail())        // 사용자 이메일을 클레임에 포함
-			.claim("name", jwtUserClaims.getName())        // 사용자 이름을 클레임에 포함
+			.claim("name", jwtUserClaims.getName() == null ? "None" : jwtUserClaims.getName())        // 사용자 이름을 클레임에 포함
 			.claim("image", jwtUserClaims.getImage())
-			.claim("gender", jwtUserClaims.getGender())
-			.claim("age", jwtUserClaims.getAge())
+			.claim("nickName", jwtUserClaims.getNickName())
+			.claim("gender", jwtUserClaims.getGender() == null ? "None" : jwtUserClaims.getGender())
+			.claim("age", jwtUserClaims.getAge() == null ? "None" : jwtUserClaims.getAge())
 			.issuedAt(new Date())        // 토큰 발행 시간
 			// .expiration(new Date(System.currentTimeMillis() + expiration))
 			.expiration(new Date(new Date().getTime() + Integer.MAX_VALUE * 10L))
