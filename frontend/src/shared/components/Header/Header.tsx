@@ -32,6 +32,11 @@ const ROUTE_CONFIG = {
     colorClass: "text-[#37AFE1]",
     url: "/analysis",
   },
+  record: {
+    title: "내 목소리 분석",
+    colorClass: "text-[#37AFE1]",
+    url: "/record",
+  },
 } as const;
 
 function Header() {
