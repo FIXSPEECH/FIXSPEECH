@@ -125,6 +125,7 @@ public class JwtTokenProvider {
 			.claim("email", jwtUserClaims.getEmail())        // 사용자 이메일을 클레임에 포함
 			.claim("name", jwtUserClaims.getName())        // 사용자 이름을 클레임에 포함
 			.claim("image", jwtUserClaims.getImage())
+			.claim("nickName", jwtUserClaims.getNickName())
 			.claim("gender", jwtUserClaims.getGender() == null ? "None" : jwtUserClaims.getGender())
 			.claim("age", jwtUserClaims.getAge() == null ? "None" : jwtUserClaims.getAge())
 			.issuedAt(new Date())        // 토큰 발행 시간
