@@ -6,7 +6,7 @@ interface PronounceScoreState {
     isNumber : number;  // 총 문제의 개수
     isCorrect : number;  // 맞춘 문제의 개수
     setIsNumber: () => void
-    setIsCorrect: (isCorrect: number) => void
+    setIsCorrect: () => void
     setIsNumberZero: () => void;
     setIsNumberMinus: () => void;
  }

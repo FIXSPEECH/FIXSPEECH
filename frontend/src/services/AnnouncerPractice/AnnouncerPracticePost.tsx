@@ -1,4 +1,5 @@
 import fastApiInstance from "../axiosFastInstance";
+import axiosInstance from "../axiosInstance";
 import { AxiosRequestConfig } from 'axios';
 
 // interface Audio{
@@ -16,5 +17,18 @@ export function audioPost(payload: FormData, config?: AxiosRequestConfig) {
         })
         .catch((error) => {
             return Promise.reject(error)
+        })
+}
+
+
+
+export function announcerFinishPost() {
+    return axiosInstance
+        .post('/grass')
+        .then((response) => {
+            Promise.resolve(response.data)
+        })
+        .catch((error) => {
+            Promise.reject(error)
         })
 }

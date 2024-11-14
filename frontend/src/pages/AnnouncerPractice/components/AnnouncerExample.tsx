@@ -10,6 +10,8 @@ import { audioPost } from "../../../services/AnnouncerPractice/AnnouncerPractice
 import useModalStore from "../../../shared/stores/modalStore";
 import useGraphStore from "../../../shared/stores/graphStore";
 import SpinnerOrbits from "../../../shared/components/Loader/SpinnerOrbits";
+import useNextArrowState from "../../../shared/stores/nextArrowStore";
+import { announcerFinishPost } from "../../../services/AnnouncerPractice/AnnouncerPracticePost";
 
 interface PronounceExampleProps {
   color: string; // color prop의 타입 정의
@@ -29,7 +31,7 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
   const { setUser, setAnnouncer } = useGraphStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const controllerRef = useRef<AbortController | null>(null);
-
+  const {isNext, setIsNext} = useNextArrowState();
   const navigate = useNavigate();
 
   const handlePlayAudio = () => {
@@ -48,6 +50,7 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
   const getExample = async () => {
     setUser([]);
     setAnnouncer([]);
+    setIsNext(false)
     try {
       const response = await AnnouncerExampleGet();
       console.log(response.data);
@@ -93,6 +96,7 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
       }
       setIsLoading(false);
       setIsNumber();
+      setIsNext(true)
     }
   };
 
@@ -123,10 +127,21 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
     }
   }, [isNumber]); // isNumber가 변경될 때마다 실행
 
+
+  const finishPost = async() => {
+    try{
+      const response = await announcerFinishPost() 
+      console.log(response)
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
     setIsNumberZero();
     navigate("/training");
+    finishPost();
   };
 
   return (
@@ -156,7 +171,7 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
 
       {/* ArrowRight 컴포넌트 */}
       <div className="ml-auto mr-10 flex">
-        <ArrowRight onClick={getExample} color="#B18CFE" />
+        <ArrowRight onClick={isNext ? getExample : undefined} color="#B18CFE" />
       </div>
 
       <div className="flex justify-center">

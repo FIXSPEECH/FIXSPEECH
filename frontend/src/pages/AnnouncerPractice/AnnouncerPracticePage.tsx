@@ -7,6 +7,7 @@ import usePronounceScoreStore from "../../shared/stores/pronounceScoreStore";
 import FinishModal from "../../shared/components/PracticePronounce/FinishModal";
 import useGraphStore from "../../shared/stores/graphStore";
 import VoiceComparisonChart from "./components/VoiceChart";
+import { announcerFinishPost } from "../../services/AnnouncerPractice/AnnouncerPracticePost";
 
 function AnnouncerPractice() {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -14,10 +15,20 @@ function AnnouncerPractice() {
   const navigate = useNavigate();
   const { user, announcer } = useGraphStore();
 
+  const finishPost = async() => {
+    try{
+      const response = await announcerFinishPost() 
+      console.log(response)
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
     setIsNumberZero();
-    navigate("/");
+    navigate("/training");
+    finishPost()
   };
 
   const handleClick = () => {
