@@ -19,24 +19,25 @@ function VoiceRecord() {
       const formData = new FormData();
       formData.append("record", audioFile);
 
-      // Spring Boot 서버로 전송
-      const response = await axiosInstance.post("/record", formData, {
+      // Blob 형태로 저장
+      const blob = new Blob([audioFile], { type: audioFile.type });
+      setAudioBlob(blob);
+
+      // Spring으로 전송 시작했다는 것만 확인하고 바로 결과 페이지로 이동
+      axiosInstance.post("/record", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      if (response.data.status === "C000") {
-        // Blob 형태로 저장
-        const blob = new Blob([audioFile], { type: audioFile.type });
-        setAudioBlob(blob);
-
-        // 녹음 완료 시 바로 분석 페이지로 이동
-        if (userGender) {
-          navigate("/record/result", { state: { fromRecordPage: true } });
-        }
-      } else {
-        console.error("음성 분석 실패:", response.data.message);
+      // 녹음 완료 시 바로 분석 페이지로 이동
+      if (userGender) {
+        navigate("/record/result", {
+          state: {
+            fromRecordPage: true,
+            startTime: new Date().getTime(), // 분석 시작 시간 전달
+          },
+        });
       }
     } catch (error) {
       console.error("음성 파일 전송 실패:", error);
