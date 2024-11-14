@@ -8,6 +8,7 @@ import usePronounceScoreStore from "../../../shared/stores/pronounceScoreStore";
 import FinishModal from "./FinishModal";
 import useSttStore from "../../stores/sttStore";
 import { sttPost } from "../../../services/PronouncePractice/PronouncePracticePost";
+import useNextArrowState from "../../stores/nextArrowStore";
 
 interface PronounceExampleProps {
   color: string; // color prop의 타입 정의
@@ -26,6 +27,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const {userStt, setUserStt} = useSttStore();
   const [differences, setDifferences] = useState<any[]>([]);
+  const {isNext, setIsNext} = useNextArrowState();
 
   const navigate = useNavigate();
 
@@ -43,6 +45,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
       if (response.data.similarity){
         setIsCorrect();
       }
+      setIsNext(true)
     } catch(e) {
       console.log (e)
     }
@@ -70,7 +73,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
   // 연습 문제 가져오기
   const getExample = async () => {
-
+    setIsNext(false)
     setUserStt('')
     setDifferences([])
     try {
@@ -162,7 +165,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
       {/* ArrowRight 컴포넌트 */}
       <div className="ml-auto mr-10 flex">
-        <ArrowRight onClick={getExample} color="#FF8C82" />
+        <ArrowRight onClick={isNext ? getExample : undefined} color="#FF8C82" />
       </div>
 
       {/* isNumber가 11일 때 FinishModal이 자동으로 표시 */}

@@ -31,6 +31,10 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
   const recognitionRef = useRef<any>(null);
   const {setUserStt} = useSttStore();
 
+
+  console.log(interimTranscript)
+  console.log(finalTranscript)
+
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
