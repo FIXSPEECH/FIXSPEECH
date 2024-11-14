@@ -14,9 +14,9 @@ spring:
               - profile_nickname
               - profile_image
               - account_email
-              - name
-              - gender
-              - age_range
+#              - name
+#              - gender
+#              - age_range
             client-name: kakao
 
         # kakao provider 설정
