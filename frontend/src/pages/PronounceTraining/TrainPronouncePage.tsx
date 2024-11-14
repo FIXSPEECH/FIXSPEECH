@@ -18,6 +18,7 @@ function TrainPronounce() {
     navigate("/training");
   };
 
+
   const handleClick = () => {
     setShowModal(true);
   };

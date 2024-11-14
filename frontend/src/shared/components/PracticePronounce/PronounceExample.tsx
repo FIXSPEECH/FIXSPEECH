@@ -6,6 +6,9 @@ import { ExampleGet } from "../../../services/PronouncePractice/PronouncePractic
 import ArrowRight from "../Icons/ArrowRightIcon";
 import usePronounceScoreStore from "../../../shared/stores/pronounceScoreStore";
 import FinishModal from "./FinishModal";
+import useSttStore from "../../stores/sttStore";
+import { sttPost } from "../../../services/PronouncePractice/PronouncePracticePost";
+import useNextArrowState from "../../stores/nextArrowStore";
 
 interface PronounceExampleProps {
   color: string; // color prop의 타입 정의
@@ -16,14 +19,52 @@ interface PronounceExampleProps {
 function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
   const { audioURL, isRecording, setIsRecording, setAudioURL } =
     useVoiceStore();
-  const { isNumber, setIsNumber, setIsNumberZero, setIsNumberMinus } =
+  const { isNumber, setIsNumber, setIsCorrect, setIsNumberZero, setIsNumberMinus } =
     usePronounceScoreStore();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
   const [example, setExample] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
+  const {userStt, setUserStt} = useSttStore();
+  const [differences, setDifferences] = useState<any[]>([]);
+  const {isNext, setIsNext} = useNextArrowState();
+  const [isBefore, setIsBefore] = useState<string | null>(null);
 
   const navigate = useNavigate();
+
+
+  const postStt = async() => {
+    const data = {
+      answer_text: example,
+      user_text: userStt
+    }
+
+    try{
+      const response = await sttPost(data)
+      console.log(response.data)
+      setDifferences(response.data.differences || [])
+      if (response.data.similarity === 1){
+        setIsCorrect();
+      }
+
+      if (isBefore !== example) {
+        setIsNumber(); // 다른 문장일 때만 카운트 증가
+        setIsBefore(example); // 현재 연습한 문장을 isBefore에 저장
+      }
+
+      setIsNext(true)
+    } catch(e) {
+      console.log (e)
+    }
+  }
+
+
+  useEffect(() => {
+    if (!isRecording && userStt !== '') {
+      postStt();
+    }
+
+  }, [isRecording, userStt])
 
   const handlePlayAudio = () => {
     if (audioRef.current) {
@@ -39,6 +80,9 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
   // 연습 문제 가져오기
   const getExample = async () => {
+    setIsNext(false)
+    setUserStt('')
+    setDifferences([])
     try {
       const response = await ExampleGet(trainingId);
       setExample(response.data);
@@ -46,14 +90,12 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
       console.log(e);
     }
 
-    setIsNumber();
     setIsRecording(false);
     setAudioURL(null);
   };
 
   // 페이지 로딩 시 연습문제 가져오기
   useEffect(() => {
-    setIsNumberZero();
     getExample();
   }, []);
 
@@ -70,6 +112,28 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
     setIsNumberZero();
     navigate("/training");
   };
+
+    // 틀린 단어를 하이라이트하여 example 텍스트로 변환하는 함수
+    const renderHighlightedExample = () => {
+      let highlightedText = [];
+      let lastIndex = 0;
+  
+      differences.forEach((diff) => {
+        const { operation, answer_position } = diff;
+        if (operation === "replace") {
+          highlightedText.push(example.slice(lastIndex, answer_position[0]));
+          highlightedText.push(
+            <span key={answer_position[0]} className="text-red-500 font-bold">
+              {example.slice(answer_position[0], answer_position[1])}
+            </span>
+          );
+          lastIndex = answer_position[1];
+        }
+      });
+  
+      highlightedText.push(example.slice(lastIndex));
+      return highlightedText;
+    };
 
   return (
     <>
@@ -92,13 +156,21 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
         </div>
 
         <div className="text-[#FF8C82] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
-          {example}
+          {/* {example} */}
+          {renderHighlightedExample()}
         </div>
       </div>
 
+       {/* 틀린 단어들 출력 */}
+       <div className="mt-4 ml-6text-center text-white m:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
+        {userStt}
+      </div>
+
+
+
       {/* ArrowRight 컴포넌트 */}
       <div className="ml-auto mr-10 flex">
-        <ArrowRight onClick={getExample} color="#FF8C82" />
+        <ArrowRight onClick={isNext ? getExample : undefined} color="#FF8C82" />
       </div>
 
       {/* isNumber가 11일 때 FinishModal이 자동으로 표시 */}
