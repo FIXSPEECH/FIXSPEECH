@@ -102,6 +102,11 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
     setIsRecording(false);
     setAudioURL(null);
+
+    // 이렇게 수정하면 10개 문장 학습후 다음으로 넘어가기 눌렀을때 모달이 뜨겠지..?
+    if(isNumber === 10) {
+      setShowModal(true);
+    }
   };
 
   // 페이지 로딩 시 연습문제 가져오기
@@ -110,12 +115,12 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
   }, []);
 
   // isNumber가 11이 되면 모달을 표시하도록 설정
-  useEffect(() => {
-    if (isNumber === 11) {
-      setIsNumberMinus();
-      setShowModal(true); // 11이 되면 모달을 띄움
-    }
-  }, [isNumber]); // isNumber가 변경될 때마다 실행
+  // useEffect(() => {
+  //   if (isNumber === 10) {
+  //     setIsNumberMinus();
+  //     setShowModal(true); // 11이 되면 모달을 띄움
+  //   }
+  // }, [isNumber]); // isNumber가 변경될 때마다 실행
 
   const closeModal = () => {
     setShowModal(false); // 모달 닫기

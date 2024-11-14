@@ -13,7 +13,7 @@ interface PronounceScoreState {
 
 const usePronounceScoreStore = create<PronounceScoreState>() (
     devtools((set) => ({
-        isNumber: 1,
+        isNumber: 0,
         isCorrect: 0,
         setIsNumber: () => set((state) => ({isNumber: state.isNumber + 1})),
         setIsNumberMinus:  () => set((state) => ({isNumber: state.isNumber - 1})),
