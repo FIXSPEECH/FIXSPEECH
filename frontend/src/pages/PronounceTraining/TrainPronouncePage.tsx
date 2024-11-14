@@ -1,7 +1,7 @@
 import Microphone from "../../shared/components/PracticePronounce/Microphone";
 import PronounceExample from "../../shared/components/PracticePronounce/PronounceExample";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import usePronounceScoreStore from "../../shared/stores/pronounceScoreStore";
 import FinishModal from "../../shared/components/PracticePronounce/FinishModal";
@@ -17,6 +17,7 @@ function TrainPronounce() {
     setIsNumberZero();
     navigate("/training");
   };
+
 
   const handleClick = () => {
     setShowModal(true);

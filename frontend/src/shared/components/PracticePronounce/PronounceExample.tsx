@@ -28,6 +28,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
   const {userStt, setUserStt} = useSttStore();
   const [differences, setDifferences] = useState<any[]>([]);
   const {isNext, setIsNext} = useNextArrowState();
+  const [isBefore, setIsBefore] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -42,9 +43,15 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
       const response = await sttPost(data)
       console.log(response.data)
       setDifferences(response.data.differences || [])
-      if (response.data.similarity){
+      if (response.data.similarity === 1){
         setIsCorrect();
       }
+
+      if (isBefore !== example) {
+        setIsNumber(); // 다른 문장일 때만 카운트 증가
+        setIsBefore(example); // 현재 연습한 문장을 isBefore에 저장
+      }
+
       setIsNext(true)
     } catch(e) {
       console.log (e)
@@ -89,9 +96,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
   // 페이지 로딩 시 연습문제 가져오기
   useEffect(() => {
-    setIsNumberZero();
     getExample();
-    setIsNumber();
   }, []);
 
   // isNumber가 11이 되면 모달을 표시하도록 설정
