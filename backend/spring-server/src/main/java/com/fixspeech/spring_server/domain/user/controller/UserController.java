@@ -1,5 +1,7 @@
 package com.fixspeech.spring_server.domain.user.controller;
 
+import java.util.Optional;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -7,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +46,21 @@ public class UserController implements UserApi {
 	private final TokenService tokenService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtCookieProvider jwtCookieProvider;
+
+	/**
+	 * 사용자 상세 정보 입력 여부 확인
+	 * @param userDetails 사용자 정보
+	 * @return 사용자 상세 정보 입력 여부(Boolean)
+	 */
+	@GetMapping("exist")
+	public ApiResponse<?> detailExist(@AuthenticationPrincipal UserDetails userDetails) {
+		Optional<Users> user = userService.findByEmail(userDetails.getUsername());
+		String gender = null;
+		if (user.isPresent()) {
+			gender = user.get().getGender();
+		}
+		return ApiResponse.createSuccess(gender != null, "사용자 존재 확인 완료");
+	}
 
 	@PostMapping("/regist")
 	public ResponseEntity<?> registUser(
