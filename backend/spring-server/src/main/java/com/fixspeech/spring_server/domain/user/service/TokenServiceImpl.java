@@ -8,6 +8,7 @@ import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshToken
 import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 import com.fixspeech.spring_server.domain.user.model.RefreshToken;
 import com.fixspeech.spring_server.domain.user.model.TokenBlacklist;
+import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.redis.RefreshTokenRepository;
 import com.fixspeech.spring_server.domain.user.repository.redis.TokenBlacklistRepository;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
@@ -48,7 +49,7 @@ public class TokenServiceImpl implements TokenService {
 	 * @return
 	 */
 	@Override
-	public ResponseRefreshTokenDTO reissueOAuthToken(String refreshToken) {
+	public ResponseRefreshTokenDTO reissueOAuthToken(Users user, String refreshToken) {
 		if(isRefreshTokenBlacklisted(refreshToken)) {
 			return null;
 		}
@@ -69,8 +70,8 @@ public class TokenServiceImpl implements TokenService {
 
 				// refreshToken 만료 시키기
 				log.info("generate Token");
-				String newAccessToken = jwtTokenProvider.generateAccessToken(refreshToken);
-				String newRefreshToken = jwtTokenProvider.generateRefreshToken(refreshToken);
+				String newAccessToken = jwtTokenProvider.generateAccessToken(JwtUserClaims.fromUsersEntity(user));
+				String newRefreshToken = jwtTokenProvider.generateRefreshToken(JwtUserClaims.fromUsersEntity(user));
 				OAuthRefreshToken newRt = new OAuthRefreshToken(email, newRefreshToken);
 				// jwtTokenProvider.getRefreshTokenExpiration());
 				oAuthRefreshRepository.save(newRt);

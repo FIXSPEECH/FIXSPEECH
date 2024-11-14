@@ -1,5 +1,7 @@
 package com.fixspeech.spring_server.domain.user.controller;
 
+import java.util.Optional;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -7,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +46,21 @@ public class UserController implements UserApi {
 	private final TokenService tokenService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtCookieProvider jwtCookieProvider;
+
+	/**
+	 * 사용자 상세 정보 입력 여부 확인
+	 * @param userDetails 사용자 정보
+	 * @return 사용자 상세 정보 입력 여부(Boolean)
+	 */
+	@GetMapping("exist")
+	public ApiResponse<?> detailExist(@AuthenticationPrincipal UserDetails userDetails) {
+		Optional<Users> user = userService.findByEmail(userDetails.getUsername());
+		String gender = null;
+		if (user.isPresent()) {
+			gender = user.get().getGender();
+		}
+		return ApiResponse.createSuccess(gender != null, "사용자 존재 확인 완료");
+	}
 
 	@PostMapping("/regist")
 	public ResponseEntity<?> registUser(
@@ -81,54 +99,21 @@ public class UserController implements UserApi {
 		return ApiResponse.success("사용자 정보 수정 성공");
 	}
 
-	// /**
-	//  * Token 재발급
-	//  * @param refreshToken
-	//  * @return
-	//  */
-	// @PostMapping("/public/reissue")
-	// public ApiResponse<?> reissueToken(HttpServletRequest httpServletRequest, @CookieValue("refresh-token") String refreshToken,
-	// 	HttpServletResponse response) {
-	//
-	// 	log.info("refreshToken = {}", refreshToken);
-	// 	try {
-	// 		if (refreshToken == null || refreshToken.isEmpty()) {
-	// 			return ApiResponse.createError(ErrorCode.INVALID_TOKEN_ERROR);
-	// 		}
-	//
-	// 		ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
-	// 		log.info("responseDTO={}", responseDTO);
-	// 		if (responseDTO == null) {
-	// 			throw new IllegalArgumentException("Refresh Token이 만료되었거나 존재하지 않습니다.");
-	// 		}
-	// 		log.info("new AccessToken = {}", responseDTO.getAccessToken());
-	// 		String newAccessToken = responseDTO.getAccessToken();
-	// 		String newRefreshToken = responseDTO.getRefreshToken();
-	//
-	// 		ResponseCookie responseCookie = jwtCookieProvider.generateCookie(newRefreshToken);
-	//
-	// 		response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
-	// 		response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-	// 		return ApiResponse.createSuccess(newAccessToken, "토큰 재발급 성공");
-	// 	} catch (Exception e) {
-	// 		log.info("e={}",e);
-	// 		return ApiResponse.createError(ErrorCode.INVALID_JWT_TOKEN);
-	// 	}
-	// }
 	/**
 	 * Token 재발급
 	 * @return accessToken
 	 */
 	@PostMapping("public/reissue")
-	public ApiResponse<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
+	public ApiResponse<?> reissueToken(@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = request.getHeader("refreshToken");
 		log.info("refreshToken = {}", refreshToken);
 		try {
 			if (refreshToken == null || refreshToken.isEmpty()) {
 				return ApiResponse.createError(ErrorCode.INVALID_TOKEN_ERROR);
 			}
-
-			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
+			Users user = userService.findByEmail(userDetails.getUsername()).orElse(null);
+			if (user == null) return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(user, refreshToken);
 			log.info("responseDTO={}", responseDTO);
 			if (responseDTO == null) {
 				throw new IllegalArgumentException("Refresh Token이 만료되었거나 존재하지 않습니다.");
