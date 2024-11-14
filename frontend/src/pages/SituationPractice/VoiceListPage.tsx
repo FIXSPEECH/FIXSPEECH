@@ -68,7 +68,7 @@ function VoiceList() {
 
             // 삭제 후 scripts 상태 업데이트 (삭제된 스크립트를 배열에서 제거)
             setScripts((prevScripts: any) =>
-              prevScripts.filter((script: any) => script.scriptId !== scriptId)
+              prevScripts.filter((script: any) => script.resultId !== resultId)
             );
 
           } catch(e) {
