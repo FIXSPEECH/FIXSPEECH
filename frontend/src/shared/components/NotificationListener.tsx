@@ -33,9 +33,18 @@ const NotificationListener = () => {
     eventSource.addEventListener("analysisComplete", (event: any) => {
       const data = JSON.parse(event.data);
       if (data.type === "Analyze Complete") {
-        setAlert("분석이 완료되었습니다. 지금 보기", "success");
+        toast.success(<>
+          분석 완료되었습니다.
+          <br />
+          <span
+            style={{ textDecoration: "underline", cursor: "pointer" }}
+            onClick={() => navigator("/situation/result")}
+          >
+            지금가기
+          </span>
+        </>);
       } else if (data.type === "ANALYSIS_ERROR") {
-        setAlert(`에러: ${data.message}`, "error");
+        toast.error(`분석 실패`);
       }
 
       // 이벤트 수신 후 SSE 연결 종료
@@ -71,3 +80,4 @@ const NotificationListener = () => {
 };
 
 export default NotificationListener;
+
