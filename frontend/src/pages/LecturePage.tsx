@@ -136,7 +136,7 @@ const YouTubeEmbed = ({ videoId }: { videoId: string }) => (
 );
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-2xl font-bold text-[#FF8C82] mb-6">{children}</h2>
+  <h2 className="text-2xl font-bold text-[#EE719E] mb-6">{children}</h2>
 );
 
 const VideoSection = ({ section }: { section: SectionData }) => (
@@ -185,10 +185,10 @@ const LecturePage = () => {
   const tabStyle = {
     color: "white",
     "&.Mui-selected": {
-      color: "#FF8C82",
+      color: "#EE719E",
     },
     "&:hover": {
-      color: "#FF8C82",
+      color: "#EE719E",
       opacity: 0.7,
     },
   };
@@ -199,7 +199,7 @@ const LecturePage = () => {
         <Box
           sx={{
             borderBottom: 1,
-            borderColor: "#FF8C82",
+            borderColor: "#EE719E",
             mb: 4,
           }}
         >
@@ -208,7 +208,7 @@ const LecturePage = () => {
             onChange={handleChange}
             sx={{
               "& .MuiTabs-indicator": {
-                backgroundColor: "#FF8C82",
+                backgroundColor: "#EE719E",
               },
             }}
             variant="fullWidth"
