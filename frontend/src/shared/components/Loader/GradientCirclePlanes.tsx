@@ -30,8 +30,23 @@ const spin3DKeyframes = `
   }
 `;
 
+const spin3DAlternateKeyframes = `
+  @keyframes spin3DAlternate {
+    0% {
+      transform: rotate3d(.5,.5,.5, 0deg);
+    }
+    50% {
+      transform: rotate3d(.5,.5,.5, 180deg);
+    }
+    100% {
+      transform: rotate3d(.5,.5,.5, 360deg);
+    }
+  }
+`;
+
 const SpinnerBox = styled.div`
   ${spin3DKeyframes}
+  ${spin3DAlternateKeyframes}
   width: 300px;
   height: 300px;
   display: flex;
@@ -74,16 +89,16 @@ const WhiteOrbit = styled(Orbit)`
   width: 60px;
   height: 60px;
   border: 2px solid #ffffff;
-  animation: spin3D 10s linear 0s infinite;
+  animation: spin3DAlternate 10s linear infinite;
 
   &.w1 {
-    transform: rotate3D(1, 1, 1, 90deg);
+    animation-delay: -2s;
   }
   &.w2 {
-    transform: rotate3D(1, 2, 0.5, 90deg);
+    animation-delay: -4s;
   }
   &.w3 {
-    transform: rotate3D(0.5, 1, 2, 90deg);
+    animation-delay: -6s;
   }
 `;
 
