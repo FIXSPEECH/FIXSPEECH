@@ -9,6 +9,7 @@ import FinishModal from "./FinishModal";
 import useSttStore from "../../stores/sttStore";
 import { sttPost } from "../../../services/PronouncePractice/PronouncePracticePost";
 import useNextArrowState from "../../stores/nextArrowStore";
+import { pronounceFinishPost } from "../../../services/PronouncePractice/PronouncePracticePost";
 
 interface PronounceExampleProps {
   color: string; // color prop의 타입 정의
@@ -55,6 +56,15 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
       setIsNext(true)
     } catch(e) {
       console.log (e)
+    }
+  }
+
+  const finishPost = async() => {
+    try{
+      const response = await pronounceFinishPost() 
+      console.log(response.data)
+    } catch(e) {
+      console.log(e)
     }
   }
 
@@ -110,6 +120,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
     setIsNumberZero();
+    finishPost();
     navigate("/training");
   };
 
