@@ -254,7 +254,7 @@ function RecentVoice() {
                             >
                               {voiceData.analyzeResult?.metrics?.[
                                 metricKey
-                              ]?.value?.toFixed(1) || "0.0"}{" "}
+                              ]?.value?.toFixed(3) || "0.0"}{" "}
                               {voiceData.analyzeResult?.metrics?.[metricKey]
                                 ?.unit || ""}
                             </div>
