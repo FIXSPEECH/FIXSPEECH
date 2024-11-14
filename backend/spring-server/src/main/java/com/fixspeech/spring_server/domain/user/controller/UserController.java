@@ -81,40 +81,6 @@ public class UserController implements UserApi {
 		return ApiResponse.success("사용자 정보 수정 성공");
 	}
 
-	// /**
-	//  * Token 재발급
-	//  * @param refreshToken
-	//  * @return
-	//  */
-	// @PostMapping("/public/reissue")
-	// public ApiResponse<?> reissueToken(HttpServletRequest httpServletRequest, @CookieValue("refresh-token") String refreshToken,
-	// 	HttpServletResponse response) {
-	//
-	// 	log.info("refreshToken = {}", refreshToken);
-	// 	try {
-	// 		if (refreshToken == null || refreshToken.isEmpty()) {
-	// 			return ApiResponse.createError(ErrorCode.INVALID_TOKEN_ERROR);
-	// 		}
-	//
-	// 		ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
-	// 		log.info("responseDTO={}", responseDTO);
-	// 		if (responseDTO == null) {
-	// 			throw new IllegalArgumentException("Refresh Token이 만료되었거나 존재하지 않습니다.");
-	// 		}
-	// 		log.info("new AccessToken = {}", responseDTO.getAccessToken());
-	// 		String newAccessToken = responseDTO.getAccessToken();
-	// 		String newRefreshToken = responseDTO.getRefreshToken();
-	//
-	// 		ResponseCookie responseCookie = jwtCookieProvider.generateCookie(newRefreshToken);
-	//
-	// 		response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
-	// 		response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-	// 		return ApiResponse.createSuccess(newAccessToken, "토큰 재발급 성공");
-	// 	} catch (Exception e) {
-	// 		log.info("e={}",e);
-	// 		return ApiResponse.createError(ErrorCode.INVALID_JWT_TOKEN);
-	// 	}
-	// }
 	/**
 	 * Token 재발급
 	 * @return accessToken
