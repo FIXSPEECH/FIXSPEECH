@@ -44,7 +44,7 @@ const getScoreColor = (score: number) => {
 const VoiceRecordResultPage = () => {
   // 상태 관리를 위한 useState 훅 사용
   const [response, setResponse] = useState<AnalysisResponse | null>(null); // API 응답 데이터
-  const [loading, setLoading] = useState(false); // 로딩 상태
+  const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState<string | null>(null); // 에러 메시지
   const userGender = useAuthStore((state) => state.userProfile?.gender); // 사용자 성별 정보
   const { audioBlob } = useVoiceStore();
@@ -63,52 +63,64 @@ const VoiceRecordResultPage = () => {
   // 컴포넌트 마운트 시 녹음된 파일 처리
   useEffect(() => {
     const processRecordedAudio = async () => {
-      if (audioBlob && userGender) {
-        setLoading(true);
-        try {
-          const file = new File([audioBlob], "recorded_audio.wav", {
-            type: "audio/wav",
-          });
-          const formData = new FormData();
-          formData.append("file", file);
-          formData.append("gender", userGender);
+      if (!audioBlob || !userGender) {
+        setError("녹음된 음성이 없습니다. 다시 녹음해주세요.");
+        setLoading(false);
+        return;
+      }
 
-          const response = await fetch(
-            `${import.meta.env.VITE_FASTAPI_URL}/analyze/full`,
-            {
-              method: "POST",
-              body: formData,
-            }
-          );
+      try {
+        const file = new File([audioBlob], "recorded_audio.wav", {
+          type: "audio/wav",
+        });
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("gender", userGender);
 
-          if (!response.ok) {
+        const response = await fetch(
+          `${import.meta.env.VITE_FASTAPI_URL}/analyze/full`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (!response.ok) {
+          if (response.status === 500) {
+            throw new Error("음성을 분석할 수 없습니다. 다시 녹음해 주세요.");
+          } else if (response.status === 400) {
+            throw new Error("잘못된 요청입니다. 다시 녹음해 주세요.");
+          } else if (response.status === 413) {
+            throw new Error("파일 크기가 너무 큽니다. 더 짧게 녹음해 주세요.");
+          } else {
             const errorData = await response.json();
-            if (response.status === 500) {
-              throw new Error("음성을 분석할 수 없습니다. 다시 녹음해 주세요.");
-            }
             throw new Error(
               errorData.detail?.message ||
                 errorData.detail ||
                 `서버 에러 (${response.status})`
             );
           }
-
-          const data = await response.json();
-          setResponse(data);
-        } catch (err) {
-          if (err instanceof Error) {
-            setError(err.message);
-          } else {
-            setError("알 수 없는 에러가 발생했습니다.");
-          }
-        } finally {
-          setLoading(false);
         }
+
+        const data = await response.json();
+        setResponse(data);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("알 수 없는 에러가 발생했습니다.");
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
+    // location.state가 없어도 로딩 상태로 시작
     if (location.state?.fromRecordPage) {
       processRecordedAudio();
+    } else {
+      setLoading(false);
+      setError("잘못된 접근입니다. 녹음 페이지에서 다시 시도해주세요.");
     }
   }, [audioBlob, userGender, location.state]);
 
@@ -129,7 +141,7 @@ const VoiceRecordResultPage = () => {
   return (
     <div className="min-h-screen bg-transparent text-white p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">음성 분석</h1>
+        {/* <h1 className="text-3xl font-bold mb-8">음성 분석</h1> */}
 
         {/* 로딩 상태 표시 */}
         {loading && (
@@ -143,15 +155,46 @@ const VoiceRecordResultPage = () => {
 
         {/* 에러 메시지 표시 */}
         {error && (
-          <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-8">
-            <div className="flex flex-col items-center gap-4">
-              <p className="text-red-400">{error}</p>
-              <button
-                onClick={handleReRecord}
-                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg border border-red-500/50 transition-colors"
-              >
-                다시 녹음하기
-              </button>
+          <div className="bg-indigo-950/30 border border-indigo-400/30 rounded-lg ">
+            <div className="flex flex-col items-center ">
+              <h2 className="text-2xl font-semibold text-indigo-300 flex items-center">
+                <GradientCirclePlanes />
+                죄송합니다. 지금은 분석이 어려워요 🥺
+              </h2>
+
+              <div className="space-y-4 text-center mb-4 flex flex-col items-center">
+                <p className="text-gray-300 mb-6">
+                  다음과 같은 이유로 현재 음성 분석이 진행되지 않았어요:
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-400/20 text-gray-400 text-sm">
+                    • 음성 분석 모델이 현재 많은 요청을 처리하고 있어요
+                  </div>
+                  <div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-400/20 text-gray-400 text-sm">
+                    • 네트워크 연결이 불안정할 수 있어요
+                  </div>
+                  <div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-400/20 text-gray-400 text-sm">
+                    • 음성 파일이 너무 길거나 짧을 수 있어요
+                  </div>
+                  <div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-400/20 text-gray-400 text-sm">
+                    • 서버가 일시적으로 과부하 상태일 수 있어요
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center gap-3">
+                <button
+                  onClick={handleReRecord}
+                  className="px-6 py-3 bg-indigo-500/20 hover:bg-indigo-500/30 
+                    text-indigo-300 rounded-lg border border-indigo-500/50 
+                    transition-all duration-300 hover:scale-105"
+                >
+                  다시 녹음하기
+                </button>
+                <p className="text-gray-400 text-sm">
+                  잠시 후 다시 시도해 주시면 감사하겠습니다
+                </p>
+              </div>
             </div>
           </div>
         )}
