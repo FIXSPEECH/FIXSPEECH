@@ -39,8 +39,8 @@ function SelectResult() {
   };
 
   // VoiceList.tsx 컴포넌트로 이동
-  const handleClick = (scriptId: number) => {
-    navigate(`/situation/voice/${scriptId}`);
+  const handleClick = (scriptId: number, scriptTitle: string) => {
+    navigate(`/situation/voice/${scriptId}`, {state: {scriptTitle}});
   };
 
   const handleDelete = (scriptId: number) => {
@@ -87,7 +87,7 @@ function SelectResult() {
               <div
                 key={script.id}
                 className="p-5 rounded-lg border border-[#FFAB01] hover:border-2 cursor-pointer transition-all"
-                onClick={() => handleClick(script.scriptId)}
+                onClick={() => handleClick(script.scriptId, script.title)}
               >
                 <div className="flex justify-between items-center">
                   <div className="text-white text-xl">{script.title}</div>

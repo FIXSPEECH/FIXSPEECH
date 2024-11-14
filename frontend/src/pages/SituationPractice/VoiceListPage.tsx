@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { VoiceListGet } from "../../services/SituationPractice/SituationPracticeGet";
 // import  {DeleteIcon}  from "../../Icons/DeleteIcon";
 // import { ScriptDelte } from "../../services/SituationPractice/SituationPracticePost";
@@ -15,6 +15,8 @@ function VoiceList() {
   const navigate = useNavigate();
   const { scriptId } = useParams();
   const Id = Number(scriptId);
+  const location = useLocation();
+  const {scriptTitle} = location.state || {};
 
   useEffect(() => {
     const VoiceList = async () => {
@@ -83,7 +85,7 @@ function VoiceList() {
   return (
     <div className="h-screen p-8">
       <div className="text-[#FFAB01] text-3xl font-bold mb-8">
-        음성 녹음 목록
+        {scriptTitle}
       </div>
       {scripts.length === 0 ? (
         <div className="text-[#FFAB01] text-lg">저장된 음성녹음 없습니다</div>
