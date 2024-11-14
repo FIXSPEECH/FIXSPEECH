@@ -18,13 +18,14 @@ interface PronounceExampleProps {
 function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
   const { audioURL, isRecording, setIsRecording, setAudioURL } =
     useVoiceStore();
-  const { isNumber, setIsNumber, setIsNumberZero, setIsNumberMinus } =
+  const { isNumber, setIsNumber, setIsCorrect, setIsNumberZero, setIsNumberMinus } =
     usePronounceScoreStore();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
   const [example, setExample] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
-  const {userStt} = useSttStore();
+  const {userStt, setUserStt} = useSttStore();
+  const [differences, setDifferences] = useState<any[]>([]);
 
   const navigate = useNavigate();
 
@@ -38,6 +39,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
     try{
       const response = await sttPost(data)
       console.log(response.data)
+      setDifferences(response.data.differences || [])
     } catch(e) {
       console.log (e)
     }
@@ -47,7 +49,6 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
   useEffect(() => {
     if (!isRecording && userStt !== '') {
       postStt();
-      setIsNumber();
     }
 
   }, [isRecording, userStt])
@@ -66,6 +67,9 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
   // 연습 문제 가져오기
   const getExample = async () => {
+
+    setUserStt('')
+    setDifferences([])
     try {
       const response = await ExampleGet(trainingId);
       setExample(response.data);
@@ -81,6 +85,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
   useEffect(() => {
     setIsNumberZero();
     getExample();
+    setIsNumber();
   }, []);
 
   // isNumber가 11이 되면 모달을 표시하도록 설정
@@ -96,6 +101,28 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
     setIsNumberZero();
     navigate("/training");
   };
+
+    // 틀린 단어를 하이라이트하여 example 텍스트로 변환하는 함수
+    const renderHighlightedExample = () => {
+      let highlightedText = [];
+      let lastIndex = 0;
+  
+      differences.forEach((diff) => {
+        const { operation, answer_position } = diff;
+        if (operation === "replace") {
+          highlightedText.push(example.slice(lastIndex, answer_position[0]));
+          highlightedText.push(
+            <span key={answer_position[0]} className="text-red-500 font-bold">
+              {example.slice(answer_position[0], answer_position[1])}
+            </span>
+          );
+          lastIndex = answer_position[1];
+        }
+      });
+  
+      highlightedText.push(example.slice(lastIndex));
+      return highlightedText;
+    };
 
   return (
     <>
@@ -118,8 +145,14 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
         </div>
 
         <div className="text-[#FF8C82] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
-          {example}
+          {/* {example} */}
+          {renderHighlightedExample()}
         </div>
+      </div>
+
+       {/* 틀린 단어들 출력 */}
+       <div className="mt-4 ml-6text-center text-white m:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
+        {userStt}
       </div>
 
 
