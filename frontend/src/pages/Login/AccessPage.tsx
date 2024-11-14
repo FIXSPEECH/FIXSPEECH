@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import useAuthStore from "../../store/authStore";
+import useAuthStore from "../../shared/stores/authStore";
 
 function Access() {
   const setToken = useAuthStore((state) => state.setToken);

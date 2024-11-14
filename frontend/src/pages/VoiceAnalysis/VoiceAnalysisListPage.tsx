@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
-import { AnalysisResponse, AnalysisItem } from "../../types/analysis";
+import { AnalysisResponse, AnalysisItem } from "../../shared/types/analysis";
 import Pagination from "@mui/material/Pagination";
 
 function VoiceAnalysisListPage() {

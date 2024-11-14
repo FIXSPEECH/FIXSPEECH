@@ -1,6 +1,6 @@
 import Avatar from "@mui/material/Avatar";
 import { useNavigate } from "react-router-dom";
-import useAuthStore from "../../../store/authStore";
+import useAuthStore from "../../../shared/stores/authStore";
 
 function UserInfo() {
   const navigate = useNavigate();
