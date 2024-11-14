@@ -75,23 +75,21 @@ function RecentVoice() {
   ];
 
   return (
-    <div className="mx-[3%] mt-5">
-      <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
-        {!voiceData ? (
-          <div className="text-center text-gray-400 py-8">
-            <p className="mb-4">
-              최근 분석한 목소리의 결과가 여기에 표시됩니다.
-            </p>
-            <p className="text-sm">아직 분석된 목소리가 없습니다.</p>
-          </div>
-        ) : (
-          <>
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex-1">
+    <div className="mx-[3%] 5">
+      {!voiceData ? (
+        <div className="text-center  text-gray-400 py-8 border rounded-xl">
+          <p className="mb-4">최근 분석한 목소리의 결과가 여기에 표시됩니다.</p>
+          <p className="text-sm">아직 분석된 목소리가 없습니다.</p>
+        </div>
+      ) : (
+        <>
+          <div className="flex  flex-col md:flex-row gap-6 rounded-xl p-3">
+            <div className="flex-1">
+              <div className="flex flex-col">
                 <div className="flex justify-between items-start mb-6">
                   <div>
                     <h2 className="text-xl font-bold text-white mb-2">
-                      {voiceData.title || "제목 없음"}
+                      최근 목소리 분석
                     </h2>
                     <p className="text-gray-400 text-sm">
                       {new Date(
@@ -99,23 +97,54 @@ function RecentVoice() {
                       ).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-blue-400 mb-1">
-                      {getOverallScore()}점
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <div className="text-3xl font-bold text-blue-400 mb-1">
+                        {getOverallScore()}점
+                      </div>
+                      <p className="text-gray-400 text-xs">종합 점수</p>
                     </div>
-                    <p className="text-gray-400 text-xs">종합 점수</p>
+                    <button
+                      onClick={() =>
+                        navigate(`/analysis/${voiceData.recordId}`)
+                      }
+                      className="text-blue-400 hover:text-blue-300 transition-colors"
+                      title="자세히 보기"
+                    >
+                      <svg
+                        className="h-6 w-6"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path
+                          d="M9 5l7 7-7 7"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
                   </div>
                 </div>
+              </div>
 
-                <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="flex grid-cols-3 gap-8">
+                <div className="w-full md:w-1/3 aspect-square col-span-1">
+                  <MetricsVisualizer
+                    metrics={voiceData.analyzeResult?.metrics || {}}
+                    showLabels={false}
+                    colorScheme={selectedColor}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4 mb-6 col-span-2 md:h-1/3">
                   {keyMetrics.map((metricKey) => {
                     const metric =
                       voiceData.analyzeResult?.metrics?.[metricKey];
-
                     return (
                       <div
                         key={metricKey}
-                        className="bg-gray-800/30 rounded-lg p-3"
+                        className="bg-gray-800/30 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-700/50 hover:border-cyan-500/50"
                       >
                         <h3 className="text-gray-400 text-xs mb-2">
                           {metricKey.split("(")[0]}
@@ -137,27 +166,10 @@ function RecentVoice() {
                   })}
                 </div>
               </div>
-
-              <div className="w-full md:w-[300px] aspect-square">
-                <MetricsVisualizer
-                  metrics={voiceData.analyzeResult?.metrics || {}}
-                  showLabels={false}
-                  colorScheme={selectedColor}
-                />
-              </div>
             </div>
-
-            <button
-              onClick={() => navigate(`/analysis/${voiceData.recordId}`)}
-              className="w-full bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 
-                py-2 rounded-lg transition-colors duration-300 text-sm font-medium
-                border border-blue-500/30 hover:border-blue-500/50"
-            >
-              자세히 보기
-            </button>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
