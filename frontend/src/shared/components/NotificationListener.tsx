@@ -3,8 +3,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { EventSourcePolyfill } from "event-source-polyfill"; // Polyfill import
 import useAuthStore from "../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 const NotificationListener = () => {
+  const navigator = useNavigate()
   useEffect(() => {
     // 토큰 가져오기
     const token = useAuthStore.getState().token;
@@ -19,11 +21,23 @@ const NotificationListener = () => {
       },
     });
 
+    console.log("구독")
+
     // "analysisComplete" 이벤트 수신
     eventSource.addEventListener("analysisComplete", (event: any) => {
       const data = JSON.parse(event.data);
       if (data.type === "Analyze Complete") {
-        toast.success(`${data.message}`);
+        toast.success(<>
+          분석이 완료되었습니다.
+          <br />
+          <span style={{ textDecoration: "underline", cursor: "pointer" }}>
+            지금 보기
+          </span>
+        </>,{
+          onClick: () => {
+            navigator("/situation/result")
+          }
+        });
       } else if (data.type === "ANALYSIS_ERROR") {
         toast.error(`에러: ${data.message}`);
       }
