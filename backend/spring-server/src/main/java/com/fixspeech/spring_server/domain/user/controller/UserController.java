@@ -6,7 +6,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -96,13 +95,11 @@ public class UserController {
 	// }
 	/**
 	 * Token 재발급
-	 * @param refreshToken
-	 * @return
+	 * @return accessToken
 	 */
 	@PostMapping("/public/reissue")
-	public ApiResponse<?> reissueToken(HttpServletRequest httpServletRequest, @RequestHeader("token") String refreshToken,
-		HttpServletResponse response) {
-
+	public ApiResponse<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
+		String refreshToken = request.getHeader("refreshToken");
 		log.info("refreshToken = {}", refreshToken);
 		try {
 			if (refreshToken == null || refreshToken.isEmpty()) {
