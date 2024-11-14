@@ -1,9 +1,14 @@
 // @ts-ignore
 import CalendarHeatmap from "react-calendar-heatmap";
-import "./History.css";
-import { useEffect, useState } from "react";
-import axiosInstance from "../../../services/axiosInstance";
 import { Tooltip } from "react-tooltip";
+import axiosInstance from "../../../services/axiosInstance";
+import useHistoryColorStore from "../../../shared/stores/historyColorStore";
+import {
+  COLOR_SCHEMES,
+  ColorSchemeType,
+} from "../../../shared/constants/colorSchemes";
+import { useEffect, useState } from "react";
+import "./History.css";
 
 interface GrassData {
   date: string | Date;
@@ -18,8 +23,15 @@ interface ApiResponse {
 
 function History() {
   const [grassValues, setGrassValues] = useState<GrassData[]>([]);
+  const { selectedColor, setSelectedColor } = useHistoryColorStore();
 
-  // 잔디 데이터 조회 함수
+  const cycleColor = () => {
+    const colorKeys = Object.keys(COLOR_SCHEMES) as ColorSchemeType[];
+    const currentIndex = colorKeys.findIndex((c) => c === selectedColor);
+    const nextIndex = (currentIndex + 1) % colorKeys.length;
+    setSelectedColor(colorKeys[nextIndex]);
+  };
+
   const fetchGrassData = async () => {
     try {
       console.log("[GET] /grass API 요청");
@@ -47,40 +59,52 @@ function History() {
 
   return (
     <div
-      style={{ marginLeft: "3%", marginRight: "3%" }}
-      className="mt-5 mb-10"
+      className="relative w-2/3 mt-5 m-5 mx-auto px-[3%]"
       aria-hidden="true" // 스크린 리더가 읽지 않도록 설정
     >
-      <CalendarHeatmap
-        tabIndex={-1}
-        startDate={new Date(new Date().setMonth(new Date().getMonth() - 4))}
-        endDate={new Date(new Date().setMonth(new Date().getMonth()))}
-        values={grassValues}
-        classForValue={(value: GrassData) => {
-          if (!value || !value.count) {
-            return "color-empty";
-          }
-          const color = "green";
-          const count = value.count >= 5 ? 5 : value.count;
-          return `color-scale-${color}-${count}`;
-        }}
-        tooltipDataAttrs={(value: GrassData) => {
-          if (!value || !value.count) {
-            return {
-              "data-tooltip-id": "grass-tooltip",
-              "data-tooltip-content": "기록 없음",
-            };
-          }
-          const date =
-            typeof value.date === "string"
-              ? value.date
-              : value.date.toISOString().split("T")[0];
-          return {
+      {/* 색상 변경 버튼 */}
+      <button
+        onClick={cycleColor}
+        className="absolute top-0 left-5 p-1.5 text-xs rounded-full transition-all
+          bg-gray-800/30 hover:bg-gray-700/30 border border-gray-700/50
+          flex items-center gap-1.5 z-10"
+        aria-label="히트맵 색상 변경"
+      >
+        <div
+          className="w-2.5 h-2.5 rounded-full"
+          style={{
+            backgroundColor: COLOR_SCHEMES[selectedColor].baseColor,
+          }}
+        />
+      </button>
+
+      {/* 히트맵 컨테이너 */}
+      <div className="w-full aspect-[4/1] ">
+        <CalendarHeatmap
+          tabIndex={-1}
+          startDate={new Date(new Date().setMonth(new Date().getMonth() - 4))}
+          endDate={new Date(new Date().setMonth(new Date().getMonth()))}
+          values={grassValues}
+          classForValue={(value: GrassData) => {
+            if (!value || !value.count) {
+              return "color-empty";
+            }
+            const count = value.count >= 5 ? 5 : value.count;
+            return `color-scale-${selectedColor}-${count}`;
+          }}
+          tooltipDataAttrs={(value: GrassData) => ({
             "data-tooltip-id": "grass-tooltip",
-            "data-tooltip-content": `${date}: ${value.count}회`,
-          };
-        }}
-      />
+            "data-tooltip-content":
+              !value || !value.count
+                ? "기록 없음"
+                : `${
+                    typeof value.date === "string"
+                      ? value.date
+                      : value.date.toISOString().split("T")[0]
+                  }: ${value.count}회`,
+          })}
+        />
+      </div>
       <Tooltip id="grass-tooltip" />
     </div>
   );

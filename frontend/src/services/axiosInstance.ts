@@ -57,18 +57,26 @@ axiosInstance.interceptors.response.use(
 
 // 리프레쉬 토큰으로 엑세스 토큰 재발급 요청
 const tokenRefresh = async () => {
+  const token = useAuthStore.getState().token;
+
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/user/public/accessToken`,
+      `${import.meta.env.VITE_API_URL}/user/public/reissue`,
       {},
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" ,
+        "Authorization": `Bearer ${token}`,
+        "refreshToken": token
+        }
       }
     );
-    const newAccessToken = response.headers.authorization.replace(
-      /^Bearer\s+/,
-      ""
-    );
+    // const newAccessToken = response.headers.authorization.replace(
+    //   /^Bearer\s+/,
+    //   ""
+    // );
+
+    const newAccessToken = response.data.data;
+    
 
     if (!newAccessToken) {
       console.log("엑세스 토큰 재발급 실패");

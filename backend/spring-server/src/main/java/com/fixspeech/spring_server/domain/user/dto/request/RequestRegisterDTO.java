@@ -7,7 +7,6 @@ import com.fixspeech.spring_server.domain.user.model.Users;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Builder

@@ -50,13 +50,15 @@ public class OAuthController {
 	@Value("${spring.security.oauth2.base-url}")
 	private String oauth2BaseUrl;
 
+	@Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+	private String clientId;
+
 	@GetMapping("/login/{provider}")
 	public void getOAuthLoginUrl(@PathVariable String provider , HttpServletRequest request, HttpServletResponse response) throws
 		IOException {
 		// http://k11d206.p.ssafy.io:8081/oauth2/authorization/kakao
 		String redirectUrl = oauth2BaseUrl + "/oauth2/authorization/" + provider;
 		log.info("provider 조회: {}", provider);
-
 		response.sendRedirect(redirectUrl);
 	}
 
@@ -93,7 +95,6 @@ public class OAuthController {
 
 	@GetMapping("/logout")
 	public RedirectView logout() {
-		String clientId = "33b6d872f75249281632df8ee5942cd3";
 		String redirectUri = "http://localhost:8081/logout";
 		String logoutUrl = "https://kauth.kakao.com/oauth/logout?client_id=" + clientId + "&logout_redirect_uri=" + redirectUri;
 		return new RedirectView(logoutUrl);

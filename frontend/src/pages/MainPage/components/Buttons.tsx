@@ -71,7 +71,7 @@ function Buttons() {
         flexGrow: 1,
         marginRight: "3%",
         marginLeft: "3%",
-        marginBottom: "3%",
+        // marginBottom: "3%",
       }}
     >
       <Grid container spacing={2}>
@@ -89,7 +89,7 @@ function Buttons() {
               backgroundColor: item.color,
               padding: 2,
               borderRadius: "3%",
-              height: 300,
+              height: 270,
               position: "relative",
               overflow: "hidden",
               cursor: "pointer",
