@@ -1,60 +1,73 @@
+// NotificationListener.tsx
 import { useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { EventSourcePolyfill } from "event-source-polyfill"; // Polyfill import
-import useAuthStore from "../stores/authStore";
+import { toast } from "react-toastify";
+import { EventSourcePolyfill } from "event-source-polyfill";
 import { useNavigate } from "react-router-dom";
+import { useSSEStore } from "../stores/sseStore";
+import useAuthStore from "../stores/authStore";
 
 const NotificationListener = () => {
+  const { isSSEActive, stopSSE, setAlert, message, type, clearAlert } = useSSEStore();
+  const token = useAuthStore.getState().token;
   const navigator = useNavigate();
-  const token = useAuthStore.getState().token; // 토큰 가져오기
 
   useEffect(() => {
-    if (!token) return; // 토큰이 없으면 SSE 연결을 하지 않음
+    if (!isSSEActive || !token) return;
 
-    console.log("SSE 구독 시작");
+    // SSE 연결 설정
+    const eventSource = new EventSourcePolyfill(
+      `${import.meta.env.VITE_API_URL}/notifications/subscribe`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
+      }
+    );
 
-    // SSE 구독 시작 - Authorization 헤더 포함
-    const eventSource = new EventSourcePolyfill(`${import.meta.env.VITE_API_URL}/notifications/subscribe`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-      },
-    });
+    console.log("SSE 연결 시작");
 
-    // "analysisComplete" 이벤트 수신
+    // "analysisComplete" 이벤트 수신 시 알림 표시
     eventSource.addEventListener("analysisComplete", (event: any) => {
-      console.log("event.data:",event.data)
       const data = JSON.parse(event.data);
       if (data.type === "Analyze Complete") {
-        toast.success(
-          <>
-            분석이 완료되었습니다.
-            <br />
-            <span style={{ textDecoration: "underline", cursor: "pointer" }}>
-              지금 보기
-            </span>
-          </>,
-          {
-            onClick: () => {
-              navigator("/situation/result");
-            },
-          }
-        );
+        setAlert("분석이 완료되었습니다. 지금 보기", "success");
       } else if (data.type === "ANALYSIS_ERROR") {
-        toast.error(`에러: ${data.message}`);
+        setAlert(`에러: ${data.message}`, "error");
       }
+
+      // 이벤트 수신 후 SSE 연결 종료
+      console.log("SSE 이벤트 수신 완료 후 연결 닫기");
+      eventSource.close();
+      stopSSE();
     });
 
-    // 컴포넌트 언마운트 시 연결 해제
+    // 에러 발생 시 SSE 연결 종료
+    eventSource.onerror = () => {
+      console.log("SSE 연결 에러 발생 - 연결 닫기");
+      eventSource.close();
+      setAlert("SSE 연결 오류가 발생했습니다.", "error");
+      stopSSE();
+    };
+
     return () => {
+      console.log("SSE 연결 종료");
       eventSource.close();
     };
-  }, [token]); // token이 변경될 때마다 useEffect 실행
+  }, [isSSEActive, token, setAlert, stopSSE]);
 
-  return <ToastContainer />;
+  // 알림 표시
+  useEffect(() => {
+    if (message) {
+      if (type === "success") toast.success(message);
+      if (type === "error") toast.error(message);
+      clearAlert();
+    }
+  }, [message, type, clearAlert]);
+
+  return null;
 };
 
 export default NotificationListener;
