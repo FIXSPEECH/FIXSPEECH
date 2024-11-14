@@ -24,13 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.amazonaws.services.s3.AmazonS3;
 import com.fixspeech.spring_server.config.s3.S3Service;
 import com.fixspeech.spring_server.domain.record.conotroller.UserVoiceController;
-import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
 import com.fixspeech.spring_server.domain.record.model.AnalyzeJsonResult;
-import com.fixspeech.spring_server.domain.record.model.AnalyzeResult;
 import com.fixspeech.spring_server.domain.record.model.UserVoiceFile;
 import com.fixspeech.spring_server.domain.record.repository.AnalyzeJsonResultRepository;
-import com.fixspeech.spring_server.domain.record.repository.AnalyzeResultRepository;
 import com.fixspeech.spring_server.domain.record.repository.UserVoiceRepository;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.global.exception.CustomException;
@@ -45,7 +42,6 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 
 	private final UserVoiceRepository userVoiceRepository;
 	private final AnalyzeJsonResultRepository analyzeJsonResultRepository;
-	private final AnalyzeResultRepository analyzeResultRepository;
 	private final S3Service s3Service;
 	private final AmazonS3 amazonS3;
 
@@ -112,6 +108,15 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 		}
 	}
 
+	@Override
+	public UserVoiceListResponseDto getRecent(Users users) {
+		UserVoiceFile userVoiceFile = userVoiceRepository.findTopByUserIdOrderByCreatedAtDesc(users.getId());
+		if (userVoiceFile == null)
+			throw new CustomException(ErrorCode.RECORD_NOT_FOUND);
+		AnalyzeJsonResult result = analyzeJsonResultRepository.findTopByUserVoiceFile(userVoiceFile);
+		return convertToUserVoiceDto(result, result.getId());
+	}
+
 	// @Override
 	// public void saveResult(UserVoiceRequestDto userVoiceRequestDto, Long userId, Long recordId) {
 	// 	UserVoiceFile userVoiceFile = userVoiceRepository.findById(recordId)
@@ -135,17 +140,6 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 		if (!Objects.equals(analyzeResult.getUserVoiceFile().getUserId(), users.getId()))
 			throw new CustomException(ErrorCode.AUTHENTICATION_FAIL_ERROR);
 		return convertToUserVoiceDto(analyzeResult, userVoiceFile.getId());
-	}
-
-	/**
-	 * 사용자가 가장 최근에 녹음한 음성 결과를 조회
-	 * @param userId 사용자 PK
-	 * @return AnalyzeResultResponseDto
-	 */
-	@Override
-	public AnalyzeResultResponseDto getUserOneAnalyzeResult(Long userId) {
-		AnalyzeResult analyzeResult = analyzeResultRepository.findTopByUserIdOrderByCreatedAtDesc(userId);
-		return AnalyzeResultResponseDto.from(analyzeResult);
 	}
 
 	private UserVoiceListResponseDto convertToUserVoiceDto(AnalyzeJsonResult analyzeResult, Long resultId) {
