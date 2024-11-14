@@ -8,6 +8,7 @@ import {
   Legend,
 } from "chart.js";
 import { Radar } from "react-chartjs-2";
+import { COLOR_SCHEMES, ColorSchemeType } from "../../constants/colorSchemes";
 
 // Chart.js 컴포넌트 등록
 ChartJS.register(
@@ -31,13 +32,21 @@ interface MetricData {
 // 컴포넌트 Props 타입 정의
 interface MetricsVisualizerProps {
   metrics: Record<string, MetricData>;
+  showLabels?: boolean;
+  colorScheme?: ColorSchemeType;
 }
 
 /**
  * 음성 품질 메트릭을 레이더 차트로 시각화하는 컴포넌트
  */
-const MetricsVisualizer = ({ metrics }: MetricsVisualizerProps) => {
+const MetricsVisualizer = ({
+  metrics,
+  showLabels = true,
+  colorScheme = "blue",
+}: MetricsVisualizerProps) => {
   if (!metrics) return null;
+
+  const colors = COLOR_SCHEMES[colorScheme];
 
   // 등급을 수치화하는 함수
   const gradeToValue = (grade: string) => {
@@ -61,8 +70,8 @@ const MetricsVisualizer = ({ metrics }: MetricsVisualizerProps) => {
       {
         label: "성능 지표",
         data: Object.values(metrics).map((m) => gradeToValue(m.grade)),
-        backgroundColor: "rgba(77, 255, 219, 0.2)",
-        borderColor: "#4DFFDB",
+        backgroundColor: colors.backgroundColor,
+        borderColor: colors.borderColor,
         borderWidth: 2,
         fill: true,
       },
@@ -82,12 +91,16 @@ const MetricsVisualizer = ({ metrics }: MetricsVisualizerProps) => {
           color: "rgba(255, 255, 255, 0.1)",
         },
         pointLabels: {
-          display: true,
+          display: showLabels,
+          font: {
+            size: 8,
+          },
         },
         min: 0,
         max: 1,
         beginAtZero: true,
         ticks: {
+          display: showLabels,
           color: "#FFFFFF",
           backdropColor: "transparent",
           stepSize: 0.2,
