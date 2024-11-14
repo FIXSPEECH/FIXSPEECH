@@ -40,7 +40,7 @@ function VoiceAnalysisListPage() {
   };
 
   return (
-    <div className="voice-analysis-list p-8">
+    <div className="voice-analysis-list p-8 lg:max-w-5xl lg:mx-auto">
       <h2 className="text-3xl font-bold text-white mb-6">음성 분석 목록</h2>
       {analysisData?.content.length ? (
         <>
