@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
 import com.fixspeech.spring_server.domain.grass.model.Grass;
+import com.fixspeech.spring_server.domain.user.dto.request.RequestUpdateDto;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.grass.repository.GrassRepository;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
@@ -49,6 +50,12 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Optional<List<Grass>> findUserGrassByEmail (Long userId) {
 		return grassRepository.findUserGrassByUserId(userId);
+	}
+
+	@Override
+	public void update(RequestUpdateDto dto, Users user) {
+		user.setGender(dto.getGender());
+		userRepository.save(user);
 	}
 
 	@Override

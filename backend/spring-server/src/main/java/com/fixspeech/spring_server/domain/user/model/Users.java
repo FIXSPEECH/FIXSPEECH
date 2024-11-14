@@ -83,6 +83,11 @@ public class Users extends BaseTimeEntity {
 	@JoinColumn(name = "user_id") // 외래키
 	private List<UserVoiceFile> userVoiceFiles = new ArrayList<>();
 
+	public Users updateOAuthInfo(String gender) {
+		this.gender = gender;
+		return this;
+	}
+
 	public Users updateOAuthInfo(String provider, String providerId, String image) {
 		this.provider = provider;
 		this.providerId = providerId;

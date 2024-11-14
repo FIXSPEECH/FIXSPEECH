@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 
 import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
 import com.fixspeech.spring_server.domain.grass.model.Grass;
+import com.fixspeech.spring_server.domain.user.dto.request.RequestUpdateDto;
 import com.fixspeech.spring_server.domain.user.model.Users;
 
 public interface UserService {
@@ -17,6 +18,8 @@ public interface UserService {
 	Authentication authenticateUser(String email, String password);
 
 	Optional<List<Grass>> findUserGrassByEmail(Long userId);
+
+	void update(RequestUpdateDto dto, Users user);
 
 	void deleteByEmail(String email);
 }

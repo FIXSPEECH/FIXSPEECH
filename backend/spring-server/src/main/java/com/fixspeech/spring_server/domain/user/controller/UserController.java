@@ -4,15 +4,21 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
+import com.fixspeech.spring_server.domain.user.dto.request.RequestUpdateDto;
 import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDTO;
+import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.TokenService;
 import com.fixspeech.spring_server.domain.user.service.UserService;
 import com.fixspeech.spring_server.global.common.ApiResponse;
@@ -57,6 +63,22 @@ public class UserController implements UserApi {
 			log.info("회원가입 오류 발생: {}", e);
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	/**
+	 * 사용자 추가정보 저장 API
+	 * @param userDetails 사용자 정보
+	 * @param dto 추가로 저장할 데이터
+	 * @return 성공 메세지
+	 */
+	@PutMapping
+	public ApiResponse<?> update(@AuthenticationPrincipal UserDetails userDetails, @RequestBody RequestUpdateDto dto) {
+		Users user = userService.findByEmail(userDetails.getUsername()).orElse(null);
+
+		if (user == null) return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+
+		userService.update(dto, user);
+		return ApiResponse.success("사용자 정보 수정 성공");
 	}
 
 	// /**
