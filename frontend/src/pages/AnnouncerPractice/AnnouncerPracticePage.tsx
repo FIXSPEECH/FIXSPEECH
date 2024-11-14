@@ -17,7 +17,7 @@ function AnnouncerPractice() {
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
     setIsNumberZero();
-    navigate("/");
+    navigate("/training");
   };
 
   const handleClick = () => {
