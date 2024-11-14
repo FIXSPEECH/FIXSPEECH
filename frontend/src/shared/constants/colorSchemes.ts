@@ -29,12 +29,6 @@ export const COLOR_SCHEMES = {
     borderColor: "rgb(255, 171, 1)",
     baseColor: "rgb(255, 171, 1)",
   },
-  default: {
-    id: "default",
-    backgroundColor: "rgba(77, 255, 219, 0.2)",
-    borderColor: "#4DFFDB",
-    baseColor: "#4DFFDB",
-  },
 } as const;
 
 export type ColorSchemeType = keyof typeof COLOR_SCHEMES;
