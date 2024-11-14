@@ -3,6 +3,7 @@ import MicNoneIcon from "@mui/icons-material/MicNone";
 import MicIcon from "@mui/icons-material/Mic";
 import useVoiceStore from "../../../shared/stores/voiceStore";
 import { LiveAudioVisualizer } from "react-audio-visualize";
+import useSttStore from "../../stores/sttStore";
 
 interface MicrophoneProps {
   color: string; // color prop의 타입 정의
@@ -28,6 +29,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
   const [interimTranscript, setInterimTranscript] = useState("");
   const [finalTranscript, setFinalTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
+  const {setUserStt} = useSttStore();
 
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -54,6 +56,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
 
         setInterimTranscript(interimTranscript);
         setFinalTranscript(newFinalTranscript);
+        setUserStt(newFinalTranscript)
       };
 
       recognition.onerror = (event: any) => {

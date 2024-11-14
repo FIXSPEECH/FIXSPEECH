@@ -6,6 +6,8 @@ import { ExampleGet } from "../../../services/PronouncePractice/PronouncePractic
 import ArrowRight from "../Icons/ArrowRightIcon";
 import usePronounceScoreStore from "../../../shared/stores/pronounceScoreStore";
 import FinishModal from "./FinishModal";
+import useSttStore from "../../stores/sttStore";
+import { sttPost } from "../../../services/PronouncePractice/PronouncePracticePost";
 
 interface PronounceExampleProps {
   color: string; // color prop의 타입 정의
@@ -22,8 +24,33 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
   const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
   const [example, setExample] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
+  const {userStt} = useSttStore();
 
   const navigate = useNavigate();
+
+
+  const postStt = async() => {
+    const data = {
+      answer_text: example,
+      user_text: userStt
+    }
+
+    try{
+      const response = await sttPost(data)
+      console.log(response.data)
+    } catch(e) {
+      console.log (e)
+    }
+  }
+
+
+  useEffect(() => {
+    if (!isRecording && userStt !== '') {
+      postStt();
+      setIsNumber();
+    }
+
+  }, [isRecording, userStt])
 
   const handlePlayAudio = () => {
     if (audioRef.current) {
@@ -46,7 +73,6 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
       console.log(e);
     }
 
-    setIsNumber();
     setIsRecording(false);
     setAudioURL(null);
   };
@@ -95,6 +121,8 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
           {example}
         </div>
       </div>
+
+
 
       {/* ArrowRight 컴포넌트 */}
       <div className="ml-auto mr-10 flex">
