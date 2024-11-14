@@ -1,6 +1,7 @@
 import Buttons from "./components/Buttons";
 import UserInfo from "./components/UserInfo";
 import History from "./components/History";
+import RecentVoice from "./components/RecentVoice";
 import { useEffect } from "react";
 
 import { tokenRefresh } from "../../services/axiosInstance";
@@ -23,7 +24,14 @@ function MainPage() {
   return (
     <>
       <UserInfo />
-      <History />
+      <div className="flex flex-col md:flex-row">
+        <div className="w-full md:w-1/2">
+          <History />
+        </div>
+        <div className="w-full md:w-1/2">
+          <RecentVoice />
+        </div>
+      </div>
       <Buttons />
     </>
   );
