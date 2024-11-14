@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fixspeech.spring_server.domain.record.dto.AnalyzeResultResponseDto;
 import com.fixspeech.spring_server.domain.record.dto.UserVoiceListResponseDto;
 import com.fixspeech.spring_server.domain.user.model.Users;
 
@@ -17,8 +16,6 @@ public interface UserVoiceService {
 
 	UserVoiceListResponseDto getUserRecordDetail(Users users, Long recordId);
 
-	AnalyzeResultResponseDto getUserOneAnalyzeResult(Long resultId);
-
 	Page<UserVoiceListResponseDto> getUserRecordList(int page, int size, Long id);
 
 	ResponseEntity<Map> analyze(Users users, MultipartFile file);
@@ -26,4 +23,6 @@ public interface UserVoiceService {
 	Map<String, Object> analyzeAndSave(Users users, MultipartFile file);
 
 	void deleteRecord(Users users, Long recordId);
+
+	UserVoiceListResponseDto getRecent(Users users);
 }

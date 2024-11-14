@@ -128,7 +128,7 @@ public class ScriptController implements ScriptApi {
 
 	@KafkaListener(topics = "voice-analysis-topic", groupId = "voice-analysis-group", concurrency = "5")
 	public void processVoiceAnalysis(VoiceAnalysisMessage message) {
-		System.out.println("분석 시작");
+		log.info("분석 시작");
 		try {
 			byte[] fileData = redisTemplate.opsForValue().get(message.redisKey());
 			if (fileData == null) {
@@ -161,10 +161,10 @@ public class ScriptController implements ScriptApi {
 
 			// ScriptJson 엔티티 생성 및 저장
 			Map<String, Object> responseBody = response.getBody();
-
+			responseBody.put("scriptId", message.scriptId());
 			scriptService.save(s3Url, message.scriptId(), responseBody);
 
-			System.out.println(response.getBody() + "ㄴㅇㄴㅇ");
+			log.info(response.getBody() + "ㄴㅇㄴㅇ");
 
 			//분석 완료 알림
 			emitterService.notify(message.userId(), new HashMap<String, Object>() {{

@@ -64,6 +64,17 @@ public class UserVoiceController implements UserVoiceApi {
 
 	}
 
+	//최신 음성 분석 단일 조회
+	@GetMapping("/recent")
+	public ApiResponse<?> getRecentRecord(
+		@AuthenticationPrincipal UserDetails userDetails
+	) {
+		Users users = userService.findByEmail(userDetails.getUsername())
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		UserVoiceListResponseDto result = userVoiceService.getRecent(users);
+		return ApiResponse.createSuccess(result, "최신 유저 음성 데이터 조회 성공");
+	}
+
 	//음성 분석 단일 조회
 	@GetMapping("/{recordId}")
 	public ApiResponse<?> getUserRecordDetail(
