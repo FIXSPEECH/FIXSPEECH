@@ -11,7 +11,7 @@ function Access() {
     if (token) {
       console.log("토큰 발견:", token);
       setToken(token);
-      window.location.replace("/record");
+      window.location.replace("/user-info");
     } else {
       console.log("토큰을 찾을 수 없습니다");
       window.location.replace("/login");

@@ -22,16 +22,16 @@ public class AnnouncerVoiceSampleSpeaker {
 
 	@Id
 	@Column(name = "id", nullable = false, length = 10)
-	private String id; // SPK001, SPK002...
+	private String id;		// SPK001, SPK002...
 
 	@Column(name = "age", nullable = false)
-	private String age; // 20대, 30대, 40대, 50대, 60대
+	private String age;		// 20대, 30대, 40대, 50대, 60대
 
 	@Column(name = "gender", nullable = false, length = 10)
-	private String gender; // male, female
+	private String gender;	// male, female
 
 	@Column(name = "job", nullable = false, length = 20)
-	private String job; // 아나운서, 아나운서준비생, 전직아나운서
+	private String job;		// 아나운서, 아나운서준비생, 전직아나운서
 
 	public static AnnouncerVoiceSampleSpeakerResponseDto from(AnnouncerVoiceSampleSpeaker speaker) {
 		return AnnouncerVoiceSampleSpeakerResponseDto.builder()

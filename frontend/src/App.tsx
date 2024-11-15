@@ -52,6 +52,9 @@ const SelectResult = lazy(
   () => import("./pages/SituationPractice/SelectResultPage")
 );
 const VoiceList = lazy(() => import("./pages/SituationPractice/VoiceListPage"));
+const UserInfoRegistPage = lazy(
+  () => import("./pages/Login/UserInfoRegistPage")
+);
 const SituationResult = lazy(
   () => import("./pages/SituationPractice/SituationResultPage")
 );
@@ -61,7 +64,7 @@ const Layout = () => {
   return (
     <>
       <ParticleBackground />
-      <NotificationListener/>
+      <NotificationListener />
       <Header />
       <ToastContainer />
       <Suspense fallback={<div></div>}>
@@ -165,6 +168,10 @@ const router = createBrowserRouter([
           {
             path: "/myvoice",
             element: <MyVoice />,
+          },
+          {
+            path: "/user-info",
+            element: <UserInfoRegistPage />,
           },
         ],
       },

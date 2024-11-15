@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.domain.announcer.dto;
+package com.fixspeech.spring_server.domain.announcer.dto.response;
 
 import java.util.List;
 import java.util.stream.Collectors;
