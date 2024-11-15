@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 // 아이콘 img import
-import geo from "/buttons/geo.png";
+import world from "/buttons/world.png";
 import Typography from "@mui/material/Typography";
 
 function TrainSelect() {
@@ -12,21 +12,21 @@ function TrainSelect() {
     {
       color: "#FFAB01",
       label: "대본 등록",
-      imageSrc: geo,
+      imageSrc: world,
       url: "regist",
       imgMargin: 50,
     },
     {
       color: "#FFAB01",
       label: "대본 불러오기",
-      imageSrc: geo,
+      imageSrc: world,
       url: "select",
       imgMargin: 50,
     },
     {
       color: "#FFAB01",
       label: "연습 내역 조회",
-      imageSrc: geo,
+      imageSrc: world,
       url: "result",
       imgMargin: 50,
     },

@@ -1,12 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
-// 아이콘 img import
-import clock from "/buttons/clock.png";
-import find from "/buttons/find.png";
-import geo from "/buttons/geo.png";
-import music from "/buttons/music.png";
-import read from "/buttons/read.png";
+// 아이콘 import
+import lecture from "/buttons/lecture.png"
+import news from "/buttons/news.png"
+import analysis from "/buttons/analysis.png"
+import world from "/buttons/world.png"
+import pronounce from "/buttons/pronounce.png"
+import game from "/buttons/game.png"
 
 function Buttons() {
   const navigate = useNavigate();
@@ -15,44 +16,44 @@ function Buttons() {
     {
       color: "#EE719E",
       label: "발음 훈련 강의",
-      imageSrc: music,
+      imageSrc: lecture,
       url: "/lecture",
       imgMargin: 50,
     },
     {
       color: "#FF8C82",
       label: "발음 훈련 연습",
-      imageSrc: music,
+      imageSrc: pronounce,
       url: "/training",
       imgMargin: 50,
     },
     {
       color: "#FFAB01",
       label: "상황별 연습",
-      imageSrc: geo,
+      imageSrc: world,
       url: "/situation",
-      imgMargin: 50,
+      imgMargin: 40,
     },
     {
       color: "#B18CFE",
       label: "아나운서 따라잡기",
-      imageSrc: read,
+      imageSrc: news,
       url: "/announcer",
-      imgMargin: 5,
+      imgMargin: 15,
     },
     {
       color: "#FE6250",
       label: "산성비 게임",
-      imageSrc: clock,
+      imageSrc: game,
       url: "/game",
-      imgMargin: 50,
+      imgMargin: 30,
     },
     {
       color: "#37AFE1",
-      label: "내 목소리 분석 결과 확인",
-      imageSrc: find,
+      label: "목소리 분석 결과",
+      imageSrc: analysis,
       url: "/analysis",
-      imgMargin: 50,
+      imgMargin: 0,
     },
   ];
 
