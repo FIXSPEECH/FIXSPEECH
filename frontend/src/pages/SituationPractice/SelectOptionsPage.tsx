@@ -4,9 +4,13 @@ import Grid from "@mui/material/Grid2";
 // 아이콘 img import
 import world from "/buttons/world.png";
 import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 function TrainSelect() {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMd = useMediaQuery(theme.breakpoints.up("md"));
 
   const gridItems = [
     {
@@ -28,7 +32,7 @@ function TrainSelect() {
       label: "연습 내역 조회",
       imageSrc: world,
       url: "result",
-      imgMargin: 50,
+      imgMargin: isMd ? 15 : 50,
     },
   ];
 
