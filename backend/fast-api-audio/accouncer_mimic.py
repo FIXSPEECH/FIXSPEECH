@@ -75,7 +75,15 @@ def normalize_f0(f0_data):
     return normalized_f0
 
 
-async def announcer_mimic(user_file: UploadFile, announcer_url: str, downsample_factor=10):
+def downsample_to_match_length(data, target_length):
+    """
+    주어진 데이터를 목표 길이에 맞춰 균등한 간격으로 다운샘플링하고, 소수점 2자리까지만 반환합니다.
+    """
+    indices = np.linspace(0, len(data) - 1, target_length, dtype=int)
+    return [round(data[i], 2) for i in indices]
+
+
+async def announcer_mimic(user_file: UploadFile, announcer_url: str):
     user_file_path = None
     announcer_file_path = None
     try:
@@ -115,9 +123,10 @@ async def announcer_mimic(user_file: UploadFile, announcer_url: str, downsample_
             logger.error(f"Error in DTW calculation: {e}")
             raise HTTPException(status_code=500, detail="Error in DTW calculation")
 
-        # response로 보낼 raw 데이터 다운샘플링 처리 (0 제외 후)
-        user_f0_downsampled = [round(val, 2) for val in user_f0_raw[user_f0_raw > 0][::downsample_factor]]
-        announcer_f0_downsampled = [round(val, 2) for val in announcer_f0_raw[announcer_f0_raw > 0][::downsample_factor]]
+        # 다운샘플링하여 비교용 데이터 준비 (0 제외 후)
+        min_length = min(len(user_f0_clean), len(announcer_f0_clean))
+        user_f0_downsampled = downsample_to_match_length(user_f0_clean, min_length)
+        announcer_f0_downsampled = downsample_to_match_length(announcer_f0_clean, min_length)
 
         return {
             "status": "success",
