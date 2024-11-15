@@ -62,8 +62,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		log.info("accessToken={}", accessToken);
 		String targetUrl = getTargetUrl(accessToken);
 
-		// clearAuthenticationAttributes(request, response);
-
 		// 리다이렉트
 		getRedirectStrategy().sendRedirect(request, response, targetUrl);
 	}

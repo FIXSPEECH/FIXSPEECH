@@ -7,12 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
-
-import com.fixspeech.spring_server.domain.oauth.repository.OAuthCodeTokenRepository;
-import com.fixspeech.spring_server.domain.oauth.repository.TempUserRepository;
-import com.fixspeech.spring_server.domain.user.service.UserService;
-import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,17 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class OAuthController {
 
-	private final UserService userService;
-	private final JwtTokenProvider jwtTokenProvider;
-	private final TempUserRepository tempUserRepository;
-	private final OAuthCodeTokenRepository oAuthCodeTokenRepository;
-	private final RestTemplate restTemplate;
-
 	@Value("${spring.security.oauth2.base-url}")
 	private String oauth2BaseUrl;
-
-	@Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-	private String clientId;
 
 	/**
 	 * 로그인 페이지로 리다이렉트
