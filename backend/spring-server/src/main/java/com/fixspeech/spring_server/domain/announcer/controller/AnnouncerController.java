@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.domain.announcer.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fixspeech.spring_server.config.s3.S3Service;
 import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
@@ -41,12 +43,22 @@ public class AnnouncerController implements AnnouncerApi {
 	 */
 	@GetMapping("one")
 	public ApiResponse<?> getOneAnnouncerData(@AuthenticationPrincipal UserDetails userDetails) {
-		Users user = userService.findByEmail(userDetails.getUsername()).orElse(null);
-		if (user == null) {
-			return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+		try {
+			if (userDetails == null) {
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized: 인증되지 않은 사용자입니다.");
+			}
+
+			Users user = userService.findByEmail(userDetails.getUsername()).orElse(null);
+			if (user == null) {
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized: 사용자 정보가 존재하지 않습니다.");
+			}
+
+			return ApiResponse.createSuccess(announcerService.getOneAnnouncerData(user.getGender()), "아나운서 데이터 단일 조회 성공");
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized: 처리 중 오류 발생", e);
 		}
-		return ApiResponse.createSuccess(announcerService.getOneAnnouncerData(user.getGender()), "아나운서 데이터 단일 조회 성공");
 	}
+
 
 	/**
 	 * 아나운서 음성 데이터 전체 조회
