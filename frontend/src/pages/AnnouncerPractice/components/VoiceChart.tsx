@@ -21,7 +21,7 @@ const VoiceComparisonChart = ({ userF0Data, announcerF0Data }: Data) => {
 
    // Calculate min and max values for dynamic Y-axis domain
    const yMin = Math.min(...userValues, ...announcerValues, 0); // 최소값은 데이터의 최소값 또는 0
-   const yMax = Math.max(...userValues, ...announcerValues,200); // 최대값은 데이터의 최대값 또는 350
+   const yMax = Math.max(...userValues, ...announcerValues,200); // 최대값은 데이터의 최대값 또는 200
 
   // Create data array for the chart
   const data = React.useMemo(() => {
