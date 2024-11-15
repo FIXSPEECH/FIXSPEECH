@@ -140,6 +140,12 @@ public class UserController implements UserApi {
 		}
 	}
 
+	/**
+	 * 사용자 로그아웃
+	 * @param request	request
+	 * @param response	response
+	 * @return 로그아웃 성공 메세지
+	 */
 	@PostMapping("/public/logout")
 	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = extractRefreshToken(request);
@@ -147,7 +153,7 @@ public class UserController implements UserApi {
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
 			tokenService.blacklistRefreshToken(refreshToken);
 			CookieUtil.deleteRefreshCookie(request, response);
-			return ApiResponse.createSuccess(null, "로그아웃 성공");
+			return ApiResponse.success("로그아웃 성공");
 		}
 		return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
 	}
