@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.oauth;
+package com.fixspeech.spring_server.domain.oauth;
 
 import java.util.Map;
 

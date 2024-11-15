@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.oauth.controller;
+package com.fixspeech.spring_server.domain.oauth.controller;
 
 import java.io.IOException;
 
@@ -23,11 +23,11 @@ import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
 import com.fixspeech.spring_server.global.common.JwtCookieProvider;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
-import com.fixspeech.spring_server.oauth.dto.response.ResponseOAuthInfoDTO;
-import com.fixspeech.spring_server.oauth.model.OAuthCodeToken;
-import com.fixspeech.spring_server.oauth.model.TempUser;
-import com.fixspeech.spring_server.oauth.repository.OAuthCodeTokenRepository;
-import com.fixspeech.spring_server.oauth.repository.TempUserRepository;
+import com.fixspeech.spring_server.domain.oauth.dto.response.ResponseOAuthInfoDto;
+import com.fixspeech.spring_server.domain.oauth.model.OAuthCodeToken;
+import com.fixspeech.spring_server.domain.oauth.model.TempUser;
+import com.fixspeech.spring_server.domain.oauth.repository.OAuthCodeTokenRepository;
+import com.fixspeech.spring_server.domain.oauth.repository.TempUserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,44 +53,20 @@ public class OAuthController {
 	@Value("${spring.security.oauth2.client.registration.kakao.client-id}")
 	private String clientId;
 
+	/**
+	 * 로그인 페이지로 리다이렉트
+	 * @param provider		제공자(kakao, naver...)
+	 * @param request		request
+	 * @param response		response
+	 * @throws IOException	IOException
+	 */
 	@GetMapping("/login/{provider}")
-	public void getOAuthLoginUrl(@PathVariable String provider , HttpServletRequest request, HttpServletResponse response) throws
+	public void getOAuthLoginUrl(@PathVariable String provider, HttpServletRequest request, HttpServletResponse response) throws
 		IOException {
 		String redirectUrl = oauth2BaseUrl + "/oauth2/authorization/" + provider;
 		log.info("provider 조회: {}", provider);
 		response.sendRedirect(redirectUrl);
 	}
-
-
-	// @GetMapping("/logout")
-	// public ResponseEntity<String> logout() {
-	// 	String accessToken = "_9KUa_lnKD03d2sUbc2xR_0TJ5LxYmgGAAAAAQopyWAAAAGTI62tr8YNwJ_muSR4";
-	// 	String logoutEndpoint = "https://kapi.kakao.com/v1/user/logout";
-	// 	log.info("init");
-	// 	HttpHeaders headers = new HttpHeaders();
-	// 	headers.set("Authorization", accessToken);
-	//
-	// 	HttpEntity<String> request = new HttpEntity<>(headers);
-	// 	try {
-	// 		ResponseEntity<String> response = restTemplate.exchange(
-	// 			logoutEndpoint,
-	// 			HttpMethod.POST,
-	// 			request,
-	// 			String.class
-	// 		);
-	//
-	// 		if (response.getStatusCode().is2xxSuccessful()) {
-	// 			log.info("카카오 로그아웃 성공");
-	// 			return ResponseEntity.ok("카카오 로그아웃 성공");
-	// 		} else {
-	// 			log.error("카카오 로그아웃 실패: " + response.getStatusCode());
-	// 			return ResponseEntity.status(response.getStatusCode()).body("카카오 로그아웃 실패");
-	// 		}
-	// 	} catch (Exception e) {
-	// 		log.error("예외 발생: ", e);
-	// 		return ResponseEntity.status(500).body("서버 오류로 인해 로그아웃 실패");
-	// 	}
-	// }
 
 	@GetMapping("/logout")
 	public RedirectView logout() {
@@ -111,7 +87,7 @@ public class OAuthController {
 			String provider = tempUser.getProvider();
 			String providerId = tempUser.getProviderId();
 
-			ResponseOAuthInfoDTO responseDTO = ResponseOAuthInfoDTO.builder()
+			ResponseOAuthInfoDto responseDTO = ResponseOAuthInfoDto.builder()
 				.email(email)
 				.name(name)
 				.provider(provider)
@@ -132,17 +108,15 @@ public class OAuthController {
 	@GetMapping("/get-user-token")
 	public ResponseEntity<?> getUserToken(@RequestParam("code") String code, HttpServletResponse response) {
 		try {
-			log.info("code={}", code);
 			OAuthCodeToken oAuthCodeToken = oAuthCodeTokenRepository.findById(code)
 				.orElseThrow(() -> new NotFoundException("코드가 유효하지 않습니다."));
 
-			log.info("oAuthCodeToken={}", oAuthCodeToken);
 			String accessToken = oAuthCodeToken.getAccessToken();
 			String refreshToken = oAuthCodeToken.getRefreshToken();
 			log.info("accessToken={}", accessToken);
 			log.info("refreshToken={}", refreshToken);
 
-			ResponseCookie responseCookie =  jwtCookieProvider.generateCookie(refreshToken);
+			ResponseCookie responseCookie = jwtCookieProvider.generateCookie(refreshToken);
 
 			response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 			response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
