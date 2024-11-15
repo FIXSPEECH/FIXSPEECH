@@ -30,13 +30,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AnnouncerController implements AnnouncerApi {
 
-
 	private final UserService userService;
 	private final AnnouncerService announcerService;
 	private final S3Service s3Service;
 
+	/**
+	 * 사용자의 성별에 따른 하나의 랜덤한 아나운서 텍스트 데이터 조회
+	 * @param userDetails 사용자 정보
+	 * @return 아나운서 텍스트 데이터
+	 */
 	@GetMapping("one")
-	public ApiResponse<?>getOneAnnouncerData(@AuthenticationPrincipal UserDetails userDetails) {
+	public ApiResponse<?> getOneAnnouncerData(@AuthenticationPrincipal UserDetails userDetails) {
 		Users user = userService.findByEmail(userDetails.getUsername()).orElse(null);
 		if (user == null) {
 			return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
@@ -64,7 +68,6 @@ public class AnnouncerController implements AnnouncerApi {
 
 	/**
 	 * 아나운서 따라잡기 사용자 음성 저장
-	 *
 	 * @param userDetails 사용자 정보
 	 * @param file 사용자 음성 파일
 	 * @param compareResultRequestDto 비교 결과
