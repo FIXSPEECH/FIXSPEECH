@@ -19,6 +19,10 @@ const VoiceComparisonChart = ({ userF0Data, announcerF0Data }: Data) => {
     return typeof announcerF0Data === 'string' ? JSON.parse(announcerF0Data) : announcerF0Data;
   }, [announcerF0Data]);
 
+   // Calculate min and max values for dynamic Y-axis domain
+   const yMin = Math.min(...userValues, ...announcerValues, 0); // 최소값은 데이터의 최소값 또는 0
+   const yMax = Math.max(...userValues, ...announcerValues,200); // 최대값은 데이터의 최대값 또는 350
+
   // Create data array for the chart
   const data = React.useMemo(() => {
     const maxLength = Math.max(userValues.length, announcerValues.length);
@@ -43,8 +47,8 @@ const VoiceComparisonChart = ({ userF0Data, announcerF0Data }: Data) => {
           <YAxis 
             stroke="#666"
             tickLine={{ stroke: '#666' }}
-            domain={[0, 350]}
-            ticks={[ 0, 50, 100, 150, 200, 250, 300, 350]}
+            domain={[yMin, yMax]}
+            // ticks={[ 0, 50, 100, 150, 200, 250, 300, 350]}
             tickFormatter={(value: any) => Math.abs(value).toString()}
             label={{ value: 'Hz', angle: -90, position: 'insideLeft', fill: '#666' }} // Y축 레이블 추가
           />
