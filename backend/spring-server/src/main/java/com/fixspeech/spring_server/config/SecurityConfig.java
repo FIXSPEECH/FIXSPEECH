@@ -41,21 +41,6 @@ public class SecurityConfig {
 	@Value("${cors.allowed-methods}")
 	private String[] allowedMethods;
 
-	// @Bean
-	// public CorsConfigurationSource corsConfigurationSource() {
-	// 	CorsConfiguration config = new CorsConfiguration();
-	// 	config.setAllowedOrigins(Arrays.asList(allowedOrigins));
-	// 	config.setAllowedMethods(Arrays.asList(allowedMethods));
-	// 	config.setAllowCredentials(true);
-	// 	config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-	// 	config.setExposedHeaders(List.of("Authorization"));
-	// 	config.setMaxAge(3600L);
-	//
-	// 	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	// 	source.registerCorsConfiguration("/**", config);
-	// 	return source;
-	// }
-
 	@Bean
 	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
