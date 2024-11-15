@@ -2,33 +2,37 @@ import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 // 아이콘 img import
-import geo from "/buttons/geo.png";
+import world from "/buttons/world.png";
 import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 function TrainSelect() {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMd = useMediaQuery(theme.breakpoints.up("md"));
 
   const gridItems = [
     {
       color: "#FFAB01",
       label: "대본 등록",
-      imageSrc: geo,
+      imageSrc: world,
       url: "regist",
       imgMargin: 50,
     },
     {
       color: "#FFAB01",
       label: "대본 불러오기",
-      imageSrc: geo,
+      imageSrc: world,
       url: "select",
       imgMargin: 50,
     },
     {
       color: "#FFAB01",
       label: "연습 내역 조회",
-      imageSrc: geo,
+      imageSrc: world,
       url: "result",
-      imgMargin: 50,
+      imgMargin: isMd ? 15 : 50,
     },
   ];
 
@@ -53,7 +57,7 @@ function TrainSelect() {
           >
             {gridItems.map((item, index) => (
               <Grid
-                size={{ xs: 4, sm: 4, md: 4 }}
+                size={{ xs: 4, sm: 4, md: 2 }}
                 className="w-full md:w-1/2 lg:w-1/3"
                 key={index}
                 sx={{

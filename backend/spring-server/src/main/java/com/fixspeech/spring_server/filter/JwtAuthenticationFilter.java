@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final String[] WHITE_LIST = {
-		"/login"
+		"/login", "/user/public/reissue"
 	};
 
 	@Override
@@ -35,11 +35,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws ServletException, IOException {
 
 		String jwt = getJwtFromRequest(request);
-
+		log.info(jwt);
 		try {
 			if (jwt != null && jwtTokenProvider.validateToken(jwt)) {
 				log.info("jwt={}", jwt);
 				Authentication auth = jwtTokenProvider.getAuthentication(jwt);
+				log.info("exit");
 				SecurityContextHolder.getContext().setAuthentication(auth);
 			}
 		} catch (CustomException e) {
@@ -67,8 +68,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected boolean shouldNotFilter(HttpServletRequest httpServletRequest) {
-		String path = httpServletRequest.getServletPath();
+	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+		String path = request.getServletPath();
 		return Arrays.asList(WHITE_LIST).contains(path);
 	}
 }

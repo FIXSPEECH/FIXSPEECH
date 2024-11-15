@@ -9,11 +9,14 @@ import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 import com.fixspeech.spring_server.domain.user.model.RefreshToken;
 import com.fixspeech.spring_server.domain.user.model.TokenBlacklist;
 import com.fixspeech.spring_server.domain.user.model.Users;
+import com.fixspeech.spring_server.domain.user.repository.UserRepository;
 import com.fixspeech.spring_server.domain.user.repository.redis.RefreshTokenRepository;
 import com.fixspeech.spring_server.domain.user.repository.redis.TokenBlacklistRepository;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
-import com.fixspeech.spring_server.oauth.model.OAuthRefreshToken;
-import com.fixspeech.spring_server.oauth.repository.OAuthRefreshRepository;
+import com.fixspeech.spring_server.domain.oauth.model.OAuthRefreshToken;
+import com.fixspeech.spring_server.domain.oauth.repository.OAuthRefreshRepository;
+import com.fixspeech.spring_server.global.exception.CustomException;
+import com.fixspeech.spring_server.global.exception.ErrorCode;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TokenServiceImpl implements TokenService {
 
 	private final JwtTokenProvider jwtTokenProvider;
+	private final UserRepository userRepository;
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final OAuthRefreshRepository oAuthRefreshRepository;
 	private final TokenBlacklistRepository tokenBlacklistRepository;
@@ -49,14 +53,13 @@ public class TokenServiceImpl implements TokenService {
 	 * @return
 	 */
 	@Override
-	public ResponseRefreshTokenDTO reissueOAuthToken(Users user, String refreshToken) {
+	public ResponseRefreshTokenDTO reissueOAuthToken(String refreshToken) {
 		if(isRefreshTokenBlacklisted(refreshToken)) {
 			return null;
 		}
 		if (jwtTokenProvider.validateToken(refreshToken)) {
 			Claims claims = jwtTokenProvider.getClaims(refreshToken);
 			String email = claims.get("email", String.class);
-			String name = claims.get("name", String.class);
 			log.info("refreshToken.email={}", email);
 
 			// refreshToken 들고 탐색 ->
@@ -68,12 +71,13 @@ public class TokenServiceImpl implements TokenService {
 				log.info("delete Token by email");
 				oAuthRefreshRepository.deleteById(email);
 
-				// refreshToken 만료 시키기
-				log.info("generate Token");
+				Users user = userRepository.findByEmail(email)
+					.orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
+
 				String newAccessToken = jwtTokenProvider.generateAccessToken(JwtUserClaims.fromUsersEntity(user));
 				String newRefreshToken = jwtTokenProvider.generateRefreshToken(JwtUserClaims.fromUsersEntity(user));
 				OAuthRefreshToken newRt = new OAuthRefreshToken(email, newRefreshToken);
-				// jwtTokenProvider.getRefreshTokenExpiration());
+
 				oAuthRefreshRepository.save(newRt);
 				return new ResponseRefreshTokenDTO(newAccessToken, newRefreshToken);
 			}

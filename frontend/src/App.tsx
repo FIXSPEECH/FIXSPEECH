@@ -55,6 +55,9 @@ const VoiceList = lazy(() => import("./pages/SituationPractice/VoiceListPage"));
 const UserInfoRegistPage = lazy(
   () => import("./pages/Login/UserInfoRegistPage")
 );
+const SituationResult = lazy(
+  () => import("./pages/SituationPractice/SituationResultPage")
+);
 
 // 레이아웃 컴포넌트 생성
 const Layout = () => {
@@ -145,6 +148,10 @@ const router = createBrowserRouter([
           {
             path: "/situation/voice/:scriptId",
             element: <VoiceList />,
+          },
+          {
+            path: "/situation/voice/result/:resultId",
+            element: <SituationResult />,
           },
           {
             path: "/announcer",

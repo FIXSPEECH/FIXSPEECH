@@ -134,10 +134,14 @@ public class ScriptServiceImpl implements ScriptService {
 	@Override
 	public ScriptAnalyzeResponseDto getResult(Long resultId, Users users) {
 		ScriptAnalyzeResult analyzeResult = findResult(resultId);
+		Script script = analyzeResult.getScript();
 		try {
 			ScriptAnalyzeResponseDto scriptAnalyzeResponseDto = ScriptAnalyzeResponseDto.fromRawData(
 				users.getId(),
-				resultId,
+				script.getId(),
+				analyzeResult.getRecordAddress(),
+				script.getTitle(),
+				script.getContent(),
 				analyzeResult.getData(),
 				analyzeResult.getCreatedAt().toLocalDate()
 			);

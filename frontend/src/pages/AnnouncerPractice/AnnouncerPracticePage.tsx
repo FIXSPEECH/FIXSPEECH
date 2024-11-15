@@ -60,7 +60,8 @@ function AnnouncerPractice() {
           {/* <Recorder color={"#D5C6F5"} barColor={"rgb(177,140,254)"} width={300} height={75} visualizeWidth="300px" modalType="record"/> */}
 
           {/* 수평 배치를 위한 flex-row 추가 */}
-          <div className="flex flex-row justify-center items-center space-x-4">
+          {/* <div className="flex flex-row justify-center items-center space-x-4"> */}
+          <div className="flex flex-col md:flex-row justify-center items-center md:space-x-4 space-y-4 md:space-y-0">
             <Recorder
               color={"#D5C6F5"}
               barColor={"rgb(177,140,254)"}
@@ -71,11 +72,17 @@ function AnnouncerPractice() {
             />
 
             {user && announcer && user.length > 0 && announcer.length > 0 ? (
-              <div style={{ width: "600px" }}>
+              // <div style={{ width: "600px" }}>
+              <div
+              className="w-full md:w-[600px]" // 기본은 600px, 모바일에서는 전체 너비
+              style={{  height: "auto" }} // 모바일 크기 줄임
+            >
                 <VoiceComparisonChart
                   userF0Data={user}
                   announcerF0Data={announcer}
                 />
+                 <div className='text-white flex justify-center'> *해당 그래프의 주파수는 말의 억양을 나타내고 있습니다.</div>
+                 <div className='text-white flex justify-center mb-5'> 아나운서와 비슷한 억양으로 말해보세요.</div>
               </div>
             ) : null}
           </div>

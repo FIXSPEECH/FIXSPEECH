@@ -1,7 +1,5 @@
 package com.fixspeech.spring_server.domain.announcer.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 
 import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
@@ -10,9 +8,7 @@ import com.fixspeech.spring_server.domain.announcer.dto.response.UserAnnouncerVo
 
 public interface AnnouncerService {
 
-	SmallAnnouncerVoiceSampleResponseDto getOneAnnouncerData();
-
-	List<SmallAnnouncerVoiceSampleResponseDto> getAllAnnouncerData();
+	SmallAnnouncerVoiceSampleResponseDto getOneAnnouncerData(String gender);
 
 	// 아나운서 음성 데이터 전체 조회
 	Page<SmallAnnouncerVoiceSampleResponseDto> getAllAnnouncerData(int pageNo, String criteria);

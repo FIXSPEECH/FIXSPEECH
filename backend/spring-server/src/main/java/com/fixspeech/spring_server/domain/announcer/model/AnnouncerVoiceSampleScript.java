@@ -23,23 +23,23 @@ public class AnnouncerVoiceSampleScript {
 
 	@Id
 	@Column(name = "id", nullable = false, length = 10)
-	private String id; // YTNPO001
+	private String id;			// YTNPO001
 
 	@Column(name = "url", nullable = false, length = 255)
-	private String url; // http://www.ytn.co.kr/_ln/0102_201803090031524138
+	private String url;			// http://www.ytn.co.kr/_ln/0102_201803090031524138
 
 	@Column(name = "title", nullable = false, length = 30)
-	private String title; // 성동조선 법정관리...STX는 자력생존 확정
+	private String title;		// 성동조선 법정관리...STX는 자력생존 확정
 
 	@Column(name = "press", nullable = false, length = 20)
-	private String press; // YTN
+	private String press;		// YTN
 
 	@Column(name = "press_field", nullable = false, length = 20)
-	private String pressField; // 경제
+	private String pressField;	// 경제
 
 	@Column(name = "press_date", nullable = false)
-	private Date pressDate; // 20180309
+	private Date pressDate;		// 20180309
 
 	@Column(name = "keyword", nullable = false, length = 30)
-	private String keyword; // 법정관리
+	private String keyword;		// 법정관리
 }

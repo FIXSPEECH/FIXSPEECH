@@ -2,8 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 // 아이콘 img import
-import puzzle from "/buttons/puzzle.png";
-import music from "/buttons/music.png";
+import pronounce from "/buttons/pronounce.png";
 import Typography from "@mui/material/Typography";
 
 function TrainSelect() {
@@ -13,14 +12,14 @@ function TrainSelect() {
     {
       color: "#FF8C82",
       label: "문장연습",
-      imageSrc: music,
+      imageSrc: pronounce,
       url: "sentence",
       imgMargin: 50,
     },
     {
       color: "#FF8C82",
       label: "잰말놀이",
-      imageSrc: puzzle,
+      imageSrc: pronounce,
       url: "tongue-twister",
       imgMargin: 50,
     },
@@ -47,7 +46,7 @@ function TrainSelect() {
           >
             {gridItems.map((item, index) => (
               <Grid
-                size={{ xs: 6, sm: 6, md: 6 }}
+                size={{ xs: 4, sm: 4, md: 2 }}
                 className="w-full md:w-1/2 lg:w-1/3"
                 key={index}
                 sx={{

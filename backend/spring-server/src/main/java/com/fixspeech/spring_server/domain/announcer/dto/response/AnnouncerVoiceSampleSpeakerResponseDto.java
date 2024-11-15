@@ -1,10 +1,7 @@
 package com.fixspeech.spring_server.domain.announcer.dto.response;
 
-import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSampleScriptDetail;
 import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSampleSpeaker;
 import lombok.*;
-
-import static com.fixspeech.spring_server.domain.announcer.model.QAnnouncerVoiceSampleScriptDetail.announcerVoiceSampleScriptDetail;
 
 @Getter
 @Setter

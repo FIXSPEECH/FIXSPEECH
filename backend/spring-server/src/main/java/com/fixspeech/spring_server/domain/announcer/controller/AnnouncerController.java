@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.domain.announcer.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fixspeech.spring_server.config.s3.S3Service;
 import com.fixspeech.spring_server.domain.announcer.dto.request.CompareResultRequestDto;
@@ -34,10 +36,29 @@ public class AnnouncerController implements AnnouncerApi {
 	private final AnnouncerService announcerService;
 	private final S3Service s3Service;
 
+	/**
+	 * 사용자의 성별에 따른 하나의 랜덤한 아나운서 텍스트 데이터 조회
+	 * @param userDetails 사용자 정보
+	 * @return 아나운서 텍스트 데이터
+	 */
 	@GetMapping("one")
-	public ApiResponse<?> getOneAnnouncerData() {
-		return ApiResponse.createSuccess(announcerService.getOneAnnouncerData(), "아나운서 데이터 단일 조회 성공");
+	public ApiResponse<?> getOneAnnouncerData(@AuthenticationPrincipal UserDetails userDetails) {
+		try {
+			if (userDetails == null) {
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized: 인증되지 않은 사용자입니다.");
+			}
+
+			Users user = userService.findByEmail(userDetails.getUsername()).orElse(null);
+			if (user == null) {
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized: 사용자 정보가 존재하지 않습니다.");
+			}
+
+			return ApiResponse.createSuccess(announcerService.getOneAnnouncerData(user.getGender()), "아나운서 데이터 단일 조회 성공");
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized: 처리 중 오류 발생", e);
+		}
 	}
+
 
 	/**
 	 * 아나운서 음성 데이터 전체 조회
@@ -59,7 +80,6 @@ public class AnnouncerController implements AnnouncerApi {
 
 	/**
 	 * 아나운서 따라잡기 사용자 음성 저장
-	 *
 	 * @param userDetails 사용자 정보
 	 * @param file 사용자 음성 파일
 	 * @param compareResultRequestDto 비교 결과
