@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { VoiceListGet } from "../../services/SituationPractice/SituationPracticeGet";
-// import  {DeleteIcon}  from "../../Icons/DeleteIcon";
-// import { ScriptDelte } from "../../services/SituationPractice/SituationPracticePost";
-// import Swal from 'sweetalert2';
+import { DeleteIcon } from "../../shared/components/Icons/DeleteIcon";
+import { ScriptVoiceResultDelete } from "../../services/SituationPractice/SituationPracticePost";
+import Swal from 'sweetalert2';
 import "./SwalStyles.css";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
@@ -15,6 +15,8 @@ function VoiceList() {
   const navigate = useNavigate();
   const { scriptId } = useParams();
   const Id = Number(scriptId);
+  const location = useLocation();
+  const {scriptTitle} = location.state || {};
 
   useEffect(() => {
     const VoiceList = async () => {
@@ -45,45 +47,45 @@ function VoiceList() {
     navigate(`/situation/voice/${scriptId}`);
   };
 
-  //   const handleDelete = (scriptId: number) => {
+    const handleDelete = (resultId: number) => {
 
-  //     Swal.fire({
-  //       title: "대본을 삭제하시겠습니까?",
-  //       showDenyButton: true,
-  //       confirmButtonText: "삭제",
-  //       denyButtonText: `취소`,
-  //       customClass: {
-  //         confirmButton: "swal2-confirm-btn", // 삭제 버튼
-  //         denyButton: "swal2-deny-btn",       // 취소 버튼
-  //       },
-  //       buttonsStyling: false
-  //     }).then(async (result) => {
-  //       /* Read more about isConfirmed, isDenied below */
-  //       if (result.isConfirmed) {
-  //         try{
-  //           const response = await ScriptDelte(scriptId)
-  //           console.log(response)
+      Swal.fire({
+        title: "분석결과를 삭제하시겠습니까?",
+        showDenyButton: true,
+        confirmButtonText: "삭제",
+        denyButtonText: `취소`,
+        customClass: {
+          confirmButton: "swal2-confirm-btn", // 삭제 버튼
+          denyButton: "swal2-deny-btn",       // 취소 버튼
+        },
+        buttonsStyling: false
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          try{
+            const response = await ScriptVoiceResultDelete(resultId)
+            console.log(response)
 
-  //           // 삭제 후 scripts 상태 업데이트 (삭제된 스크립트를 배열에서 제거)
-  //           setScripts((prevScripts: any) =>
-  //             prevScripts.filter((script: any) => script.scriptId !== scriptId)
-  //           );
+            // 삭제 후 scripts 상태 업데이트 (삭제된 스크립트를 배열에서 제거)
+            setScripts((prevScripts: any) =>
+              prevScripts.filter((script: any) => script.resultId !== resultId)
+            );
 
-  //         } catch(e) {
-  //           console.log(e)
-  //         }
+          } catch(e) {
+            console.log(e)
+          }
 
-  //       } else if (result.isDenied) {
+        } else if (result.isDenied) {
 
-  //       }
-  //     });
+        }
+      });
 
-  //   }
+    }
 
   return (
     <div className="h-screen p-8">
       <div className="text-[#FFAB01] text-3xl font-bold mb-8">
-        음성 녹음 목록
+        {scriptTitle}
       </div>
       {scripts.length === 0 ? (
         <div className="text-[#FFAB01] text-lg">저장된 음성녹음 없습니다</div>
@@ -105,7 +107,8 @@ function VoiceList() {
                     <div className="text-[#FFAB01] text-sm mr-2">
                       등록일: {script.createdAt}
                     </div>
-                    {/* <DeleteIcon onClick={() => handleDelete(script.scriptId)} /> */}
+
+                    <DeleteIcon onClick={() => handleDelete(script.resultId)} />
                   </div>
                 </div>
               </div>
