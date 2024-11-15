@@ -48,6 +48,11 @@ public class UserController implements UserApi {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtCookieProvider jwtCookieProvider;
 
+	@GetMapping("test")
+	public ApiResponse<?> test(@CookieValue("refresh-token") String refreshToken) {
+		log.info("refreshToken={}", refreshToken);
+		return ApiResponse.createSuccess(refreshToken, "테스트 성공");
+	}
 	/**
 	 * 사용자 상세 정보 입력 여부 확인
 	 * @param userDetails 사용자 정보
