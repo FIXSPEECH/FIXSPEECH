@@ -11,11 +11,22 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
 
+	private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh-token";
+	private static final int COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7일 동안 유효한 쿠키
+
 	@Value("${jwt.oauth.refresh-token.cookie.domain}")
 	private static String cookieDomain;
 
+	public static void addRefreshCookie(HttpServletResponse response, String refreshToken) {
+		addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, COOKIE_MAX_AGE);
+	}
+
+	public static void deleteRefreshCookie(HttpServletRequest request, HttpServletResponse response) {
+		deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
+	}
+
 	// 요청값(이름, 값, 만료 기간)을 바탕으로 HTTP 응답에 쿠키 추가
-	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+	private static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setDomain(cookieDomain);
 		cookie.setMaxAge(maxAge); // 쿠키 만료 시간 설정
@@ -25,9 +36,9 @@ public class CookieUtil {
 		cookie.setAttribute("SameSite", "None");
 		response.addCookie(cookie);
 	}
-
+	
 	// 쿠키의 이름을 입력받아 쿠키 삭제
-	public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
+	private static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
 		Cookie[] cookies = request.getCookies();
 
 		if (cookies == null) {
@@ -63,5 +74,16 @@ public class CookieUtil {
 				Base64.getUrlDecoder().decode(cookie.getValue())
 			)
 		);
+	}
+
+	// refresh-token cookie value 추출
+	public static String extractRefreshToken(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		for (Cookie cookie : cookies) {
+			if (REFRESH_TOKEN_COOKIE_NAME.equals(cookie.getName())) {
+				return cookie.getValue();
+			}
+		}
+		return null;
 	}
 }

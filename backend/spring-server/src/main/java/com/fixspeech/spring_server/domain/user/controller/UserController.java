@@ -4,11 +4,9 @@ import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,11 +24,10 @@ import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.TokenService;
 import com.fixspeech.spring_server.domain.user.service.UserService;
 import com.fixspeech.spring_server.global.common.ApiResponse;
-import com.fixspeech.spring_server.global.common.JwtCookieProvider;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.global.exception.ErrorCode;
+import com.fixspeech.spring_server.utils.CookieUtil;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,11 +40,14 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController implements UserApi {
 
 	private final UserService userService;
-	private final PasswordEncoder passwordEncoder;
 	private final TokenService tokenService;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final JwtCookieProvider jwtCookieProvider;
 
+	@GetMapping("test")
+	public ApiResponse<?> test(@CookieValue("refresh-token") String refreshToken) {
+		log.info("refreshToken={}", refreshToken);
+		return ApiResponse.createSuccess(refreshToken, "테스트 성공");
+	}
 	/**
 	 * 사용자 상세 정보 입력 여부 확인
 	 * @param userDetails 사용자 정보
@@ -106,64 +106,48 @@ public class UserController implements UserApi {
 	 */
 	@PostMapping("public/reissue")
 	public ApiResponse<?> reissueToken(
-		@AuthenticationPrincipal UserDetails userDetails,
-		@CookieValue(value = "refresh-token", required = false) String refreshTokenCookie,
-		HttpServletRequest request, HttpServletResponse response) {
-		log.info("Header 체크={}", refreshTokenCookie);
-		String refreshToken = request.getHeader("refreshToken");
-		log.info("refreshToken = {}", refreshToken);
+		HttpServletResponse response,
+		@CookieValue(value = "refresh-token", required = false) String refreshToken
+		) {
 		try {
 			if (refreshToken == null || refreshToken.isEmpty()) {
 				return ApiResponse.createError(ErrorCode.INVALID_TOKEN_ERROR);
 			}
-			Users user = userService.findByEmail(userDetails.getUsername()).orElse(null);
-			if (user == null) return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
-			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(user, refreshToken);
-			log.info("responseDTO={}", responseDTO);
+
+			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
+
 			if (responseDTO == null) {
 				throw new IllegalArgumentException("Refresh Token이 만료되었거나 존재하지 않습니다.");
 			}
-			log.info("new AccessToken = {}", responseDTO.getAccessToken());
+
 			String newAccessToken = responseDTO.getAccessToken();
 			String newRefreshToken = responseDTO.getRefreshToken();
 
-			ResponseCookie responseCookie = jwtCookieProvider.generateCookie(newRefreshToken);
+			// 쿠키 생성
+			CookieUtil.addRefreshCookie(response, newRefreshToken);
 
 			response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
-			response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 			return ApiResponse.createSuccess(newAccessToken, "토큰 재발급 성공");
 		} catch (Exception e) {
-			log.info("e={}",e);
 			return ApiResponse.createError(ErrorCode.INVALID_JWT_TOKEN);
 		}
 	}
 
+	/**
+	 * 사용자 로그아웃
+	 * @param request	request
+	 * @param response	response
+	 * @return 로그아웃 성공 메세지
+	 */
 	@PostMapping("/public/logout")
 	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) {
-		String refreshToken = extractRefreshToken(request);
+		String refreshToken = CookieUtil.extractRefreshToken(request);
 		log.info(refreshToken);
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
 			tokenService.blacklistRefreshToken(refreshToken);
-
-			Cookie cookie = new Cookie("refreshToken", null);
-			cookie.setMaxAge(0);
-			cookie.setPath("/");
-			response.addCookie(cookie);
-			log.info("로그아웃 완료");
-			return ApiResponse.createSuccess(null, "로그아웃 성공");
+			CookieUtil.deleteRefreshCookie(request, response);
+			return ApiResponse.success("로그아웃 성공");
 		}
 		return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
-	}
-
-	private String extractRefreshToken(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("refreshToken")) {
-					return cookie.getValue();
-				}
-			}
-		}
-		return null;
 	}
 }
