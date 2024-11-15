@@ -27,14 +27,6 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	private final AnnouncerVoiceSampleRepository announcerVoiceSampleRepository;
 	private final UserAnnouncerVoiceComparisonRepository userAnnouncerVoiceComparisonRepository;
 
-	// @Override
-	// public List<SmallAnnouncerVoiceSampleResponseDto> getAllAnnouncerData() {
-	// 	List<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findAll();
-	// 	return announcerVoiceSamples.stream()
-	// 			.map(SmallAnnouncerVoiceSampleResponseDto::from)  // AnnouncerVoiceSample -> AnnouncerVoiceSampleResponseDto로 변환
-	// 			.collect(Collectors.toList()); // 리스트로 수집
-	// }
-
 	/**
 	 * 아나운서 음성, 대본 데이터 단일, 랜덤 조회
 	 * @return
@@ -85,7 +77,6 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	@Override
 	public UserAnnouncerVoiceComparisonResponseDto getOneUserToAnnouncerVoiceComparison(Long id) {
 		UserAnnouncerVoiceComparisonResult userAnnouncerVoiceComparisonResult = userAnnouncerVoiceComparisonRepository.findById(id).orElse(null);
-		log.info("사용자와 아나운서 음성 비교 상세 조회= {}", userAnnouncerVoiceComparisonResult);
 		if (userAnnouncerVoiceComparisonResult == null) {
 			return null;
 		}

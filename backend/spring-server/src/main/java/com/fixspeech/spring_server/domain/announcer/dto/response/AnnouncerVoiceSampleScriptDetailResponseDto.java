@@ -1,10 +1,7 @@
 package com.fixspeech.spring_server.domain.announcer.dto.response;
 
-import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSampleScript;
 import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSampleScriptDetail;
 import lombok.*;
-
-import java.util.Date;
 
 @Getter
 @Setter
