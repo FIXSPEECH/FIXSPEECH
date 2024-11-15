@@ -108,17 +108,15 @@ public class OAuthController {
 	@GetMapping("/get-user-token")
 	public ResponseEntity<?> getUserToken(@RequestParam("code") String code, HttpServletResponse response) {
 		try {
-			log.info("code={}", code);
 			OAuthCodeToken oAuthCodeToken = oAuthCodeTokenRepository.findById(code)
 				.orElseThrow(() -> new NotFoundException("코드가 유효하지 않습니다."));
 
-			log.info("oAuthCodeToken={}", oAuthCodeToken);
 			String accessToken = oAuthCodeToken.getAccessToken();
 			String refreshToken = oAuthCodeToken.getRefreshToken();
 			log.info("accessToken={}", accessToken);
 			log.info("refreshToken={}", refreshToken);
 
-			ResponseCookie responseCookie =  jwtCookieProvider.generateCookie(refreshToken);
+			ResponseCookie responseCookie = jwtCookieProvider.generateCookie(refreshToken);
 
 			response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 			response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
