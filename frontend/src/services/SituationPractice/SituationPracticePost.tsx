@@ -49,3 +49,16 @@ export async function ScriptVoicePost(payload: FormData, scriptId: number) {
 }
 
 
+
+// 음성 분석 결과 단일 삭제
+export async function ScriptVoiceResultDelete(resultId: number) {
+    return axiosInstance
+        .delete(`/script/result/detail/${resultId}`)
+        .then((response) => {
+            Promise.resolve(response.data)
+        })
+        .catch((error) => {
+            Promise.reject(error)
+        })
+}
+
