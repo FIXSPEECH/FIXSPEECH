@@ -58,6 +58,49 @@ export function LectureTabs({
   recentVideos,
   customizedContent,
 }: LectureTabsProps) {
+  const renderAIRecommendations = () => {
+    if (sectionsLoading.ai) {
+      return <LoadingMessage />;
+    }
+
+    return (
+      <div className="space-y-6">
+        {aiRecommendations.map((recommendation, index) => (
+          <AIRecommendationCard key={index} recommendation={recommendation} />
+        ))}
+      </div>
+    );
+  };
+
+  const renderRecentVideos = () => {
+    if (sectionsLoading.videos) {
+      return <LoadingMessage />;
+    }
+
+    const recentVideoSection = {
+      title: "추천 동영상",
+      videos: recentVideos.map((video) => ({
+        title: video.title,
+        videoId: video.id,
+      })),
+      metricName: "recent",
+      grade: "good",
+      value: 0,
+    };
+
+    return <VideoSection section={recentVideoSection} />;
+  };
+
+  const renderCustomContent = () => {
+    if (sectionsLoading.custom) {
+      return <LoadingMessage />;
+    }
+
+    return customizedContent.map((section, index) => (
+      <VideoSection key={index} section={section} />
+    ));
+  };
+
   return (
     <>
       <Box sx={{ borderBottom: 1, borderColor: "#EE719E", mb: 4 }}>
@@ -79,52 +122,17 @@ export function LectureTabs({
 
       {/* AI 추천 탭 */}
       <TabPanel value={value} index={0}>
-        {sectionsLoading.ai ? (
-          <div className="flex flex-col items-center justify-center min-h-[400px]">
-            <LoadingMessage />
-          </div>
-        ) : aiRecommendations && aiRecommendations.length > 0 ? (
-          <div className="space-y-6">
-            {aiRecommendations.map((recommendation, index) => (
-              <AIRecommendationCard
-                key={index}
-                recommendation={recommendation}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center text-gray-400 py-8">
-            AI 추천을 불러오는 중입니다...
-          </div>
-        )}
+        {renderAIRecommendations()}
       </TabPanel>
 
       {/* 추천 동영상 탭 */}
       <TabPanel value={value} index={1}>
-        {sectionsLoading.videos ? (
-          <div className="flex flex-col items-center justify-center min-h-[400px]">
-            <LoadingMessage />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentVideos.map((video) => (
-              <RecentVideoCard key={video.id} video={video} />
-            ))}
-          </div>
-        )}
+        {renderRecentVideos()}
       </TabPanel>
 
       {/* 맞춤형 강의 탭 */}
       <TabPanel value={value} index={2}>
-        {sectionsLoading.custom ? (
-          <div className="flex flex-col items-center justify-center min-h-[400px]">
-            <LoadingMessage />
-          </div>
-        ) : (
-          customizedContent.map((section, index) => (
-            <VideoSection key={index} section={section} />
-          ))
-        )}
+        {renderCustomContent()}
       </TabPanel>
     </>
   );

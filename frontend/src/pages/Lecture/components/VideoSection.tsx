@@ -4,13 +4,14 @@ import { METRIC_DESCRIPTIONS } from "../constants/metricSearchTerms";
 
 interface Props {
   section: SectionData;
-  metricName: string;
-  grade: string;
-  value: number;
 }
 
-export function VideoSection({ section, metricName, grade, value }: Props) {
-  const description = METRIC_DESCRIPTIONS[metricName] || "";
+export function VideoSection({ section }: Props) {
+  const description = METRIC_DESCRIPTIONS[section.metricName] || "";
+
+  const handleVideoClick = (videoId: string) => {
+    window.open(`https://www.youtube.com/watch?v=${videoId}`, "_blank");
+  };
 
   return (
     <motion.div
@@ -23,40 +24,40 @@ export function VideoSection({ section, metricName, grade, value }: Props) {
           <h2 className="text-xl font-semibold text-[#EE719E]">
             {section.title}
           </h2>
-          <span
-            className={`px-3 py-1 rounded-full text-sm ${
-              grade === "poor"
-                ? "bg-red-500/20 text-red-400"
-                : grade === "good"
-                ? "bg-yellow-500/20 text-yellow-400"
-                : "bg-green-500/20 text-green-400"
-            }`}
-          >
-            점수: {value}
-          </span>
+          {section.grade === "poor" && (
+            <span className="px-3 py-1 rounded-full text-sm bg-red-500/20 text-red-400">
+              개선 필요
+            </span>
+          )}
         </div>
         <p className="text-gray-400 text-sm mb-4">{description}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {section.videos.map((video, index) => (
-          <div
+          <motion.div
             key={index}
-            className="bg-gray-800/30 backdrop-blur-sm rounded-lg overflow-hidden border border-gray-700/50"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gray-800/30 backdrop-blur-sm rounded-lg overflow-hidden border border-gray-700/50 cursor-pointer hover:border-[#EE719E]/50 transition-all"
+            onClick={() => handleVideoClick(video.videoId)}
           >
-            <iframe
-              width="100%"
-              height="215"
-              src={`https://www.youtube.com/embed/${video.videoId}`}
-              title={video.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="border-0"
-            />
-            <div className="p-4">
-              <h3 className="text-white font-medium">{video.title}</h3>
+            <div className="aspect-video relative">
+              <img
+                src={`https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`}
+                alt={video.title}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-all">
+                <div className="absolute bottom-4 left-4 right-4">
+                  <h3 className="text-white font-medium line-clamp-2 text-shadow">
+                    {video.title}
+                  </h3>
+                </div>
+              </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </motion.div>
