@@ -28,7 +28,7 @@ const TrainSelect = lazy(
 const TrainPronounce = lazy(
   () => import("./pages/PronounceTraining/TrainPronouncePage")
 );
-const Lecture = lazy(() => import("./pages/LecturePage"));
+const Lecture = lazy(() => import("./pages/Lecture/LecturePage"));
 const SelectOptions = lazy(
   () => import("./pages/SituationPractice/SelectOptionsPage")
 );
