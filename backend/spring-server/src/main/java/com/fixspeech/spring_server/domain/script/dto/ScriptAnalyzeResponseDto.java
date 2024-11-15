@@ -8,6 +8,8 @@ public record ScriptAnalyzeResponseDto(
 	Long userId,
 	Long scriptId,
 	String recordAddress,
+	String scriptName,
+	String scriptContent,
 	Map<String, MetricDetail> metrics,
 	int overallScore,
 	List<String> recommendations,
@@ -24,7 +26,10 @@ public record ScriptAnalyzeResponseDto(
 	}
 
 	//data->data->data구조 해결
-	public static ScriptAnalyzeResponseDto fromRawData(Long userId, Long scriptId, String recordAddress,
+	public static ScriptAnalyzeResponseDto fromRawData(Long userId,
+		Long scriptId, String recordAddress,
+		String scriptName,
+		String scriptContent,
 		Map<String, Object> rawData,
 		LocalDate createdAt) {
 		try {
@@ -52,6 +57,8 @@ public record ScriptAnalyzeResponseDto(
 				userId,
 				scriptId,
 				recordAddress,
+				scriptName,
+				scriptContent,
 				structuredMetrics,
 				((Number)data.get("overall_score")).intValue(),
 				(List<String>)data.get("recommendations"),
