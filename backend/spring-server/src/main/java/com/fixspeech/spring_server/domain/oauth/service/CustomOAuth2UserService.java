@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.oauth.service;
+package com.fixspeech.spring_server.domain.oauth.service;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import com.fixspeech.spring_server.domain.user.model.Role;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
-import com.fixspeech.spring_server.oauth.OAuthAttributes;
+import com.fixspeech.spring_server.domain.oauth.OAuthAttributes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

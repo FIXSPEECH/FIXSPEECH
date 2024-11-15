@@ -8,7 +8,7 @@ import com.fixspeech.spring_server.domain.announcer.repository.OAuth2Authorizati
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
 import com.fixspeech.spring_server.domain.user.repository.redis.RefreshTokenRepository;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
-import com.fixspeech.spring_server.oauth.repository.OAuthRefreshRepository;
+import com.fixspeech.spring_server.domain.oauth.repository.OAuthRefreshRepository;
 
 @Configuration
 public class OAuth2Config {

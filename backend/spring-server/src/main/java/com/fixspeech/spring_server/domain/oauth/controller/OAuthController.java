@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.oauth.controller;
+package com.fixspeech.spring_server.domain.oauth.controller;
 
 import java.io.IOException;
 
@@ -23,11 +23,11 @@ import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
 import com.fixspeech.spring_server.global.common.JwtCookieProvider;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
-import com.fixspeech.spring_server.oauth.dto.response.ResponseOAuthInfoDTO;
-import com.fixspeech.spring_server.oauth.model.OAuthCodeToken;
-import com.fixspeech.spring_server.oauth.model.TempUser;
-import com.fixspeech.spring_server.oauth.repository.OAuthCodeTokenRepository;
-import com.fixspeech.spring_server.oauth.repository.TempUserRepository;
+import com.fixspeech.spring_server.domain.oauth.dto.response.ResponseOAuthInfoDto;
+import com.fixspeech.spring_server.domain.oauth.model.OAuthCodeToken;
+import com.fixspeech.spring_server.domain.oauth.model.TempUser;
+import com.fixspeech.spring_server.domain.oauth.repository.OAuthCodeTokenRepository;
+import com.fixspeech.spring_server.domain.oauth.repository.TempUserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -111,7 +111,7 @@ public class OAuthController {
 			String provider = tempUser.getProvider();
 			String providerId = tempUser.getProviderId();
 
-			ResponseOAuthInfoDTO responseDTO = ResponseOAuthInfoDTO.builder()
+			ResponseOAuthInfoDto responseDTO = ResponseOAuthInfoDto.builder()
 				.email(email)
 				.name(name)
 				.provider(provider)
