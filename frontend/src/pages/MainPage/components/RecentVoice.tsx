@@ -179,7 +179,7 @@ function RecentVoice() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-8">
-            <div className="w-full sm:w-1/3 aspect-square hidden sm:block">
+            <div className="sm:w-1/3 aspect-square hidden sm:block">
               {voiceData ? (
                 <MetricsVisualizer
                   metrics={voiceData.analyzeResult?.metrics || {}}
@@ -223,7 +223,7 @@ function RecentVoice() {
                         paginate(-1);
                       }
                     }}
-                    className="absolute w-full grid grid-cols-2 gap-4"
+                    className="absolute w-full grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-2  gap-4"
                   >
                     {currentMetrics.map((metricKey, index) => (
                       <motion.div
@@ -254,7 +254,7 @@ function RecentVoice() {
                             >
                               {voiceData.analyzeResult?.metrics?.[
                                 metricKey
-                              ]?.value?.toFixed(1) || "0.0"}{" "}
+                              ]?.value?.toFixed(3) || "0.0"}{" "}
                               {voiceData.analyzeResult?.metrics?.[metricKey]
                                 ?.unit || ""}
                             </div>
