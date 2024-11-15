@@ -11,6 +11,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
 
+	private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh-token";
+	private static final int COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7일 동안 유효한 쿠키
+
 	@Value("${jwt.oauth.refresh-token.cookie.domain}")
 	private static String cookieDomain;
 
@@ -24,6 +27,10 @@ public class CookieUtil {
 		cookie.setHttpOnly(true); // JavaScript에서 접근 불가
 		cookie.setAttribute("SameSite", "None");
 		response.addCookie(cookie);
+	}
+
+	public static void addRefreshCookie(HttpServletResponse response, String refreshToken) {
+		addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, COOKIE_MAX_AGE);
 	}
 
 	// 쿠키의 이름을 입력받아 쿠키 삭제

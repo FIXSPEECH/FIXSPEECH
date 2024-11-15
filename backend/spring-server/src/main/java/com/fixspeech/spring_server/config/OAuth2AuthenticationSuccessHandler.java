@@ -93,8 +93,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	}
 
 	private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
-		int cookieMaxAge = 60 * 60 * 24 * 7; // 7일 동안 유효한 쿠키
-
+		int cookieMaxAge = 60 * 60 * 24 * 7;
 		CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
 		CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieMaxAge);
 	}
