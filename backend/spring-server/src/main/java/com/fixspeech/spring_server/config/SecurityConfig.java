@@ -17,7 +17,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import com.fixspeech.spring_server.domain.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.fixspeech.spring_server.filter.JwtAuthenticationFilter;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.oauth.service.CustomOAuth2UserService;
@@ -33,7 +32,6 @@ public class SecurityConfig {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final CustomOAuth2UserService customOAuth2UserService;
 	private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-	private final OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository;
 
 	@Value("${cors.allowed-origin}")
 	private String[] allowedOrigins;
@@ -66,9 +64,6 @@ public class SecurityConfig {
 			.oauth2Login(oauth2 -> oauth2
 				// .loginPage("/login")
 				.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-				.authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
-					.authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository)
-				)
 				.successHandler(oAuth2AuthenticationSuccessHandler)
 			)
 			.cors(AbstractHttpConfigurer::disable)

@@ -2,8 +2,6 @@
 package com.fixspeech.spring_server.domain.user.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,8 +32,8 @@ public interface UserApi {
 		@ApiResponse(responseCode = "401", description = "유효하지 않은 토큰"),
 		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
 	})
-	com.fixspeech.spring_server.global.common.ApiResponse<?> reissueToken(@AuthenticationPrincipal UserDetails userDetails,
-		@CookieValue(value = "refresh-token", required = false) String refreshTokenCookie, HttpServletRequest request, HttpServletResponse response);
+	com.fixspeech.spring_server.global.common.ApiResponse<?> reissueToken(HttpServletResponse response,
+		@CookieValue(value = "refresh-token", required = false) String refreshToken);
 
 	@Operation(summary = "로그아웃 API", description = "사용자 로그아웃을 처리하는 API")
 	@ApiResponses(value = {
