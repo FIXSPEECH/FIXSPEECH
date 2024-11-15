@@ -17,6 +17,14 @@ public class CookieUtil {
 	@Value("${jwt.oauth.refresh-token.cookie.domain}")
 	private static String cookieDomain;
 
+	public static void addRefreshCookie(HttpServletResponse response, String refreshToken) {
+		addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, COOKIE_MAX_AGE);
+	}
+
+	public static void deleteRefreshCookie(HttpServletRequest request, HttpServletResponse response) {
+		deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
+	}
+
 	// 요청값(이름, 값, 만료 기간)을 바탕으로 HTTP 응답에 쿠키 추가
 	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
 		Cookie cookie = new Cookie(name, value);
@@ -27,10 +35,6 @@ public class CookieUtil {
 		cookie.setHttpOnly(true); // JavaScript에서 접근 불가
 		cookie.setAttribute("SameSite", "None");
 		response.addCookie(cookie);
-	}
-
-	public static void addRefreshCookie(HttpServletResponse response, String refreshToken) {
-		addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, COOKIE_MAX_AGE);
 	}
 
 	// 쿠키의 이름을 입력받아 쿠키 삭제

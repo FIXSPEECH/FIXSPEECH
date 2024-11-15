@@ -136,7 +136,6 @@ public class UserController implements UserApi {
 			response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
 			return ApiResponse.createSuccess(newAccessToken, "토큰 재발급 성공");
 		} catch (Exception e) {
-			log.info("e={}",e);
 			return ApiResponse.createError(ErrorCode.INVALID_JWT_TOKEN);
 		}
 	}
@@ -147,12 +146,7 @@ public class UserController implements UserApi {
 		log.info(refreshToken);
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
 			tokenService.blacklistRefreshToken(refreshToken);
-
-			Cookie cookie = new Cookie("refreshToken", null);
-			cookie.setMaxAge(0);
-			cookie.setPath("/");
-			response.addCookie(cookie);
-			log.info("로그아웃 완료");
+			CookieUtil.deleteRefreshCookie(request, response);
 			return ApiResponse.createSuccess(null, "로그아웃 성공");
 		}
 		return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
@@ -162,7 +156,7 @@ public class UserController implements UserApi {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("refreshToken")) {
+				if (cookie.getName().equals("refresh-token")) {
 					return cookie.getValue();
 				}
 			}
