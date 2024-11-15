@@ -8,6 +8,7 @@ import useModalStore from "../../shared/stores/modalStore";
 import useVoiceStore from "../../shared/stores/voiceStore";
 import { ScriptVoicePost } from "../../services/SituationPractice/SituationPracticePost";
 import Swal from "sweetalert2";
+import { useSSEStore } from "../../shared/stores/sseStore"; // SSE 상태 관리 스토어 임포트
 import "./SwalStyles.css";
 
 interface Data {
@@ -27,13 +28,19 @@ function SituationPractice() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<string>("");
 
+  const { startSSE, stopSSE } = useSSEStore(); // SSE 시작 및 종료 함수
+
   console.log("id 타입", typeof Id);
 
+  // postVoice 함수: 오디오 업로드 및 SSE 연결 활성화
   const postVoice = async () => {
     if (!audioBlob) {
-      console.error("Audio blob is nulll");
+      console.error("Audio blob is null");
       return;
     }
+
+    // SSE 연결 시작
+    startSSE();
 
     // 현재 시간을 이용해 고유한 파일명 생성
     const timestamp = new Date().getTime();
@@ -43,37 +50,37 @@ function SituationPractice() {
       type: "audio/wav",
     });
 
-    const data = new FormData();
-
-    data.append("record", file);
+    const formData = new FormData();
+    formData.append("record", file);
 
     try {
-      const response = await ScriptVoicePost(data, Id);
+      const response = await ScriptVoicePost(formData, Id);
 
+      // 응답 상태 설정
       setStatus(response.status);
     } catch (e) {
       console.log(e);
+      stopSSE(); // 오류 발생 시 SSE 종료
     }
   };
 
+  // 모달 창이 열렸을 때 postVoice 실행
   useEffect(() => {
-    if (isModal === true) {
+    if (isModal) {
       postVoice();
     }
-
-    console.log("isModal", isModal);
-    console.log("audioBlob", audioBlob);
   }, [isModal]);
 
+  // 응답 상태가 성공일 경우 알림 표시 및 페이지 이동
   useEffect(() => {
     if (status === "C000") {
       Swal.fire({
         title: "대본 연습이 전송되었습니다.",
-        text: "분석 완료시 알려드리겠습니다.",
+        text: "분석 완료 시 알려드리겠습니다.",
         showDenyButton: false,
         confirmButtonText: "확인",
         customClass: {
-          confirmButton: "swal2-confirm-btn", // 삭제 버튼
+          confirmButton: "swal2-confirm-btn",
         },
         buttonsStyling: false,
       }).then(() => {
@@ -84,12 +91,11 @@ function SituationPractice() {
     }
   }, [status]);
 
+  // scriptId에 따라 데이터 가져오기
   useEffect(() => {
     const PracticeContent = async () => {
       try {
         const response = await ScriptGet(Id);
-        console.log(response);
-
         if (response.status === "C000") {
           setData(response.data);
         }

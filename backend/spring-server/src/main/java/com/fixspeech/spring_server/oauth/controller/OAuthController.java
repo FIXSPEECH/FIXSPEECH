@@ -56,7 +56,6 @@ public class OAuthController {
 	@GetMapping("/login/{provider}")
 	public void getOAuthLoginUrl(@PathVariable String provider , HttpServletRequest request, HttpServletResponse response) throws
 		IOException {
-		// http://k11d206.p.ssafy.io:8081/oauth2/authorization/kakao
 		String redirectUrl = oauth2BaseUrl + "/oauth2/authorization/" + provider;
 		log.info("provider 조회: {}", provider);
 		response.sendRedirect(redirectUrl);
