@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -104,7 +105,11 @@ public class UserController implements UserApi {
 	 * @return accessToken
 	 */
 	@PostMapping("public/reissue")
-	public ApiResponse<?> reissueToken(@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request, HttpServletResponse response) {
+	public ApiResponse<?> reissueToken(
+		@AuthenticationPrincipal UserDetails userDetails,
+		@CookieValue(value = "refresh-token", required = false) String refreshTokenCookie,
+		HttpServletRequest request, HttpServletResponse response) {
+		log.info("Header 체크={}", refreshTokenCookie);
 		String refreshToken = request.getHeader("refreshToken");
 		log.info("refreshToken = {}", refreshToken);
 		try {
