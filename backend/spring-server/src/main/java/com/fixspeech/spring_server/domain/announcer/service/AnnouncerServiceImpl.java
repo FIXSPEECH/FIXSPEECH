@@ -1,7 +1,6 @@
 package com.fixspeech.spring_server.domain.announcer.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,39 +27,34 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	private final AnnouncerVoiceSampleRepository announcerVoiceSampleRepository;
 	private final UserAnnouncerVoiceComparisonRepository userAnnouncerVoiceComparisonRepository;
 
-	@Override
-	public List<SmallAnnouncerVoiceSampleResponseDto> getAllAnnouncerData() {
-		List<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findAll();
-		return announcerVoiceSamples.stream()
-				.map(SmallAnnouncerVoiceSampleResponseDto::from)  // AnnouncerVoiceSample -> AnnouncerVoiceSampleResponseDto로 변환
-				.collect(Collectors.toList()); // 리스트로 수집
-	}
+	// @Override
+	// public List<SmallAnnouncerVoiceSampleResponseDto> getAllAnnouncerData() {
+	// 	List<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findAll();
+	// 	return announcerVoiceSamples.stream()
+	// 			.map(SmallAnnouncerVoiceSampleResponseDto::from)  // AnnouncerVoiceSample -> AnnouncerVoiceSampleResponseDto로 변환
+	// 			.collect(Collectors.toList()); // 리스트로 수집
+	// }
 
 	/**
 	 * 아나운서 음성, 대본 데이터 단일, 랜덤 조회
 	 * @return
 	 */
 	@Override
-	public SmallAnnouncerVoiceSampleResponseDto getOneAnnouncerData() {
-		// 전체 개수 탐색
-		Long cnt = announcerVoiceSampleRepository.count();
+	public SmallAnnouncerVoiceSampleResponseDto getOneAnnouncerData(String gender) {
+		List<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findBySpeakerGender(gender.equals("male") ? "남성" : "여성");
+		log.info("아나운서 음성 크기={}", announcerVoiceSamples.size());
+
+		if (announcerVoiceSamples.isEmpty()) {
+			return null; // 해당 성별의 아나운서 음성 샘플이 없다면 null 반환
+		}
 
 		// 랜덤 인덱스 생성
-		long idx = (long)(Math.random() * cnt);
-		// 페이지 네이션을 위한 페이지 번호 계산
-		int page = (int)(idx / 1); // 한 페이지에 하나만 출력
-		log.info("인덱스 번호={}", idx);
+		long idx = (long)(Math.random() * announcerVoiceSamples.size());
+		AnnouncerVoiceSample announcerVoiceSample = announcerVoiceSamples.get((int) idx);
 
-		PageRequest pageRequest = PageRequest.of(page, 1);
-		Page<AnnouncerVoiceSample> announcerPage = announcerVoiceSampleRepository.findAll(pageRequest);
-
-		if (announcerPage.hasContent()) {
-			AnnouncerVoiceSample announcerVoiceSample = announcerPage.getContent().get(0);
-			return SmallAnnouncerVoiceSampleResponseDto.from(announcerVoiceSample);
-		}
-		return null;
+		// 조회한 아나운서 음성 샘플을 DTO로 변환하여 반환
+		return SmallAnnouncerVoiceSampleResponseDto.from(announcerVoiceSample);
 	}
-
 
 	/**
 	 * 아나운서 음성 데이터 전체 조회
