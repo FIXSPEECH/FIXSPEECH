@@ -80,7 +80,7 @@ function VoiceList() {
     <div className="h-screen p-8">
       <div className="text-[#FFAB01] text-3xl font-bold mb-8">{scriptTitle}</div>
       {scripts.length === 0 ? (
-        <div className="text-[#FFAB01] text-lg">저장된 음성녹음이 없습니다</div>
+        <div className="text-[#FFAB01] text-2xl flex justify-center items-center h-[70vh]">저장된 음성녹음이 없습니다</div>
       ) : (
         <>
           <div className="space-y-3">

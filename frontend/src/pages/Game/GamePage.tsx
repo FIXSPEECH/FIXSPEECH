@@ -8,6 +8,7 @@ import {
   postGameResult,
 } from "../../services/Game/GameApi";
 import { useNavigate } from "react-router-dom";
+import './Blink.css'
 
 export default function Game() {
   const [letters, setLetters] = useState<
@@ -209,12 +210,14 @@ export default function Game() {
               style={{ pointerEvents: "none" }}
             >
               <h1
-                className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4"
+                className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4 animate-blink"
                 style={{ pointerEvents: "auto" }}
                 onClick={startGame}
               >
                 START
               </h1>
+
+              
 
               <div
                 className="flex gap-2 mt-4"
@@ -236,6 +239,7 @@ export default function Game() {
                   </Button>
                 ))}
               </div>
+           
             </div>
           )}
 

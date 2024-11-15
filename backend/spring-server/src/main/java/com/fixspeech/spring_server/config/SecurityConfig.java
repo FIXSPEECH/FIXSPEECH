@@ -17,10 +17,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import com.fixspeech.spring_server.domain.announcer.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.fixspeech.spring_server.domain.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.fixspeech.spring_server.filter.JwtAuthenticationFilter;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
-import com.fixspeech.spring_server.oauth.service.CustomOAuth2UserService;
+import com.fixspeech.spring_server.domain.oauth.service.CustomOAuth2UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,21 +40,6 @@ public class SecurityConfig {
 
 	@Value("${cors.allowed-methods}")
 	private String[] allowedMethods;
-
-	// @Bean
-	// public CorsConfigurationSource corsConfigurationSource() {
-	// 	CorsConfiguration config = new CorsConfiguration();
-	// 	config.setAllowedOrigins(Arrays.asList(allowedOrigins));
-	// 	config.setAllowedMethods(Arrays.asList(allowedMethods));
-	// 	config.setAllowCredentials(true);
-	// 	config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-	// 	config.setExposedHeaders(List.of("Authorization"));
-	// 	config.setMaxAge(3600L);
-	//
-	// 	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	// 	source.registerCorsConfiguration("/**", config);
-	// 	return source;
-	// }
 
 	@Bean
 	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
