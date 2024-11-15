@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import com.fixspeech.spring_server.domain.announcer.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.fixspeech.spring_server.domain.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.fixspeech.spring_server.filter.JwtAuthenticationFilter;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.domain.oauth.service.CustomOAuth2UserService;

@@ -11,7 +11,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fixspeech.spring_server.domain.announcer.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.fixspeech.spring_server.domain.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;

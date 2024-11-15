@@ -61,37 +61,6 @@ public class OAuthController {
 		response.sendRedirect(redirectUrl);
 	}
 
-
-	// @GetMapping("/logout")
-	// public ResponseEntity<String> logout() {
-	// 	String accessToken = "_9KUa_lnKD03d2sUbc2xR_0TJ5LxYmgGAAAAAQopyWAAAAGTI62tr8YNwJ_muSR4";
-	// 	String logoutEndpoint = "https://kapi.kakao.com/v1/user/logout";
-	// 	log.info("init");
-	// 	HttpHeaders headers = new HttpHeaders();
-	// 	headers.set("Authorization", accessToken);
-	//
-	// 	HttpEntity<String> request = new HttpEntity<>(headers);
-	// 	try {
-	// 		ResponseEntity<String> response = restTemplate.exchange(
-	// 			logoutEndpoint,
-	// 			HttpMethod.POST,
-	// 			request,
-	// 			String.class
-	// 		);
-	//
-	// 		if (response.getStatusCode().is2xxSuccessful()) {
-	// 			log.info("카카오 로그아웃 성공");
-	// 			return ResponseEntity.ok("카카오 로그아웃 성공");
-	// 		} else {
-	// 			log.error("카카오 로그아웃 실패: " + response.getStatusCode());
-	// 			return ResponseEntity.status(response.getStatusCode()).body("카카오 로그아웃 실패");
-	// 		}
-	// 	} catch (Exception e) {
-	// 		log.error("예외 발생: ", e);
-	// 		return ResponseEntity.status(500).body("서버 오류로 인해 로그아웃 실패");
-	// 	}
-	// }
-
 	@GetMapping("/logout")
 	public RedirectView logout() {
 		String redirectUri = "http://localhost:8081/logout";
