@@ -1,9 +1,14 @@
 package com.fixspeech.spring_server.domain.announcer.dto.response;
 
-import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSampleScript;
-import lombok.*;
-
 import java.util.Date;
+
+import com.fixspeech.spring_server.domain.announcer.model.AnnouncerVoiceSampleScript;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -16,7 +21,7 @@ public class AnnouncerVoiceSampleScriptResponseDto {
     private String title;          // 기사 제목
     private String press;          // 언론사
     private String pressField;     // 보도 분야
-    private Date pressDate;   // 보도 일자
+    private Date pressDate;        // 보도 일자
     private String keyword;        // 키워드
 
     public static AnnouncerVoiceSampleScriptResponseDto from(AnnouncerVoiceSampleScript announcerVoiceSampleScript) {
