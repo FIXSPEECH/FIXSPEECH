@@ -2,18 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import FallingLetter from "./components/FallingLetter";
 import { Button } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import {
-  getGameList,
-  getGameWords,
-  postGameResult,
-} from "../../services/Game/GameApi";
+import { getGameList, getGameWords, postGameResult } from "../../services/Game/GameApi";
 import { useNavigate } from "react-router-dom";
-import './Blink.css'
+import "./Blink.css";
 
 export default function Game() {
-  const [letters, setLetters] = useState<
-    { id: number; letter: string; left: number }[]
-  >([]);
+  const [letters, setLetters] = useState<{ id: number; letter: string; left: number }[]>([]);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(5);
   const [isGameOver, setIsGameOver] = useState(false);
@@ -24,7 +18,8 @@ export default function Game() {
   const [stageList, setStageList] = useState<number[]>([]);
   const [stage, setStage] = useState<number>(1);
   const [words, setWords] = useState<string[]>([]);
-  const [startTime, setStartTime] = useState<number | null>(null); // 게임 시작 시각을 저장
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(null); // New state for countdown
   const recognitionRef = useRef<any>(null);
   const navigate = useNavigate();
   const judgmentLineHeight = window.innerHeight * 0.58;
@@ -32,20 +27,29 @@ export default function Game() {
   // stageList 가져오기
   useEffect(() => {
     getGameList().then((res) => {
-      const idList = res.data
-        .map((item: any) => item?.id)
-        .filter((id: number) => id !== undefined);
+      const idList = res.data.map((item: any) => item?.id).filter((id: number) => id !== undefined);
       setStageList(idList);
     });
-    handleStageSelection(stage);
   }, []);
 
   const handleStageSelection = (selectedStage: number) => {
     setStage(selectedStage);
     getGameWords(selectedStage).then((res) => {
       setWords(res.data);
+      setCountdown(3); // Start countdown
     });
   };
+
+  useEffect(() => {
+    if (countdown === null) return;
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0) {
+      setCountdown(null); // Clear countdown
+      startGame(); // Start game when countdown finishes
+    }
+  }, [countdown]);
 
   const addLetter = () => {
     const newLetter = {
@@ -73,12 +77,8 @@ export default function Game() {
     stopRecording();
     setLetters([]);
 
-    // 게임 시간 (초 단위로 계산)
-    const playtime = startTime
-      ? Math.floor((Date.now() - startTime) / 1000)
-      : 0;
+    const playtime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
 
-    // API 호출
     postGameResult({ level: stage, playtime, correctNumber: score });
   };
 
@@ -95,14 +95,11 @@ export default function Game() {
     recognition.onresult = (event: any) => {
       for (let i = event.resultIndex; i < event.results.length; i++) {
         let transcript = event.results[i][0].transcript.trim().toLowerCase();
-        transcript = transcript.replace(/\s+/g, ""); // 공백 제거
+        transcript = transcript.replace(/\s+/g, "");
 
         if (event.results[i].isFinal) {
           setRecognizedText(transcript);
           setBeforeText(transcript);
-        } else {
-          // interimResult를 일부 처리하고 싶다면 여기에 추가 가능
-          console.log("Interim result:", transcript);
         }
       }
     };
@@ -115,8 +112,7 @@ export default function Game() {
   };
 
   const startRecording = () => {
-    if (!recognitionRef.current)
-      recognitionRef.current = initializeRecognition();
+    if (!recognitionRef.current) recognitionRef.current = initializeRecognition();
     if (!isRecording && recognitionRef.current) recognitionRef.current.start();
     setIsRecording(true);
   };
@@ -128,10 +124,7 @@ export default function Game() {
 
   const handleMatchCheck = () => {
     if (!recognizedText) return;
-    const matchingLetters = letters.filter(
-      (letter) =>
-        letter.letter.toLowerCase().normalize("NFC") === recognizedText
-    );
+    const matchingLetters = letters.filter((letter) => letter.letter.toLowerCase().normalize("NFC") === recognizedText);
     if (matchingLetters.length > 0) {
       const oldestLetter = matchingLetters.reduce((minLetter, currentLetter) =>
         currentLetter.id < minLetter.id ? currentLetter : minLetter
@@ -140,7 +133,6 @@ export default function Game() {
       removeLetter(oldestLetter.id);
       setRecognizedText("");
     } else {
-      console.log("매칭 실패: 정답 불일치");
       setRecognizedText("");
     }
   };
@@ -155,7 +147,7 @@ export default function Game() {
     setLetters([]);
     setIsGameOver(false);
     setIsGameRunning(true);
-    setStartTime(Date.now()); // 게임 시작 시각을 기록
+    setStartTime(Date.now());
     startRecording();
   };
 
@@ -166,25 +158,18 @@ export default function Game() {
   }, [isGameRunning]);
 
   return (
-    <div
-      className="flex flex-col min-h-[70vh] justify-between"
-      style={{ backgroundColor: "#2C2C2E" }}
-    >
+    <div className="flex flex-col min-h-[70vh] justify-between" style={{ backgroundColor: "#2C2C2E" }}>
       <div className="flex flex-col min-h-[70vh]">
         <div className="flex flex-col justify-start p-4">
           <div className="flex">
             {Array.from({ length: lives }).map((_, index) => (
-              <FavoriteIcon
-                key={index}
-                style={{ color: "red", margin: "0 5px" }}
-              />
+              <FavoriteIcon key={index} style={{ color: "red", margin: "0 5px" }} />
             ))}
           </div>
           <div className="text-colorFE6250 font-bold mt-2">Score: {score}</div>
         </div>
 
         <div className="flex-1 relative w-full overflow-hidden">
-          {/* 판정선을 시각적으로 표시 */}
           <div
             style={{
               position: "absolute",
@@ -209,60 +194,46 @@ export default function Game() {
               className="absolute inset-0 flex flex-col items-center justify-center"
               style={{ pointerEvents: "none" }}
             >
-              <h1
-                className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4 animate-blink"
-                style={{ pointerEvents: "auto" }}
-                onClick={startGame}
-              >
-                START
-              </h1>
-
-              
-
-              <div
-                className="flex gap-2 mt-4"
-                style={{ pointerEvents: "auto" }}
-              >
-                {stageList.map((stageId) => (
-                  <Button
-                    key={stageId}
-                    variant="contained"
-                    style={{
-                      backgroundColor:
-                        stage === stageId ? "#FE6250" : "#FFAB01",
-                      color: "white",
-                    }}
-                    onClick={() => handleStageSelection(stageId)}
-                    disabled={stage === stageId}
-                  >
-                    {stageId === 1 ? "Easy" : stageId === 2 ? "Normal" : "Hard"}
-                  </Button>
-                ))}
-              </div>
-           
+              {countdown === null ? (
+                <h1
+                  className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4 animate-blink"
+                >
+                  START
+                </h1>
+              ) : (
+                <h1 className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4 animate-blink">{countdown}</h1>
+              )}
+              {countdown === null && (
+                <div className="flex gap-2 mt-4" style={{ pointerEvents: "auto" }}>
+                  {stageList.map((stageId) => (
+                    <Button
+                      key={stageId}
+                      variant="contained"
+                      style={{
+                        backgroundColor: "#FFAB01",
+                        color: "white",
+                      }}
+                      onClick={() => handleStageSelection(stageId)}
+                    >
+                      {stageId === 1 ? "Easy" : stageId === 2 ? "Normal" : "Hard"}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {isGameOver && (
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <h1 className="text-8xl font-bold text-colorFE6250 mb-4 text-center ">
-                GAME OVER
-              </h1>
+              <h1 className="text-8xl font-bold text-colorFE6250 mb-4 text-center ">GAME OVER</h1>
               <div className="flex gap-4 mt-4 text-white">
-                <Button
-                  variant="text"
-                  onClick={() => (window.location.href = "/")}
-                >
+                <Button variant="text" onClick={() => (window.location.href = "/")}>
                   <p className="text-colorFE6250 font-bold">나가기</p>
                 </Button>
                 <Button variant="text" color="error" onClick={startGame}>
                   <p className="text-colorFE6250 font-bold">다시하기</p>
                 </Button>
-                <Button
-                  variant="text"
-                  color="error"
-                  onClick={() => navigate("/game/ranking")}
-                >
+                <Button variant="text" color="error" onClick={() => navigate("/game/ranking")}>
                   <p className="text-colorFE6250 font-bold">랭킹보기</p>
                 </Button>
               </div>
@@ -271,15 +242,12 @@ export default function Game() {
         </div>
       </div>
 
-      {/* 음성 인식 결과와 발음된 텍스트 출력 */}
       {isGameRunning && (
         <div
           className="flex flex-col items-center justify-center min-h-[10vh]"
-          style={{ backgroundColor: "transparent" }} // 투명도 있는 배경
+          style={{ backgroundColor: "transparent" }}
         >
-          <h2 className="text-white bg-opacity-0 p-2 rounded-md">
-            {beforeText}
-          </h2>
+          <h2 className="text-white bg-opacity-0 p-2 rounded-md">{beforeText}</h2>
         </div>
       )}
     </div>
