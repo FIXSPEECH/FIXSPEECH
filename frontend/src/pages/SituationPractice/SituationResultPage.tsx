@@ -22,6 +22,8 @@ interface AnalysisDetailResponse {
   overallScore: number;
   recommendations: string[];
   recordAddress: string;
+  scriptName: string;
+  scriptContent: string;
   createdAt: string;
 }
 
@@ -44,7 +46,7 @@ const VoiceAnalysisDetailPage = () => {
       try {
         const response = await axiosInstance.get(`script/result/detail/${resultId}`);
         setAnalysisData(response.data.data);
-        // console.log(response.data.data);
+        console.log(response.data.data);
         const audioObj = new Audio(response.data.data.recordAddress);
         setAudio(audioObj);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -109,7 +111,7 @@ const VoiceAnalysisDetailPage = () => {
     <div className="min-h-screen bg-transparent text-white p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">대본 연습 분석 내용</h1>
+          <h1 className="text-3xl font-bold">{analysisData.scriptName}</h1>
           <span className="text-gray-400">{analysisData.createdAt}</span>
         </div>
 
@@ -150,6 +152,10 @@ const VoiceAnalysisDetailPage = () => {
                 metrics={analysisData.metrics}
                 colorScheme={selectedColor}
               />
+            </div>
+            <div className="aspect-square w-full bg-gray-800/30 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-gray-700/50">
+              <h2 className="text-lg font-bold mb-4">대본 내용</h2>
+              <p>{analysisData.scriptContent}</p>
             </div>
           </div>
 
