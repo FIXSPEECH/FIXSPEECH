@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class JwtUserClaims {
-	private String name; // Email
+	private String name;
 	private String nickName;
 	private String email;
 	private String gender;
