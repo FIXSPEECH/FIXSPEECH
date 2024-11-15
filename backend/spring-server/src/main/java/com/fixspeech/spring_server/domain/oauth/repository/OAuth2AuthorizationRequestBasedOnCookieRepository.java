@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.domain.announcer.repository;
+package com.fixspeech.spring_server.domain.oauth.repository;
 
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;

@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.domain.announcer.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +19,7 @@ public interface AnnouncerApi {
 		@ApiResponse(responseCode = "200", description = "조회 성공"),
 		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
 	})
-	com.fixspeech.spring_server.global.common.ApiResponse<?> getOneAnnouncerData();
+	com.fixspeech.spring_server.global.common.ApiResponse<?> getOneAnnouncerData(@AuthenticationPrincipal UserDetails userDetails);
 
 	@Operation(summary = "아나운서 전체 데이터 조회 API", description = "모든 아나운서 음성 데이터를 조회하는 API")
 	@ApiResponses(value = {

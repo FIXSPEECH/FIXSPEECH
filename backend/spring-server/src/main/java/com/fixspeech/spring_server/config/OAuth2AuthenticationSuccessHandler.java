@@ -11,7 +11,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fixspeech.spring_server.domain.announcer.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.fixspeech.spring_server.domain.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
@@ -19,8 +19,8 @@ import com.fixspeech.spring_server.domain.user.repository.redis.RefreshTokenRepo
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.global.exception.CustomException;
 import com.fixspeech.spring_server.global.exception.ErrorCode;
-import com.fixspeech.spring_server.oauth.model.OAuthRefreshToken;
-import com.fixspeech.spring_server.oauth.repository.OAuthRefreshRepository;
+import com.fixspeech.spring_server.domain.oauth.model.OAuthRefreshToken;
+import com.fixspeech.spring_server.domain.oauth.repository.OAuthRefreshRepository;
 import com.fixspeech.spring_server.utils.CookieUtil;
 
 import jakarta.servlet.ServletException;
