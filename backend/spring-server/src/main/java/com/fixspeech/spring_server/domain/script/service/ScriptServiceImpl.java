@@ -137,7 +137,8 @@ public class ScriptServiceImpl implements ScriptService {
 		try {
 			ScriptAnalyzeResponseDto scriptAnalyzeResponseDto = ScriptAnalyzeResponseDto.fromRawData(
 				users.getId(),
-				resultId,
+				analyzeResult.getScript().getId(),
+				analyzeResult.getRecordAddress(),
 				analyzeResult.getData(),
 				analyzeResult.getCreatedAt().toLocalDate()
 			);
