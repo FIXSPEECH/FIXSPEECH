@@ -121,15 +121,15 @@ public class JwtTokenProvider {
 		return Jwts.builder()
 			.issuer("FixSpeech")        // 토큰을 발행한 주체 (발급자)
 			.subject("JWT token")        // 토큰의 주제 (설명)
+			// .claim("name", jwtUserClaims.getName() == null ? "None" : jwtUserClaims.getName())        // 사용자 이름을 클레임에 포함
 			.claim("email", jwtUserClaims.getEmail())        // 사용자 이메일을 클레임에 포함
-			.claim("name", jwtUserClaims.getName() == null ? "None" : jwtUserClaims.getName())        // 사용자 이름을 클레임에 포함
 			.claim("image", jwtUserClaims.getImage())
 			.claim("nickName", jwtUserClaims.getNickName())
 			.claim("gender", jwtUserClaims.getGender() == null ? "None" : jwtUserClaims.getGender())
 			.claim("age", jwtUserClaims.getAge() == null ? "None" : jwtUserClaims.getAge())
 			.issuedAt(new Date())        // 토큰 발행 시간
-			// .expiration(new Date(System.currentTimeMillis() + expiration))
-			.expiration(new Date(new Date().getTime() + Integer.MAX_VALUE * 10L))
+			.expiration(new Date(System.currentTimeMillis() + expiration))
+			// .expiration(new Date(new Date().getTime() + Integer.MAX_VALUE * 10L))
 			.signWith(secretKey)        // 비밀 키를 사용해 서명
 			.compact();        // JWT 토큰 문자열 생성
 	}
@@ -146,7 +146,7 @@ public class JwtTokenProvider {
 			.issuer("FixSpeech")        // 토큰을 발행한 주체 (발급자)
 			.subject("JWT token")        // 토큰의 주제 (설명)
 			.claim("email", claims.get("email"))        // 사용자 이메일을 클레임에 포함
-			.claim("name", claims.get("name"))        // 사용자 이름을 클레임에 포함
+			// .claim("name", claims.get("name"))        // 사용자 이름을 클레임에 포함
 			.claim("image", claims.get("image"))
 			.claim("gender", claims.get("gender"))
 			.claim("age", claims.get("age"))
