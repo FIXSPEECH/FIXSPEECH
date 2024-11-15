@@ -1,4 +1,4 @@
-package com.fixspeech.spring_server.oauth.model;
+package com.fixspeech.spring_server.domain.oauth.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;

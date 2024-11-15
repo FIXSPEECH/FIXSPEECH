@@ -10,7 +10,7 @@
 // @Configuration
 // @EnableRedisRepositories(
 // 	basePackages = {
-// 		"com.fixspeech.spring_server.oauth.repository",
+// 		"com.fixspeech.spring_server.domain.oauth.repository",
 // 		"com.fixspeech.spring_server.domain.user.repository.redis"
 // 	}
 // )
