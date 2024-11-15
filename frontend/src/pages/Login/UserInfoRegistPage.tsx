@@ -1,6 +1,6 @@
 import { useState, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../services/axiosInstance";
+import axiosInstance, { tokenRefresh } from "../../services/axiosInstance";
 import useAuthStore from "../../shared/stores/authStore";
 
 function UserInfoRegistPage() {
@@ -17,6 +17,15 @@ function UserInfoRegistPage() {
       navigate("/");
     }
   }, [userProfile, navigate]);
+  const refreshAccessToken = async () => {
+    try {
+      await tokenRefresh(); // 토큰 재발급 호출
+      console.log("토큰 재발급 성공");
+    } catch (error) {
+      console.error("토큰 재발급 실패", error);
+      // 여기서 필요한 추가 처리 가능
+    }
+  };
 
   const handleSubmit = async () => {
     if (!gender) {
@@ -29,9 +38,9 @@ function UserInfoRegistPage() {
       await axiosInstance.post("/user", {
         gender,
       });
+      // 토큰 재발급 호출
+      await refreshAccessToken();
       // 메인 페이지로 이동
-      // 토큰 재발급 호출해야하나,
-      // 메인페이지에서 useEffect 사용하여 호출하므로 여기서는 호출하지 않음.
       navigate("/");
     } catch {
       setError("사용자 정보 저장에 실패했습니다. 다시 시도해주세요.");
