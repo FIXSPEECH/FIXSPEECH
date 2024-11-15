@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
 import { AnalysisResponse, AnalysisItem } from "../../shared/types/analysis";
 import Pagination from "@mui/material/Pagination";
+import MetricsVisualizer from "../../shared/components/VoiceQuality/MetricsVisualizer";
 
 function VoiceAnalysisListPage() {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ function VoiceAnalysisListPage() {
   };
 
   return (
-    <div className="voice-analysis-list p-8">
+    <div className="voice-analysis-list p-8 lg:max-w-5xl lg:mx-auto">
       <h2 className="text-3xl font-bold text-white mb-6">음성 분석 목록</h2>
       {analysisData?.content.length ? (
         <>
@@ -51,91 +52,115 @@ function VoiceAnalysisListPage() {
                 className="p-4 border-b border-white/30 hover:bg-white/10 transition-colors cursor-pointer"
                 onClick={() => navigate(`/analysis/${item.recordId}`)}
               >
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-xl font-semibold text-white">
-                    {item.title}
-                  </h3>
-                  <span className="text-sm text-white/80">
-                    {item.createdAt}
-                  </span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div
-                    className={`px-4 py-1.5 rounded-full text-center whitespace-nowrap ${
-                      calculateOverallGrade(item.analyzeResult.metrics) ===
-                      "최상"
-                        ? "bg-emerald-500/30 text-emerald-300 border border-emerald-400/50"
-                        : calculateOverallGrade(item.analyzeResult.metrics) ===
-                          "양호"
-                        ? "bg-blue-500/30 text-blue-300 border border-blue-400/50"
-                        : "bg-rose-500/30 text-rose-300 border border-rose-400/50"
-                    }`}
-                  >
-                    {calculateOverallGrade(item.analyzeResult.metrics)}
-                  </div>
-                  <div className="flex gap-4 text-white/90">
-                    <div className="flex items-center gap-2">
-                      <span>명료도:</span>
-                      <span
-                        className={
-                          item.analyzeResult.metrics["명료도(Clarity)"]
-                            .grade === "excellent"
-                            ? "text-emerald-300"
-                            : item.analyzeResult.metrics["명료도(Clarity)"]
-                                .grade === "good"
-                            ? "text-blue-300"
-                            : "text-rose-300"
-                        }
-                      >
-                        {item.analyzeResult.metrics["명료도(Clarity)"].grade}
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-xl font-semibold text-white">
+                        {item.title}
+                      </h3>
+                      <span className="text-sm text-white/80">
+                        {item.createdAt}
                       </span>
                     </div>
-                    <span className="text-white/30">|</span>
-                    <div className="flex items-center gap-2">
-                      <span>발화 에너지:</span>
-                      <span
-                        className={
-                          item.analyzeResult.metrics[
-                            "발화의 에너지(Utterance Energy)"
-                          ].grade === "excellent"
-                            ? "text-emerald-300"
-                            : item.analyzeResult.metrics[
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`px-4 py-1.5 rounded-full text-center whitespace-nowrap ${
+                          calculateOverallGrade(item.analyzeResult.metrics) ===
+                          "최상"
+                            ? "bg-emerald-500/30 text-emerald-300 border border-emerald-400/50"
+                            : calculateOverallGrade(
+                                item.analyzeResult.metrics
+                              ) === "양호"
+                            ? "bg-blue-500/30 text-blue-300 border border-blue-400/50"
+                            : "bg-rose-500/30 text-rose-300 border border-rose-400/50"
+                        }`}
+                      >
+                        {calculateOverallGrade(item.analyzeResult.metrics)}
+                      </div>
+                      <div className="flex gap-4 text-white/90">
+                        <div className="flex items-center gap-2">
+                          <span>명료도:</span>
+                          <span
+                            className={
+                              item.analyzeResult.metrics["명료도(Clarity)"]
+                                .grade === "excellent"
+                                ? "text-emerald-300"
+                                : item.analyzeResult.metrics["명료도(Clarity)"]
+                                    .grade === "good"
+                                ? "text-blue-300"
+                                : "text-rose-300"
+                            }
+                          >
+                            {
+                              item.analyzeResult.metrics["명료도(Clarity)"]
+                                .grade
+                            }
+                          </span>
+                        </div>
+                        <span className="text-white/30">|</span>
+                        <div className="flex items-center gap-2">
+                          <span>발화 에너지:</span>
+                          <span
+                            className={
+                              item.analyzeResult.metrics[
                                 "발화의 에너지(Utterance Energy)"
-                              ].grade === "good"
-                            ? "text-blue-300"
-                            : "text-rose-300"
-                        }
-                      >
-                        {
-                          item.analyzeResult.metrics[
-                            "발화의 에너지(Utterance Energy)"
-                          ].grade
-                        }
-                      </span>
-                    </div>
-                    <span className="text-white/30">|</span>
-                    <div className="flex items-center gap-2">
-                      <span>멜로디:</span>
-                      <span
-                        className={
-                          item.analyzeResult.metrics[
-                            "멜로디 지수(Melody Index)"
-                          ].grade === "excellent"
-                            ? "text-emerald-300"
-                            : item.analyzeResult.metrics[
+                              ].grade === "excellent"
+                                ? "text-emerald-300"
+                                : item.analyzeResult.metrics[
+                                    "발화의 에너지(Utterance Energy)"
+                                  ].grade === "good"
+                                ? "text-blue-300"
+                                : "text-rose-300"
+                            }
+                          >
+                            {
+                              item.analyzeResult.metrics[
+                                "발화의 에너지(Utterance Energy)"
+                              ].grade
+                            }
+                          </span>
+                        </div>
+                        <span className="text-white/30">|</span>
+                        <div className="flex items-center gap-2">
+                          <span>멜로디:</span>
+                          <span
+                            className={
+                              item.analyzeResult.metrics[
                                 "멜로디 지수(Melody Index)"
-                              ].grade === "good"
-                            ? "text-blue-300"
-                            : "text-rose-300"
-                        }
-                      >
-                        {
-                          item.analyzeResult.metrics[
-                            "멜로디 지수(Melody Index)"
-                          ].grade
-                        }
-                      </span>
+                              ].grade === "excellent"
+                                ? "text-emerald-300"
+                                : item.analyzeResult.metrics[
+                                    "멜로디 지수(Melody Index)"
+                                  ].grade === "good"
+                                ? "text-blue-300"
+                                : "text-rose-300"
+                            }
+                          >
+                            {
+                              item.analyzeResult.metrics[
+                                "멜로디 지수(Melody Index)"
+                              ].grade
+                            }
+                          </span>
+                        </div>
+                      </div>
                     </div>
+                  </div>
+                  <div className="w-[100px] h-[100px] flex-shrink-0">
+                    <MetricsVisualizer
+                      metrics={item.analyzeResult.metrics}
+                      showLabels={false}
+                      colorScheme={
+                        calculateOverallGrade(item.analyzeResult.metrics) ===
+                        "최상"
+                          ? "green"
+                          : calculateOverallGrade(
+                              item.analyzeResult.metrics
+                            ) === "양호"
+                          ? "blue"
+                          : "red"
+                      }
+                    />
                   </div>
                 </div>
               </div>

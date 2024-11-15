@@ -234,28 +234,45 @@ const VoiceRecordResultPage = () => {
               {/* 추천사항 카드 */}
               <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 hover:border-cyan-500/50 mb-8">
                 <h2 className="text-lg font-bold mb-4">추천사항</h2>
-                {response.data.recommendations?.length > 0 ? (
-                  <ul className="list-disc pl-5 space-y-2">
-                    {response.data.recommendations.map((rec, idx) => (
-                      <li
-                        key={idx}
-                        className="text-gray-300 p-2 rounded bg-gray-700/30 border border-gray-600/50"
-                      >
-                        {rec}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-gray-300 text-center p-4 bg-emerald-500/10 rounded border border-emerald-500/30">
-                    <p className="mb-2 text-emerald-400">
-                      ✨ 훌륭한 음성 품질을 보여주고 계십니다!
-                    </p>
-                    <p className="text-emerald-300">
-                      현재의 좋은 발성을 유지하면서 더욱 자신감 있게
-                      말씀해보세요.
-                    </p>
+                <div className="flex gap-6">
+                  <div className="flex-1">
+                    {response.data.recommendations?.length > 0 ? (
+                      <ul className="list-disc pl-5 space-y-2">
+                        {response.data.recommendations.map((rec, idx) => (
+                          <li
+                            key={idx}
+                            className="text-gray-300 p-2 rounded bg-gray-700/30 border border-gray-600/50"
+                          >
+                            {rec}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="text-gray-300 text-center p-4 bg-emerald-500/10 rounded border border-emerald-500/30">
+                        <p className="mb-2 text-emerald-400">
+                          ✨ 훌륭한 음성 품질을 보여주고 계십니다!
+                        </p>
+                        <p className="text-emerald-300">
+                          현재의 좋은 발성을 유지하면서 더욱 자신감 있게
+                          말씀해보세요.
+                        </p>
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  {/* 작은 레이더 그래프 추가 */}
+                  <div className="w-[200px] h-[200px] flex-shrink-0">
+                    <MetricsVisualizer
+                      metrics={response.data.metrics}
+                      showLabels={false}
+                      colorScheme={
+                        response.data.recommendations?.length > 0
+                          ? "yellow"
+                          : "green"
+                      }
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* 개별 메트릭 카드 그리드 */}
