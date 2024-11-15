@@ -53,7 +53,7 @@ function TrainSelect() {
           >
             {gridItems.map((item, index) => (
               <Grid
-                size={{ xs: 4, sm: 4, md: 4 }}
+                size={{ xs: 4, sm: 4, md: 2 }}
                 className="w-full md:w-1/2 lg:w-1/3"
                 key={index}
                 sx={{
