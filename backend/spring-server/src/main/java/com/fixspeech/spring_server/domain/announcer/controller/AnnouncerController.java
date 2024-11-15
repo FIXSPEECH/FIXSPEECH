@@ -30,13 +30,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AnnouncerController implements AnnouncerApi {
 
+
 	private final UserService userService;
 	private final AnnouncerService announcerService;
 	private final S3Service s3Service;
 
 	@GetMapping("one")
-	public ApiResponse<?> getOneAnnouncerData() {
-		return ApiResponse.createSuccess(announcerService.getOneAnnouncerData(), "아나운서 데이터 단일 조회 성공");
+	public ApiResponse<?>getOneAnnouncerData(@AuthenticationPrincipal UserDetails userDetails) {
+		Users user = userService.findByEmail(userDetails.getUsername()).orElse(null);
+		if (user == null) {
+			return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+		}
+		return ApiResponse.createSuccess(announcerService.getOneAnnouncerData(user.getGender()), "아나운서 데이터 단일 조회 성공");
 	}
 
 	/**
