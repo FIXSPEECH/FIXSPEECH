@@ -6,7 +6,7 @@ interface Metric {
   interpretation: string;
 }
 
-interface Metrics {
+interface Metrics extends Record<string, Metric> {
   "명료도(Clarity)": Metric;
   "강도 변동성(AMR)": Metric;
   "성대 떨림(Jitter)": Metric;

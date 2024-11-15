@@ -19,13 +19,13 @@ function UserInfo() {
     <div className="flex-shrink-0 py-5">
       <div className="flex items-center mx-[3%] justify-center">
         <Avatar
-          alt={userProfile.name || "사용자"}
+          alt={userProfile.nickName || "사용자"}
           src={userProfile.image || "/static/images/avatar/1.jpg"}
           sx={{ width: 80, height: 80 }}
         />
         <div className="flex flex-col items-center gap-2 ml-4">
           <span className="text-white text-lg font-medium mb-2">
-            반가워요, {userProfile.name || "사용자"}님!
+            반가워요, {userProfile.nickName || "사용자"}님!
           </span>
           <div className="flex items-center gap-2">
             <div

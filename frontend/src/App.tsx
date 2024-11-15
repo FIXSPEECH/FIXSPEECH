@@ -52,13 +52,16 @@ const SelectResult = lazy(
   () => import("./pages/SituationPractice/SelectResultPage")
 );
 const VoiceList = lazy(() => import("./pages/SituationPractice/VoiceListPage"));
+const UserInfoRegistPage = lazy(
+  () => import("./pages/Login/UserInfoRegistPage")
+);
 
 // 레이아웃 컴포넌트 생성
 const Layout = () => {
   return (
     <>
       <ParticleBackground />
-      <NotificationListener/>
+      <NotificationListener />
       <Header />
       <ToastContainer />
       <Suspense fallback={<div></div>}>
@@ -158,6 +161,10 @@ const router = createBrowserRouter([
           {
             path: "/myvoice",
             element: <MyVoice />,
+          },
+          {
+            path: "/user-info",
+            element: <UserInfoRegistPage />,
           },
         ],
       },
