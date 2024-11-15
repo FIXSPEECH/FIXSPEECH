@@ -25,7 +25,6 @@ import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.TokenService;
 import com.fixspeech.spring_server.domain.user.service.UserService;
 import com.fixspeech.spring_server.global.common.ApiResponse;
-import com.fixspeech.spring_server.global.common.JwtCookieProvider;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.global.exception.ErrorCode;
 import com.fixspeech.spring_server.utils.CookieUtil;
@@ -42,10 +41,8 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController implements UserApi {
 
 	private final UserService userService;
-	private final PasswordEncoder passwordEncoder;
 	private final TokenService tokenService;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final JwtCookieProvider jwtCookieProvider;
 
 	@GetMapping("test")
 	public ApiResponse<?> test(@CookieValue("refresh-token") String refreshToken) {
@@ -113,14 +110,12 @@ public class UserController implements UserApi {
 		HttpServletResponse response,
 		@CookieValue(value = "refresh-token", required = false) String refreshToken
 		) {
-		log.info("refreshToken = {}", refreshToken);
 		try {
 			if (refreshToken == null || refreshToken.isEmpty()) {
 				return ApiResponse.createError(ErrorCode.INVALID_TOKEN_ERROR);
 			}
 
 			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
-			log.info("responseDTO={}", responseDTO);
 
 			if (responseDTO == null) {
 				throw new IllegalArgumentException("Refresh Token이 만료되었거나 존재하지 않습니다.");

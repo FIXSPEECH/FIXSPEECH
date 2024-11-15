@@ -36,7 +36,7 @@ public class CookieUtil {
 		cookie.setAttribute("SameSite", "None");
 		response.addCookie(cookie);
 	}
-
+	
 	// 쿠키의 이름을 입력받아 쿠키 삭제
 	public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
 		Cookie[] cookies = request.getCookies();
