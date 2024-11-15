@@ -36,42 +36,6 @@ public class AnnouncerVoiceSample extends BaseTimeEntity {
 	@Column(name = "sample_address", nullable = false)
 	private String sampleAddress;
 
-	// @JsonFormat
-	// @Column(name = "clarity", nullable = false)
-	// private Object clarity;
-	//
-	// @JsonFormat
-	// @Column(name = "intonation_pattern_consistency", nullable = false)
-	// private Object intonationPatternConsistency;
-	//
-	// @JsonFormat
-	// @Column(name = "melody_index", nullable = false)
-	// private Object melodyIndex;
-	//
-	// @JsonFormat
-	// @Column(name = "speech_rhythm", nullable = false)
-	// private Object speechRhythm;
-	//
-	// @JsonFormat
-	// @Column(name = "pause_timing", nullable = false)
-	// private Object pauseTiming;
-	//
-	// @JsonFormat
-	// @Column(name = "rate_variability", nullable = false)
-	// private Object rateVariability;
-	//
-	// @JsonFormat
-	// @Column(name = "jitter", nullable = false)
-	// private Object jitter;
-	//
-	// @JsonFormat
-	// @Column(name = "amr", nullable = false)
-	// private Object amr;
-	//
-	// @JsonFormat
-	// @Column(name = "utterance_energy", nullable = false)
-	// private Object utteranceEnergy;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "script_id", referencedColumnName = "id") // script_id는 외래 키 컬럼명
 	private AnnouncerVoiceSampleScript script;
