@@ -5,6 +5,9 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { getGameList, getGameWords, postGameResult } from "../../services/Game/GameApi";
 import { useNavigate } from "react-router-dom";
 import "./Blink.css";
+import { LiveAudioVisualizer } from "react-audio-visualize";
+import MicNoneIcon from "@mui/icons-material/MicNone";
+import MicIcon from "@mui/icons-material/Mic";
 
 export default function Game() {
   const [letters, setLetters] = useState<{ id: number; letter: string; left: number }[]>([]);
@@ -12,14 +15,15 @@ export default function Game() {
   const [lives, setLives] = useState(5);
   const [isGameOver, setIsGameOver] = useState(false);
   const [recognizedText, setRecognizedText] = useState("");
-  const [beforeText, setBeforeText] = useState("");
+  const [beforeText, setBeforeText] = useState("버튼을 눌러 녹음하고 다시 눌러 제출하세요");
   const [isGameRunning, setIsGameRunning] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [stageList, setStageList] = useState<number[]>([]);
+  const [startTime, setStartTime] = useState<number | null>(null);
   const [stage, setStage] = useState<number>(1);
   const [words, setWords] = useState<string[]>([]);
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [countdown, setCountdown] = useState<number | null>(null); // New state for countdown
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const recognitionRef = useRef<any>(null);
   const navigate = useNavigate();
   const judgmentLineHeight = window.innerHeight * 0.58;
@@ -111,7 +115,22 @@ export default function Game() {
     return recognition;
   };
 
-  const startRecording = () => {
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); // 오디오 스트림 가져오기
+      const recorder = new MediaRecorder(stream); // MediaRecorder 초기화
+      setMediaRecorder(recorder); // 상태에 저장
+      recorder.start(); // 녹음 시작
+      setIsRecording(true);
+
+      recorder.onstop = () => {
+        setMediaRecorder(null); // MediaRecorder를 초기화
+        setIsRecording(false); // 녹음 상태 업데이트
+      };
+    } catch (err) {
+      console.error("마이크 접근 실패:", err);
+    }
+
     if (!recognitionRef.current) recognitionRef.current = initializeRecognition();
     if (!isRecording && recognitionRef.current) recognitionRef.current.start();
     setIsRecording(true);
@@ -119,12 +138,26 @@ export default function Game() {
 
   const stopRecording = () => {
     if (recognitionRef.current) recognitionRef.current.stop();
-    setIsRecording(false);
+    if (mediaRecorder) {
+      mediaRecorder.stop(); // MediaRecorder 중지
+      setIsRecording(false); // 녹음 상태 업데이트
+    }
+  };
+
+  const startGame = () => {
+    setScore(0);
+    setLives(5);
+    setLetters([]);
+    setIsGameOver(false);
+    setIsGameRunning(true);
+    setStartTime(Date.now());
   };
 
   const handleMatchCheck = () => {
     if (!recognizedText) return;
-    const matchingLetters = letters.filter((letter) => letter.letter.toLowerCase().normalize("NFC") === recognizedText);
+    const matchingLetters = letters.filter(
+      (letter) => letter.letter.toLowerCase().normalize("NFC") === recognizedText
+    );
     if (matchingLetters.length > 0) {
       const oldestLetter = matchingLetters.reduce((minLetter, currentLetter) =>
         currentLetter.id < minLetter.id ? currentLetter : minLetter
@@ -140,16 +173,6 @@ export default function Game() {
   useEffect(() => {
     handleMatchCheck();
   }, [recognizedText]);
-
-  const startGame = () => {
-    setScore(0);
-    setLives(5);
-    setLetters([]);
-    setIsGameOver(false);
-    setIsGameRunning(true);
-    setStartTime(Date.now());
-    startRecording();
-  };
 
   useEffect(() => {
     if (!isGameRunning) return;
@@ -195,11 +218,7 @@ export default function Game() {
               style={{ pointerEvents: "none" }}
             >
               {countdown === null ? (
-                <h1
-                  className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4 animate-blink"
-                >
-                  START
-                </h1>
+                <h1 className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4 animate-blink">START</h1>
               ) : (
                 <h1 className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4 animate-blink">{countdown}</h1>
               )}
@@ -244,10 +263,57 @@ export default function Game() {
 
       {isGameRunning && (
         <div
-          className="flex flex-col items-center justify-center min-h-[10vh]"
+          className="flex flex-col items-center justify-center min-h-[10vh] gap-4"
           style={{ backgroundColor: "transparent" }}
         >
           <h2 className="text-white bg-opacity-0 p-2 rounded-md">{beforeText}</h2>
+
+          <div
+            style={{
+              position: "relative",
+              width: "300px",
+              height: "100px",
+              cursor: "pointer",
+            }}
+            onClick={() => (isRecording ? stopRecording() : startRecording())}
+          >
+            {isGameRunning && mediaRecorder && (
+              <LiveAudioVisualizer
+                mediaRecorder={mediaRecorder}
+                width={300}
+                height={100}
+                barColor="#FE6250"
+                gap={3}
+                barWidth={5}
+              />
+            )}
+
+            {isRecording ? (
+              <MicIcon
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  color: "#FE6250",
+                  fontSize: "3rem",
+                  zIndex: 2,
+                }}
+              />
+            ) : (
+              <MicNoneIcon
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  color: "#CCCCCC",
+                  fontSize: "3rem",
+                  zIndex: 2,
+                }}
+              />
+            )}
+          </div>
         </div>
       )}
     </div>
