@@ -1,14 +1,13 @@
-interface Data {
-  userF0Data: number[];
-  announcerF0Data : number[];
-}
-
-
 import React from 'react';
 import { Line } from 'recharts';
-import { LineChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-const VoiceComparisonChart = ({ userF0Data, announcerF0Data}: Data) => {
+interface Data {
+  userF0Data: number[];
+  announcerF0Data: number[];
+}
+
+const VoiceComparisonChart = ({ userF0Data, announcerF0Data }: Data) => {
   // Ensure we have arrays to work with
   const userValues = React.useMemo(() => {
     if (!userF0Data) return [];
@@ -27,16 +26,8 @@ const VoiceComparisonChart = ({ userF0Data, announcerF0Data}: Data) => {
       index: index + 1,
       user: userValues[index] || 0,
       announcer: announcerValues[index] || 0,
-      // Negate user values for mirroring effect
-      userMirrored: -(userValues[index] || 0)
     }));
   }, [userValues, announcerValues]);
-
-  // if (!data.length) {
-  //   return <div className="w-full h-[400px] bg-black p-4 text-white flex items-center justify-center">
-  //     No data available
-  //   </div>;
-  // }
 
   return (
     <div className="w-full h-[400px] bg-black p-4">
@@ -47,26 +38,28 @@ const VoiceComparisonChart = ({ userF0Data, announcerF0Data}: Data) => {
             dataKey="index" 
             stroke="#666"
             tickLine={{ stroke: '#666' }}
+            label={{ value: 'Time', position: 'insideBottom', offset: -10, fill: '#666' }} // X축 레이블 추가
           />
           <YAxis 
             stroke="#666"
             tickLine={{ stroke: '#666' }}
-            domain={[-200, 200]}
-            ticks={[-150, -100, -50, 0, 50, 100, 150]}
+            domain={[0, 350]}
+            ticks={[ 0, 50, 100, 150, 200, 250, 300, 350]}
             tickFormatter={(value: any) => Math.abs(value).toString()}
+            label={{ value: 'Hz', angle: -90, position: 'insideLeft', fill: '#666' }} // Y축 레이블 추가
           />
           <Tooltip 
             contentStyle={{ backgroundColor: '#222', border: '1px solid #444' }}
             labelStyle={{ color: '#fff' }}
-            formatter={(value: any, name: any) => {
-              if (name === 'userMirrored') {
-                return [Math.abs(value), 'User'];
-              }
-              return [value, name];
-            }}
+            formatter={(value: any, name: any) => [value, name]}
+          />
+          {/* 범례 추가 */}
+           <Legend 
+            verticalAlign="top" 
+            wrapperStyle={{ color: '#fff' }} 
           />
           
-          {/* Announcer's line (top) */}
+          {/* Announcer's line */}
           <Line
             type="monotone"
             dataKey="announcer"
@@ -76,10 +69,10 @@ const VoiceComparisonChart = ({ userF0Data, announcerF0Data}: Data) => {
             name="Announcer"
           />
           
-          {/* User's line (bottom, mirrored) */}
+          {/* User's line (on the same axis as announcer) */}
           <Line
             type="monotone"
-            dataKey="userMirrored"
+            dataKey="user"
             stroke="#00bfff"
             strokeWidth={2}
             dot={false}

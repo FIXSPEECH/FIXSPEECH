@@ -9,7 +9,6 @@ import {
 } from "../../services/Game/GameApi";
 import { useNavigate } from "react-router-dom";
 import './Blink.css'
-import {PlayIcon} from './components/PlayIcon'
 
 export default function Game() {
   const [letters, setLetters] = useState<
