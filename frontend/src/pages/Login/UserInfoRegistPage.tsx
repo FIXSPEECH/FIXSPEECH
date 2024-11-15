@@ -35,7 +35,7 @@ function UserInfoRegistPage() {
 
     try {
       // 백엔드로 사용자 정보 전송
-      await axiosInstance.post("/user", {
+      await axiosInstance.put("/user", {
         gender,
       });
       // 토큰 재발급 호출
