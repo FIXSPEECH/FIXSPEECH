@@ -30,7 +30,6 @@ import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.global.exception.ErrorCode;
 import com.fixspeech.spring_server.utils.CookieUtil;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -148,7 +147,7 @@ public class UserController implements UserApi {
 	 */
 	@PostMapping("/public/logout")
 	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) {
-		String refreshToken = extractRefreshToken(request);
+		String refreshToken = CookieUtil.extractRefreshToken(request);
 		log.info(refreshToken);
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
 			tokenService.blacklistRefreshToken(refreshToken);
@@ -156,17 +155,5 @@ public class UserController implements UserApi {
 			return ApiResponse.success("로그아웃 성공");
 		}
 		return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
-	}
-
-	private String extractRefreshToken(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("refresh-token")) {
-					return cookie.getValue();
-				}
-			}
-		}
-		return null;
 	}
 }

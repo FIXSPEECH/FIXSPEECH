@@ -75,4 +75,15 @@ public class CookieUtil {
 			)
 		);
 	}
+
+	// refresh-token cookie value 추출
+	public static String extractRefreshToken(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		for (Cookie cookie : cookies) {
+			if (REFRESH_TOKEN_COOKIE_NAME.equals(cookie.getName())) {
+				return cookie.getValue();
+			}
+		}
+		return null;
+	}
 }
