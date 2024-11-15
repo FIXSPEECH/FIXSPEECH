@@ -26,7 +26,7 @@ public class CookieUtil {
 	}
 
 	// 요청값(이름, 값, 만료 기간)을 바탕으로 HTTP 응답에 쿠키 추가
-	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+	private static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setDomain(cookieDomain);
 		cookie.setMaxAge(maxAge); // 쿠키 만료 시간 설정
@@ -38,7 +38,7 @@ public class CookieUtil {
 	}
 	
 	// 쿠키의 이름을 입력받아 쿠키 삭제
-	public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
+	private static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
 		Cookie[] cookies = request.getCookies();
 
 		if (cookies == null) {
