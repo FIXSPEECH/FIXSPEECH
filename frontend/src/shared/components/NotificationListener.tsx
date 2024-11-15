@@ -5,11 +5,17 @@ import { EventSourcePolyfill } from "event-source-polyfill";
 import { useNavigate } from "react-router-dom";
 import { useSSEStore } from "../stores/sseStore";
 import useAuthStore from "../stores/authStore";
+import notificationSound from "../sounds/notificationSound.mp3"
 
 const NotificationListener = () => {
   const { isSSEActive, stopSSE, setAlert, message, type, clearAlert } = useSSEStore();
   const token = useAuthStore.getState().token;
   const navigator = useNavigate();
+
+  const playNotificationSound = () => {
+    const audio = new Audio(notificationSound);
+    audio.play().catch((error) => console.log("사운드 재생 오류:", error));
+  };
 
   useEffect(() => {
     if (!isSSEActive || !token) return;
@@ -33,6 +39,7 @@ const NotificationListener = () => {
     eventSource.addEventListener("analysisComplete", (event: any) => {
       const data = JSON.parse(event.data);
       if (data.type === "Analyze Complete") {
+        playNotificationSound()
         toast.success(<>
           분석 완료되었습니다.
           <br />
@@ -44,7 +51,8 @@ const NotificationListener = () => {
           </span>
         </>);
       } else if (data.type === "ANALYSIS_ERROR") {
-        toast.error(`분석 실패`);
+        playNotificationSound()
+        toast.error(`분석 중 오류가 발생했습니다`);
       }
 
       // 이벤트 수신 후 SSE 연결 종료
@@ -57,7 +65,7 @@ const NotificationListener = () => {
     eventSource.onerror = () => {
       console.log("SSE 연결 에러 발생 - 연결 닫기");
       eventSource.close();
-      setAlert("SSE 연결 오류가 발생했습니다.", "error");
+      setAlert("분석 중 오류가 발생했습니다", "error");
       stopSSE();
     };
 
@@ -70,6 +78,7 @@ const NotificationListener = () => {
   // 알림 표시
   useEffect(() => {
     if (message) {
+      playNotificationSound()
       if (type === "success") toast.success(message);
       if (type === "error") toast.error(message);
       clearAlert();
