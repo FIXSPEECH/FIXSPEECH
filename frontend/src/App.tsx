@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import { lazy, Suspense, useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import ParticleBackground from "./shared/components/Visualizer/ParticleBackground";
 import Header from "./shared/components/Header/Header";
 import ProtectedRoute from "./shared/routes/ProtectedRoute";
@@ -10,56 +10,30 @@ import "react-toastify/dist/ReactToastify.css";
 import useHistoryColorStore from "./shared/stores/historyColorStore";
 import { ColorSchemeType } from "./shared/constants/colorSchemes";
 
-// Lazy imports
-const LoginPage = lazy(() => import("./pages/Login/LoginPage"));
-const MainPage = lazy(() => import("./pages/MainPage/MainPage"));
-const AccessPage = lazy(() => import("./pages/Login/AccessPage"));
-const VoiceRecord = lazy(() => import("./pages/VoiceAnalysis/VoiceRecordPage"));
-const VoiceRecordResult = lazy(
-  () => import("./pages/VoiceAnalysis/VoiceRecordResultPage")
-);
-const VoiceAnalysisList = lazy(
-  () => import("./pages/VoiceAnalysis/VoiceAnalysisListPage")
-);
-const VoiceAnalysisDetail = lazy(
-  () => import("./pages/VoiceAnalysis/VoiceAnalysisDetailPage")
-);
-const TrainSelect = lazy(
-  () => import("./pages/PronounceTraining/TrainSelectPage")
-);
-const TrainPronounce = lazy(
-  () => import("./pages/PronounceTraining/TrainPronouncePage")
-);
-const Lecture = lazy(() => import("./pages/Lecture/LecturePage"));
-const SelectOptions = lazy(
-  () => import("./pages/SituationPractice/SelectOptionsPage")
-);
-const RegistScript = lazy(
-  () => import("./pages/SituationPractice/RegistScriptPage")
-);
-const SelectScript = lazy(
-  () => import("./pages/SituationPractice/SelectScriptPage")
-);
-const SituationPractice = lazy(
-  () => import("./pages/SituationPractice/SituationPracticePage")
-);
-const AnnouncerPractice = lazy(
-  () => import("./pages/AnnouncerPractice/AnnouncerPracticePage")
-);
-const Game = lazy(() => import("./pages/Game/GamePage"));
-const MyVoice = lazy(() => import("./pages/MyVoicePage"));
-const ErrorPage = lazy(() => import("./pages/ErrorPage"));
-const GameRanking = lazy(() => import("./pages/Game/GameRankingPage"));
-const SelectResult = lazy(
-  () => import("./pages/SituationPractice/SelectResultPage")
-);
-const VoiceList = lazy(() => import("./pages/SituationPractice/VoiceListPage"));
-const UserInfoRegistPage = lazy(
-  () => import("./pages/Login/UserInfoRegistPage")
-);
-const SituationResult = lazy(
-  () => import("./pages/SituationPractice/SituationResultPage")
-);
+import LoginPage from "./pages/Login/LoginPage";
+import MainPage from "./pages/MainPage/MainPage";
+import AccessPage from "./pages/Login/AccessPage";
+import VoiceRecord from "./pages/VoiceAnalysis/VoiceRecordPage";
+import VoiceRecordResult from "./pages/VoiceAnalysis/VoiceRecordResultPage";
+import VoiceAnalysisList from "./pages/VoiceAnalysis/VoiceAnalysisListPage";
+import VoiceAnalysisDetail from "./pages/VoiceAnalysis/VoiceAnalysisDetailPage";
+import TrainSelect from "./pages/PronounceTraining/TrainSelectPage";
+import TrainPronounce from "./pages/PronounceTraining/TrainPronouncePage";
+import Lecture from "./pages/Lecture/LecturePage";
+
+import SelectOptions from "./pages/SituationPractice/SelectOptionsPage";
+import RegistScript from "./pages/SituationPractice/RegistScriptPage";
+import SelectScript from "./pages/SituationPractice/SelectScriptPage";
+import SituationPractice from "./pages/SituationPractice/SituationPracticePage";
+import AnnouncerPractice from "./pages/AnnouncerPractice/AnnouncerPracticePage";
+import Game from "./pages/Game/GamePage";
+import MyVoice from "./pages/MyVoicePage";
+import ErrorPage from "./pages/ErrorPage";
+import GameRanking from "./pages/Game/GameRankingPage";
+import SelectResult from "./pages/SituationPractice/SelectResultPage";
+import VoiceList from "./pages/SituationPractice/VoiceListPage";
+import UserInfoRegistPage from "./pages/Login/UserInfoRegistPage";
+import SituationResult from "./pages/SituationPractice/SituationResultPage";
 
 // 레이아웃 컴포넌트 생성
 const Layout = () => {
