@@ -16,10 +16,11 @@ const springTransition = {
 
 interface DeleteIconProps {
     onClick?: () => void; // onClick prop 추가
+    strokeColor?:string;
   }
 
   
-const DeleteIcon = ({onClick}: DeleteIconProps) => {
+const DeleteIcon = ({onClick, strokeColor}: DeleteIconProps) => {
   const controls = useAnimation();
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -42,7 +43,7 @@ const DeleteIcon = ({onClick}: DeleteIconProps) => {
         height="28"
         viewBox="0 0 24 24"
         fill="none"
-        stroke="#FFAB01"
+        stroke={strokeColor}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"

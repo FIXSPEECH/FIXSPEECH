@@ -11,7 +11,7 @@ import Stack from "@mui/material/Stack";
 function SelectScript() {
   const [scripts, setScripts] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState<number>(1); // 현재 페이지
-  const [scriptsPerPage] = useState<number>(5); // 페이지당 스크립트 수
+  const [scriptsPerPage] = useState<number>(10); // 페이지당 스크립트 수
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -73,7 +73,7 @@ function SelectScript() {
   };
 
   return (
-    <div className="h-screen p-8">
+    <div className="h-screen p-8 lg:max-w-5xl lg:mx-auto">
       <div className="text-[#FFAB01] text-3xl font-bold mb-8">
         저장된 대본 목록
       </div>
@@ -94,7 +94,7 @@ function SelectScript() {
                     <div className="text-[#FFAB01] text-sm mr-2">
                       등록일: {script.createdAt}
                     </div>
-                    <DeleteIcon onClick={() => handleDelete(script.scriptId)} />
+                    <DeleteIcon onClick={() => handleDelete(script.scriptId)} strokeColor='#FFAB01' />
                   </div>
                 </div>
               </div>
@@ -108,6 +108,7 @@ function SelectScript() {
               width: "fit-content",
               margin: "0 auto",
               marginTop: "2%",
+              paddingBottom: "5%"
             }}
           >
             <Pagination

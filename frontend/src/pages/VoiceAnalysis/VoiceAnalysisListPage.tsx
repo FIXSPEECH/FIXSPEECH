@@ -4,6 +4,11 @@ import axiosInstance from "../../services/axiosInstance";
 import { AnalysisResponse, AnalysisItem } from "../../shared/types/analysis";
 import Pagination from "@mui/material/Pagination";
 import MetricsVisualizer from "../../shared/components/VoiceQuality/MetricsVisualizer";
+import { DeleteIcon } from "../../shared/components/Icons/DeleteIcon";
+import Swal from "sweetalert2";
+import "../SituationPractice/SwalStyles.css"
+import { AnalysisDelete } from "../../services/VoiceAnalysis/VoiceAnalysisPost";
+
 
 function VoiceAnalysisListPage() {
   const navigate = useNavigate();
@@ -11,6 +16,7 @@ function VoiceAnalysisListPage() {
     null
   );
   const [page, setPage] = useState(1);
+  
 
   const fetchAnalysisList = async (pageNum: number) => {
     try {
@@ -40,6 +46,38 @@ function VoiceAnalysisListPage() {
     return "개선 필요";
   };
 
+
+  const handleDelete = (recordId: number) => {
+    Swal.fire({
+      title: "대본을 삭제하시겠습니까?",
+      showDenyButton: true,
+      confirmButtonText: "삭제",
+      denyButtonText: `취소`,
+      customClass: {
+        confirmButton: "swal2-confirm-btn", // 삭제 버튼
+        denyButton: "swal2-deny-btn", // 취소 버튼
+      },
+      buttonsStyling: false,
+    }).then(async (result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        try {
+          const response = await AnalysisDelete(recordId);
+          console.log(response);
+
+          setAnalysisData((prevData) => ({
+            ...prevData!,
+            content: prevData!.content.filter(item => item.recordId !== recordId),
+          }));
+          
+        } catch (e) {
+          console.log(e);
+        }
+      } else if (result.isDenied) {
+      }
+    });
+  };
+
   return (
     <div className="voice-analysis-list p-8 lg:max-w-5xl lg:mx-auto">
       <h2 className="text-3xl font-bold text-white mb-6">음성 분석 목록</h2>
@@ -54,14 +92,24 @@ function VoiceAnalysisListPage() {
               >
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex-1">
+
+
+
                     <div className="flex justify-between items-center mb-3">
-                      <h3 className="text-xl font-semibold text-white">
-                        {item.title}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                          <h3 className="text-xl font-semibold text-white">
+                            {item.title}
+                          </h3>
+                          <DeleteIcon onClick={() => handleDelete(item.recordId)} strokeColor='#4CC9FE' />
+                      </div>
                       <span className="text-sm text-white/80">
                         {item.createdAt}
                       </span>
                     </div>
+
+
+
+
                     <div className="flex items-center gap-4">
                       <div
                         className={`px-4 py-1.5 rounded-full text-center whitespace-nowrap ${

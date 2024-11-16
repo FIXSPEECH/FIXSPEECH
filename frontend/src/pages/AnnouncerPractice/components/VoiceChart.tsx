@@ -1,6 +1,7 @@
 import React from 'react';
 import { Line } from 'recharts';
 import { LineChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import useGraphStore from '../../../shared/stores/graphStore';
 
 interface Data {
   userF0Data: number[];
@@ -8,6 +9,9 @@ interface Data {
 }
 
 const VoiceComparisonChart = ({ userF0Data, announcerF0Data }: Data) => {
+
+  const {similarity} = useGraphStore();
+
   // Ensure we have arrays to work with
   const userValues = React.useMemo(() => {
     if (!userF0Data) return [];
@@ -33,24 +37,26 @@ const VoiceComparisonChart = ({ userF0Data, announcerF0Data }: Data) => {
     }));
   }, [userValues, announcerValues]);
 
+
   return (
     <div className="w-full h-[400px] bg-black p-4">
+      <div className='text-[#B18CFE] text-lg flex justify-center'>유사도: {similarity} %</div>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
+        <LineChart data={data} margin={{ top: 5, right: 30, left: 30, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#333" />
           <XAxis 
             dataKey="index" 
-            stroke="#666"
-            tickLine={{ stroke: '#666' }}
-            label={{ value: '시간 [sec]', position: 'insideBottom', offset: -10, fill: '#666' }} // X축 레이블 추가
+            stroke="#FFFFFF"
+            tickLine={{ stroke: '#FFFFFF' }}
+            label={{ value: '샘플링 단위', position: 'insideBottom', offset: -10, fill: '#FFFFFF' }} // X축 레이블 추가
           />
           <YAxis 
-            stroke="#666"
-            tickLine={{ stroke: '#666' }}
+            stroke="#FFFFFF"
+            tickLine={{ stroke: '#FFFFFF' }}
             domain={[yMin, yMax]}
             // ticks={[ 0, 50, 100, 150, 200, 250, 300, 350]}
             tickFormatter={(value: any) => Math.abs(value).toString()}
-            label={{ value: '주파수 [HZ]', angle: -90, position: 'insideLeft', fill: '#666' }} // Y축 레이블 추가
+            label={{ value: '기본 주파수 [HZ]', angle: -90, position: 'insideLeft', fill: '#FFFFFF' }} // Y축 레이블 추가
           />
           <Tooltip 
             contentStyle={{ backgroundColor: '#222', border: '1px solid #444' }}
@@ -62,6 +68,7 @@ const VoiceComparisonChart = ({ userF0Data, announcerF0Data }: Data) => {
             verticalAlign="top" 
             wrapperStyle={{ color: '#fff' }} 
           />
+
           
           {/* Announcer's line */}
           <Line
