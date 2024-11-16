@@ -31,6 +31,14 @@ public interface UserVoiceApi {
 	com.fixspeech.spring_server.global.common.ApiResponse<?> getUserRecordList(UserDetails userDetails, int page,
 		int size);
 
+	@Operation(summary = "최신 녹음 상세 조회 API", description = "유저의 최신 분석 정보를 조회하는 API")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "최신 조회 성공"),
+		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
+	})
+	com.fixspeech.spring_server.global.common.ApiResponse<?> getRecentRecord(
+		@AuthenticationPrincipal UserDetails userDetails);
+
 	@Operation(summary = "녹음 상세 조회 API", description = "특정 녹음의 상세 정보를 조회하는 API")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "상세 조회 성공"),
@@ -39,6 +47,15 @@ public interface UserVoiceApi {
 	com.fixspeech.spring_server.global.common.ApiResponse<?> getUserRecordDetail(
 		@AuthenticationPrincipal UserDetails userDetails,
 		Long resultId);
+
+	@Operation(summary = "녹음 삭제 API", description = "특정 녹음을 삭제하는 API")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "녹음 삭제성공"),
+		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
+	})
+	com.fixspeech.spring_server.global.common.ApiResponse<?> deleteUserRecord(
+		@AuthenticationPrincipal UserDetails userDetails,
+		Long recordId);
 }
 
 
