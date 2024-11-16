@@ -64,6 +64,14 @@ public interface ScriptApi {
 	})
 	com.fixspeech.spring_server.global.common.ApiResponse<?> getResultDetail(UserDetails userDetails, Long resultId);
 
+	@Operation(summary = "분석 결과 삭제 API", description = "특정 분석 결과 삭제하는 API")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "분석 결과 삭제 성공"),
+		@ApiResponse(responseCode = "404", description = "결과를 찾을 수 없음"),
+		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
+	})
+	com.fixspeech.spring_server.global.common.ApiResponse<?> deleteResultDetail(UserDetails userDetails, Long resultId);
+
 	@Operation(summary = "대본별 분석 결과 목록 조회 API", description = "특정 대본의 모든 분석 결과 목록을 조회하는 API")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "결과 목록 조회 성공"),
