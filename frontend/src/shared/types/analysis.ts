@@ -19,7 +19,7 @@ interface Metrics extends Record<string, Metric> {
 }
 
 export interface AnalysisItem {
-  recordId: string;
+  recordId: number;
   analyzeResult: {
     metrics: Metrics;
   };
