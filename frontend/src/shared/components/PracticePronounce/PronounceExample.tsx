@@ -127,7 +127,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
     let lastIndex = 0;
 
     differences.forEach((diff, index) => {
-      const { operation, user_postion, answer_position, answer_text, user_text } = diff;
+      const { operation, user_postion, answer_position, answer_text } = diff;
 
       // 일치하지 않는 텍스트 앞의 정상적인 텍스트 추가
       if (user_postion && user_postion[0] !== null && user_postion[0] > lastIndex) {
