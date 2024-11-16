@@ -6,6 +6,9 @@ import useVoiceStore from "../../shared/stores/voiceStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import GradientCirclePlanes from "../../shared/components/Loader/GradientCirclePlanes";
 import { METRIC_CRITERIA } from "../../shared/constants/voiceMetrics";
+import { useLectureStore } from "../../shared/stores/lectureStore";
+import axiosInstance from "../../services/axiosInstance";
+import useHistoryColorStore from "../../shared/stores/historyColorStore";
 
 // 음성 분석 메트릭 데이터 타입 정의
 interface MetricData {
@@ -51,6 +54,8 @@ const VoiceRecordResultPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loadingDots, setLoadingDots] = useState("");
+  const { initializeWithAnalysis } = useLectureStore();
+  const { selectedColor } = useHistoryColorStore();
 
   const handleReRecord = () => {
     navigate("/record"); // 녹음 페이지로 이동
@@ -136,6 +141,23 @@ const VoiceRecordResultPage = () => {
       return () => clearInterval(interval);
     }
   }, [loading]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get("/record/recent");
+        if (response.data.status === "C000") {
+          const analysis = response.data.data.analyzeResult;
+          // 분석 결과를 받은 즉시 LectureStore 초기화
+          await initializeWithAnalysis(analysis);
+        }
+      } catch (error) {
+        console.error("분석 결과 로드 실패:", error);
+      }
+    };
+
+    fetchData();
+  }, [initializeWithAnalysis]);
 
   // UI 렌더링
   return (
@@ -225,7 +247,10 @@ const VoiceRecordResultPage = () => {
               {/* 메트릭 시각화 */}
               <div className="aspect-square w-full bg-gray-800/30 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-gray-700/50 hover:border-cyan-500/50">
                 <h2 className="text-lg font-bold mb-4">메트릭 시각화</h2>
-                <MetricsVisualizer metrics={response.data.metrics} />
+                <MetricsVisualizer
+                  metrics={response.data.metrics}
+                  colorScheme={selectedColor}
+                />
               </div>
             </div>
 
@@ -258,19 +283,6 @@ const VoiceRecordResultPage = () => {
                         </p>
                       </div>
                     )}
-                  </div>
-
-                  {/* 작은 레이더 그래프 추가 */}
-                  <div className="w-[200px] h-[200px] flex-shrink-0">
-                    <MetricsVisualizer
-                      metrics={response.data.metrics}
-                      showLabels={false}
-                      colorScheme={
-                        response.data.recommendations?.length > 0
-                          ? "yellow"
-                          : "green"
-                      }
-                    />
                   </div>
                 </div>
               </div>
