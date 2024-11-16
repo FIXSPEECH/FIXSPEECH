@@ -155,9 +155,7 @@ export default function Game() {
 
   const handleMatchCheck = () => {
     if (!recognizedText) return;
-    const matchingLetters = letters.filter(
-      (letter) => letter.letter.toLowerCase().normalize("NFC") === recognizedText
-    );
+    const matchingLetters = letters.filter((letter) => letter.letter.toLowerCase().normalize("NFC") === recognizedText);
     if (matchingLetters.length > 0) {
       const oldestLetter = matchingLetters.reduce((minLetter, currentLetter) =>
         currentLetter.id < minLetter.id ? currentLetter : minLetter
@@ -223,20 +221,38 @@ export default function Game() {
                 <h1 className="text-8xl font-bold text-colorFE6250 cursor-pointer mb-4 animate-blink">{countdown}</h1>
               )}
               {countdown === null && (
-                <div className="flex gap-2 mt-4" style={{ pointerEvents: "auto" }}>
-                  {stageList.map((stageId) => (
+                <div className="flex flex-col items-center mt-4" style={{ pointerEvents: "auto", width: "100%" }}>
+                  <div className="flex justify-between w-full max-w-md gap-2">
+                    {stageList.map((stageId) => (
+                      <Button
+                        key={stageId}
+                        variant="contained"
+                        style={{
+                          backgroundColor: "#FFAB01",
+                          color: "white",
+                          flex: "1",
+                          fontWeight: "bold",
+                        }}
+                        onClick={() => handleStageSelection(stageId)}
+                      >
+                        {stageId === 1 ? "Easy" : stageId === 2 ? "Normal" : "Hard"}
+                      </Button>
+                    ))}
+                  </div>
+                  <div className="flex justify-center w-full max-w-md mt-4">
                     <Button
-                      key={stageId}
                       variant="contained"
                       style={{
                         backgroundColor: "#FFAB01",
                         color: "white",
+                        width: "100%",                    
+                        fontWeight: "bold",
                       }}
-                      onClick={() => handleStageSelection(stageId)}
+                      onClick={() => navigate("/game/ranking")}
                     >
-                      {stageId === 1 ? "Easy" : stageId === 2 ? "Normal" : "Hard"}
+                      랭킹 보기
                     </Button>
-                  ))}
+                  </div>
                 </div>
               )}
             </div>
