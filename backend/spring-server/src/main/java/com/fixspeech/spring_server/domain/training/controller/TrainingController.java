@@ -5,13 +5,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fixspeech.spring_server.domain.grass.service.GrassService;
-import com.fixspeech.spring_server.domain.training.dto.TrainingRequestDto;
-import com.fixspeech.spring_server.domain.training.dto.TrainingResponseDto;
 import com.fixspeech.spring_server.domain.training.service.TrainingService;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.UserService;
@@ -58,22 +55,6 @@ public class TrainingController implements TrainingApi {
 		trainingService.deleteRedis(users);
 		grassService.addGrassRecord(users.getId());
 		return ApiResponse.success("훈련 종료 완료");
-	}
-
-	@PostMapping("/answer")
-	public ApiResponse<?> answer(
-		@AuthenticationPrincipal UserDetails userDetails,
-		@RequestBody TrainingRequestDto trainingRequestDto
-	) {
-		try {
-			Users users = userService.findByEmail(userDetails.getUsername())
-				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-			TrainingResponseDto trainingResponseDto = trainingService.checkClarity(users,
-				trainingRequestDto.userRecord());
-			return ApiResponse.createSuccess(trainingResponseDto, "채점 성공");
-		} catch (Exception e) {
-			throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
-		}
 	}
 
 }
