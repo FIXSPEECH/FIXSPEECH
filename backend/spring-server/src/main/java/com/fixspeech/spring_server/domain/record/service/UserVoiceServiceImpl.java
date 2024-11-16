@@ -53,7 +53,7 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 			body.add("file", new UserVoiceController.MultipartInputStreamFileResource(file.getInputStream(),
 				file.getOriginalFilename()));
-			body.add("gender", users.getGender());
+			body.add("gender", users.getGender() != null ? users.getGender() : "male");
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
