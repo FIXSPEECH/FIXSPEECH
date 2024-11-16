@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class RequestRegisterDTO {
+public class RequestRegisterDto {
 	private String userName;
 	private String gender;
 	private String nickName;

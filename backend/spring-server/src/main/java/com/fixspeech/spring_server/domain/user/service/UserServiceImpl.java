@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
+import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDto;
 import com.fixspeech.spring_server.domain.grass.model.Grass;
 import com.fixspeech.spring_server.domain.user.dto.request.RequestUpdateDto;
 import com.fixspeech.spring_server.domain.user.model.Users;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
 	private final TokenService tokenService;
 
 	@Override
-	public void registUser(RequestRegisterDTO requestDto) {
+	public void registUser(RequestRegisterDto requestDto) {
 		userRepository.save(requestDto.toEntity());
 	}
 

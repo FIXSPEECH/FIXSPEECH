@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
+import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDto;
 import com.fixspeech.spring_server.domain.user.dto.request.RequestUpdateDto;
-import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDTO;
+import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDto;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.TokenService;
 import com.fixspeech.spring_server.domain.user.service.UserService;
@@ -44,11 +44,6 @@ public class UserController implements UserApi {
 	private final TokenService tokenService;
 	private final JwtTokenProvider jwtTokenProvider;
 
-	@GetMapping("test")
-	public ApiResponse<?> test(@CookieValue("refresh-token") String refreshToken) {
-		log.info("refreshToken={}", refreshToken);
-		return ApiResponse.createSuccess(refreshToken, "테스트 성공");
-	}
 	/**
 	 * 사용자 상세 정보 입력 여부 확인
 	 * @param userDetails 사용자 정보
@@ -67,7 +62,7 @@ public class UserController implements UserApi {
 	@PostMapping("/regist")
 	public ResponseEntity<?> registUser(
 		@RequestPart(value = "image", required = false) MultipartFile profileImageFile,
-		@RequestPart(value = "registUserDto") RequestRegisterDTO requestDto) {
+		@RequestPart(value = "registUserDto") RequestRegisterDto requestDto) {
 		try {
 			log.info("requestDto: {}", requestDto);
 			// String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
@@ -101,9 +96,11 @@ public class UserController implements UserApi {
 		return ApiResponse.success("사용자 정보 수정 성공");
 	}
 
+
 	/**
-	 * Token 재발급
-	 * @return accessToken
+	 * @param response		response
+	 * @param refreshToken	refresh-token
+	 * @return	accessToken	accessToken
 	 */
 	@PostMapping("public/reissue")
 	public ApiResponse<?> reissueToken(
@@ -115,7 +112,7 @@ public class UserController implements UserApi {
 				return ApiResponse.createError(ErrorCode.INVALID_TOKEN_ERROR);
 			}
 
-			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
+			ResponseRefreshTokenDto responseDTO = tokenService.reissueOAuthToken(refreshToken);
 
 			if (responseDTO == null) {
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // 401 상태 코드 설정
