@@ -81,8 +81,8 @@ function AnnouncerPractice() {
                   userF0Data={user}
                   announcerF0Data={announcer}
                 />
-                 <div className='text-white flex justify-center'> *해당 그래프의 주파수는 말의 억양을 나타내고 있습니다.</div>
-                 <div className='text-white flex justify-center mb-5'> 아나운서와 비슷한 억양으로 말해보세요.</div>
+                 <div className='text-[#B18CFE] flex justify-center mt-5'> *해당 그래프의 주파수는 말의 억양을 나타내고 있습니다.</div>
+                 <div className='text-[#B18CFE] flex justify-center mb-5'> 아나운서와 비슷한 억양으로 말해보세요.</div>
               </div>
             ) : null}
           </div>

@@ -28,7 +28,7 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
   const [example, setExample] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [announcerUrl, setAnnouncerUrl] = useState<string>("");
-  const { setUser, setAnnouncer } = useGraphStore();
+  const { setUser, setAnnouncer, setSimilarity } = useGraphStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const controllerRef = useRef<AbortController | null>(null);
   const {isNext, setIsNext} = useNextArrowState();
@@ -94,6 +94,9 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
       console.log(response.data);
       setUser(response.data.user_f0_data);
       setAnnouncer(response.data.announcer_f0_data);
+      setSimilarity(response.data.f0_similarity_percentage);
+      console.log('유사도 측정', response.data.f0_similarity_percentage)
+
 
       if (isBefore !== example) {
         setIsNumber(); // 다른 문장일 때만 카운트 증가
