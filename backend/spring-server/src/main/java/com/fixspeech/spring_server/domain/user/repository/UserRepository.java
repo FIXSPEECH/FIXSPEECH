@@ -12,7 +12,4 @@ import com.fixspeech.spring_server.domain.user.model.Users;
 @Repository
 public interface UserRepository extends JpaRepository<Users, Long> {
 	Optional<Users> findByEmail(String email);
-
-	@Query("SELECT u FROM Users u WHERE u.email = :email")
-	Optional<Users> findGrassByEmail(@Param("email") String email);
 }
