@@ -70,18 +70,23 @@ const VoiceAnalysisDetailPage = () => {
   };
 
   // 점수에 따른 색상 및 그림자 효과
-  const getScoreColor = (
+  const getScoreColor = (score: number) => {
+    if (score >= 80)
+      return { color: "#00FF88", shadow: "0 0 20px rgba(0, 255, 136, 0.5)" };
+    if (score >= 60)
+      return { color: "#FFD700", shadow: "0 0 20px rgba(255, 215, 0, 0.5)" };
+    return { color: "#FF4D4D", shadow: "0 0 20px rgba(255, 77, 77, 0.5)" };
+  };
+
+  // 점수 계산 함수 추가
+  const calculateOverallScore = (
     metrics: AnalysisDetailResponse["analyzeResult"]["metrics"]
   ) => {
     const grades = Object.values(metrics).map((m) => m.grade);
     const excellent = grades.filter((g) => g === "excellent").length;
     const good = grades.filter((g) => g === "good").length;
 
-    if (excellent >= 5)
-      return { color: "#00FF88", shadow: "0 0 20px rgba(0, 255, 136, 0.5)" };
-    if (excellent + good >= 5)
-      return { color: "#FFD700", shadow: "0 0 20px rgba(255, 215, 0, 0.5)" };
-    return { color: "#FF4D4D", shadow: "0 0 20px rgba(255, 77, 77, 0.5)" };
+    return (excellent * 100 + good * 70) / grades.length;
   };
 
   if (loading)
@@ -118,12 +123,18 @@ const VoiceAnalysisDetailPage = () => {
         </div>
 
         {/* 오디오 플레이어 */}
-        <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 mb-8">
+        <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 mb-8 flex justify-between">
           <button
             onClick={handlePlayPause}
             className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors"
           >
             {isPlaying ? "일시정지" : "음성 재생"}
+          </button>
+          <button
+            onClick={() => navigate("/analysis")}
+            className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors"
+          >
+            목록으로 돌아가기
           </button>
         </div>
 
@@ -132,25 +143,24 @@ const VoiceAnalysisDetailPage = () => {
           <div className="lg:col-span-1 space-y-8">
             {/* 전체 평가 카드 */}
             <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50">
-              <h2 className="text-lg font-bold mb-4">전체 평가</h2>
+              <h2 className="text-lg font-bold mb-4">전체 점수</h2>
               <div className="text-center">
                 <div
                   className="text-6xl font-bold mb-2"
                   style={{
-                    color: getScoreColor(analysisData.analyzeResult.metrics)
-                      .color,
+                    color: getScoreColor(
+                      calculateOverallScore(analysisData.analyzeResult.metrics)
+                    ).color,
                     textShadow: getScoreColor(
-                      analysisData.analyzeResult.metrics
+                      calculateOverallScore(analysisData.analyzeResult.metrics)
                     ).shadow,
                   }}
                 >
-                  {
-                    Object.values(analysisData.analyzeResult.metrics).filter(
-                      (m) => m.grade === "excellent"
-                    ).length
-                  }
+                  {calculateOverallScore(
+                    analysisData.analyzeResult.metrics
+                  ).toFixed(1)}
                 </div>
-                <p className="text-gray-400">우수 항목 개수</p>
+                <p className="text-gray-400">100점 만점</p>
               </div>
             </div>
 
@@ -181,16 +191,6 @@ const VoiceAnalysisDetailPage = () => {
               )}
             </div>
           </div>
-        </div>
-
-        {/* 목록으로 돌아가기 버튼 */}
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={() => navigate("/analysis")}
-            className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors"
-          >
-            목록으로 돌아가기
-          </button>
         </div>
       </div>
     </div>

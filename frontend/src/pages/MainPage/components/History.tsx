@@ -23,13 +23,22 @@ interface ApiResponse {
 
 function History() {
   const [grassValues, setGrassValues] = useState<GrassData[]>([]);
-  const { selectedColor, setSelectedColor } = useHistoryColorStore();
+  const [lastClickTime, setLastClickTime] = useState(0);
+  const { selectedColor, setSelectedColor, toggleColorCycling } =
+    useHistoryColorStore();
 
-  const cycleColor = () => {
-    const colorKeys = Object.keys(COLOR_SCHEMES) as ColorSchemeType[];
-    const currentIndex = colorKeys.findIndex((c) => c === selectedColor);
-    const nextIndex = (currentIndex + 1) % colorKeys.length;
-    setSelectedColor(colorKeys[nextIndex]);
+  const handleColorClick = () => {
+    const now = Date.now();
+    if (now - lastClickTime < 300) {
+      // 더블 클릭 감지 (300ms 이내)
+      toggleColorCycling();
+    } else {
+      const colorKeys = Object.keys(COLOR_SCHEMES) as ColorSchemeType[];
+      const currentIndex = colorKeys.findIndex((c) => c === selectedColor);
+      const nextIndex = (currentIndex + 1) % colorKeys.length;
+      setSelectedColor(colorKeys[nextIndex]);
+    }
+    setLastClickTime(now);
   };
 
   const fetchGrassData = async () => {
@@ -64,11 +73,11 @@ function History() {
     >
       {/* 색상 변경 버튼 */}
       <button
-        onClick={cycleColor}
+        onClick={handleColorClick}
         className="absolute top-0 left-5 p-1.5 text-xs rounded-full transition-all
           bg-gray-800/30 hover:bg-gray-700/30 border border-gray-700/50
           flex items-center gap-1.5 z-10"
-        aria-label="히트맵 색상 변경"
+        aria-label="히트맵 색상 변경 (더블 클릭으로 자동 변경)"
       >
         <div
           className="w-2.5 h-2.5 rounded-full"

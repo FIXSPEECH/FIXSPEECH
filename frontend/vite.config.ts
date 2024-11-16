@@ -82,4 +82,8 @@ export default defineConfig({
       plugins: [tailwindcss],
     },
   },
+
+  build: {
+    chunkSizeWarningLimit: 2500, // 경고 임계값 상향 조정함
+  },
 });
