@@ -39,6 +39,7 @@ axiosInstance.interceptors.response.use(
       try {
         await tokenRefresh();
         const token = useAuthStore.getState().token;
+        console.log("엑세스 토큰 재발급 요청", error.response)
 
         if (token && error.config) {
           // 토큰 재발급 확인을 위한 콘솔 로그
