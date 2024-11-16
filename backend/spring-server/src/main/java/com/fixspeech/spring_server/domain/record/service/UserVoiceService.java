@@ -25,4 +25,5 @@ public interface UserVoiceService {
 	void deleteRecord(Users users, Long recordId);
 
 	UserVoiceListResponseDto getRecent(Users users);
+
 }
