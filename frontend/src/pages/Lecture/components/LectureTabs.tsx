@@ -3,13 +3,8 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { LoadingMessage } from "../../../shared/components/Loader/LoadingMessage";
 import { AIRecommendationCard } from "./AIRecommendationCard";
-import { RecentVideoCard } from "./RecentVideoCard";
 import { VideoSection } from "./VideoSection";
-import type {
-  AIRecommendation,
-  YouTubeVideo,
-  SectionData,
-} from "../types/lecture";
+import type { AIRecommendation, SectionData } from "../types/lecture";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -35,11 +30,9 @@ interface LectureTabsProps {
   onChange: (newValue: number) => void;
   sectionsLoading: {
     ai: boolean;
-    videos: boolean;
     custom: boolean;
   };
   aiRecommendations: AIRecommendation[];
-  recentVideos: YouTubeVideo[];
   customizedContent: SectionData[];
 }
 
@@ -55,7 +48,6 @@ export function LectureTabs({
   onChange,
   sectionsLoading,
   aiRecommendations,
-  recentVideos,
   customizedContent,
 }: LectureTabsProps) {
   const renderAIRecommendations = () => {
@@ -70,25 +62,6 @@ export function LectureTabs({
         ))}
       </div>
     );
-  };
-
-  const renderRecentVideos = () => {
-    if (sectionsLoading.videos) {
-      return <LoadingMessage />;
-    }
-
-    const recentVideoSection = {
-      title: "추천 동영상",
-      videos: recentVideos.map((video) => ({
-        title: video.title,
-        videoId: video.id,
-      })),
-      metricName: "recent",
-      grade: "good",
-      value: 0,
-    };
-
-    return <VideoSection section={recentVideoSection} />;
   };
 
   const renderCustomContent = () => {
@@ -115,23 +88,15 @@ export function LectureTabs({
           variant="fullWidth"
         >
           <Tab label="AI 추천" sx={tabStyle} />
-          <Tab label="추천 동영상" sx={tabStyle} />
           <Tab label="맞춤형 강의" sx={tabStyle} />
         </Tabs>
       </Box>
 
-      {/* AI 추천 탭 */}
       <TabPanel value={value} index={0}>
         {renderAIRecommendations()}
       </TabPanel>
 
-      {/* 추천 동영상 탭 */}
       <TabPanel value={value} index={1}>
-        {renderRecentVideos()}
-      </TabPanel>
-
-      {/* 맞춤형 강의 탭 */}
-      <TabPanel value={value} index={2}>
         {renderCustomContent()}
       </TabPanel>
     </>
