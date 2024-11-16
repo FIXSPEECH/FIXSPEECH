@@ -23,7 +23,6 @@ public class GrassServiceImpl implements GrassService {
 		Grass grass = grassRepository.findGrassRecordExists(userId).orElse(null);
 		if (grass != null) {
 			grass.setCount(grass.getCount() + 1);
-			grassRepository.save(grass);
 			log.info("오늘 해결한 잔디 기록이 존재합니다.");
 		} else {
 			// 같은 날짜가 없다면 새로 추가한다.
@@ -32,8 +31,8 @@ public class GrassServiceImpl implements GrassService {
 				.count(1)
 				// .createdAt(LocalDate.now())
 				.build();
-			grassRepository.save(grass);
 			log.info("오늘 해결한 잔디 기록이 존재하지 않습니다.");
 		}
+		grassRepository.save(grass);
 	}
 }
