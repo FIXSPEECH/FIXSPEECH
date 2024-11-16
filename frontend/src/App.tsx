@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import ParticleBackground from "./shared/components/Visualizer/ParticleBackground";
 import Header from "./shared/components/Header/Header";
 import ProtectedRoute from "./shared/routes/ProtectedRoute";
@@ -7,6 +7,8 @@ import PublicRoute from "./shared/routes/PublicRoute";
 import NotificationListener from "./shared/components/NotificationListener";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useHistoryColorStore from "./shared/stores/historyColorStore";
+import { ColorSchemeType } from "./shared/constants/colorSchemes";
 
 // Lazy imports
 const LoginPage = lazy(() => import("./pages/Login/LoginPage"));
@@ -28,7 +30,7 @@ const TrainSelect = lazy(
 const TrainPronounce = lazy(
   () => import("./pages/PronounceTraining/TrainPronouncePage")
 );
-const Lecture = lazy(() => import("./pages/LecturePage"));
+const Lecture = lazy(() => import("./pages/Lecture/LecturePage"));
 const SelectOptions = lazy(
   () => import("./pages/SituationPractice/SelectOptionsPage")
 );
@@ -61,6 +63,46 @@ const SituationResult = lazy(
 
 // 레이아웃 컴포넌트 생성
 const Layout = () => {
+  const setSelectedColor = useHistoryColorStore(
+    (state) => state.setSelectedColor
+  );
+  const isColorCycling = useHistoryColorStore((state) => state.isColorCycling);
+
+  useEffect(() => {
+    if (!isColorCycling) return;
+
+    const colors: ColorSchemeType[] = [
+      "green",
+      "blue",
+      "yellow",
+      "red",
+      "purple",
+    ];
+    let currentIndex = 0;
+    let lastUpdate = Date.now();
+    let isActive = true;
+
+    const updateColor = () => {
+      if (!isActive) return;
+
+      const now = Date.now();
+      if (now - lastUpdate >= 50) {
+        // 50ms 간격으로 업데이트
+        currentIndex = (currentIndex + 1) % colors.length;
+        setSelectedColor(colors[currentIndex]);
+        lastUpdate = now;
+      }
+
+      requestAnimationFrame(updateColor);
+    };
+
+    requestAnimationFrame(updateColor);
+
+    return () => {
+      isActive = false;
+    };
+  }, [setSelectedColor, isColorCycling]);
+
   return (
     <>
       <ParticleBackground />
