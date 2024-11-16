@@ -13,7 +13,7 @@ function UserInfoRegistPage() {
   // useEffect 사용시 DOM 렌더링 후 처리되므로 UserInfoPage가 보이고 깜빡임.
   // 간단히 라우팅만 하기 때문에 useLayoutEffect 사용하였음.
   useLayoutEffect(() => {
-    if (userProfile?.gender && userProfile.gender !== "None") {
+    if (userProfile?.gender === "male" || userProfile?.gender === "female") {
       navigate("/");
     }
   }, [userProfile, navigate]);
@@ -21,7 +21,6 @@ function UserInfoRegistPage() {
   useEffect(() => {
     console.log("현재 유저 프로필:", userProfile);
     console.log("현재 성별:", userProfile.gender);
-    console.log("현재 성별:", gender);
     console.log("현재 에러:", error);
   }, [userProfile, gender, error]);
 
@@ -95,7 +94,7 @@ function UserInfoRegistPage() {
 
           <button
             onClick={handleSubmit}
-            className="w-full px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 
+            className="w-full px-6 py-3 bg-cyan-500W/20 hover:bg-cyan-500/30 
               text-cyan-300 rounded-lg border border-cyan-500/50 
               transition-all duration-300"
           >
