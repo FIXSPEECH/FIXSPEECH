@@ -42,7 +42,7 @@ const VoiceComparisonChart = ({ userF0Data, announcerF0Data }: Data) => {
             dataKey="index" 
             stroke="#666"
             tickLine={{ stroke: '#666' }}
-            label={{ value: '시간 [sec]', position: 'insideBottom', offset: -10, fill: '#666' }} // X축 레이블 추가
+            label={{ value: '샘플링 단위', position: 'insideBottom', offset: -10, fill: '#666' }} // X축 레이블 추가
           />
           <YAxis 
             stroke="#666"
@@ -50,7 +50,7 @@ const VoiceComparisonChart = ({ userF0Data, announcerF0Data }: Data) => {
             domain={[yMin, yMax]}
             // ticks={[ 0, 50, 100, 150, 200, 250, 300, 350]}
             tickFormatter={(value: any) => Math.abs(value).toString()}
-            label={{ value: '주파수 [HZ]', angle: -90, position: 'insideLeft', fill: '#666' }} // Y축 레이블 추가
+            label={{ value: '기본 주파수 [HZ]', angle: -90, position: 'insideLeft', fill: '#666' }} // Y축 레이블 추가
           />
           <Tooltip 
             contentStyle={{ backgroundColor: '#222', border: '1px solid #444' }}
