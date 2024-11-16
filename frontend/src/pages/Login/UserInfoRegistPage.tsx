@@ -1,35 +1,11 @@
-import { useState, useLayoutEffect, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance, { tokenRefresh } from "../../services/axiosInstance";
-import useAuthStore from "../../shared/stores/authStore";
 
 function UserInfoRegistPage() {
   const [gender, setGender] = useState<"male" | "female" | null>(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const userProfile = useAuthStore((state) => state.userProfile);
-
-  // 필요한 정보가 이미 있다면 메인 페이지로 리다이렉트
-  // useEffect 사용시 DOM 렌더링 후 처리되므로 UserInfoPage가 보이고 깜빡임.
-  // 간단히 라우팅만 하기 때문에 useLayoutEffect 사용하였음.
-  useLayoutEffect(() => {
-    if (userProfile?.gender === "male" || userProfile?.gender === "female") {
-      console.log("리다이렉트 시도:", userProfile.gender);
-      navigate("/", { replace: true });
-    }
-  }, [userProfile?.gender, navigate]);
-
-  useEffect(() => {
-    console.log("현재 유저 프로필:", userProfile);
-    console.log("현재 성별:", userProfile.gender);
-    console.log("현재 에러:", error);
-    console.log("리다이렉트 조건 확인:", {
-      gender: userProfile?.gender,
-      isMaleOrFemale:
-        userProfile?.gender === "male" || userProfile?.gender === "female",
-      typeof: typeof userProfile?.gender,
-    });
-  }, [userProfile, gender, error]);
 
   const refreshAccessToken = async () => {
     try {
