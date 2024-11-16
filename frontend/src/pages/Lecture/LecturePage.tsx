@@ -151,7 +151,7 @@ export default function LecturePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-transparent text-white">
+    <div className="min-h-[calc(100vh-4rem)] bg-transparent text-white">
       <Box sx={{ maxWidth: "1200px", margin: "0 auto" }}>
         {error && (
           <div className="text-red-500 mb-4 p-4 bg-red-500/10 rounded">
