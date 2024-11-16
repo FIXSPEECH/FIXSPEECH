@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
+import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDto;
 import com.fixspeech.spring_server.domain.user.dto.request.RequestUpdateDto;
-import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDTO;
+import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDto;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.service.TokenService;
 import com.fixspeech.spring_server.domain.user.service.UserService;
@@ -67,7 +67,7 @@ public class UserController implements UserApi {
 	@PostMapping("/regist")
 	public ResponseEntity<?> registUser(
 		@RequestPart(value = "image", required = false) MultipartFile profileImageFile,
-		@RequestPart(value = "registUserDto") RequestRegisterDTO requestDto) {
+		@RequestPart(value = "registUserDto") RequestRegisterDto requestDto) {
 		try {
 			log.info("requestDto: {}", requestDto);
 			// String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
@@ -115,7 +115,7 @@ public class UserController implements UserApi {
 				return ApiResponse.createError(ErrorCode.INVALID_TOKEN_ERROR);
 			}
 
-			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
+			ResponseRefreshTokenDto responseDTO = tokenService.reissueOAuthToken(refreshToken);
 
 			if (responseDTO == null) {
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // 401 상태 코드 설정
