@@ -1,5 +1,14 @@
-import axios, { AxiosResponse, AxiosError } from "axios";
+import axios, {
+  AxiosResponse,
+  AxiosError,
+  InternalAxiosRequestConfig,
+} from "axios";
 import useAuthStore from "../shared/stores/authStore";
+
+// 파일 상단에 타입 정의 추가
+interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 // axios 인스턴스 생성
 const axiosInstance = axios.create({
@@ -49,7 +58,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as CustomInternalAxiosRequestConfig;
 
     if (!originalRequest) {
       return Promise.reject(error);
