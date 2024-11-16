@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/youtube")
-public class YoutubeController {
+public class YoutubeController implements YoutubeApi {
 	private final YoutubeService youtubeService;
 	private final UserVoiceService userVoiceService;
 	private final UserService userService;
