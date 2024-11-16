@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance, { tokenRefresh } from "../../services/axiosInstance";
 import useAuthStore from "../../shared/stores/authStore";
@@ -13,12 +13,18 @@ function UserInfoRegistPage() {
   // useEffect 사용시 DOM 렌더링 후 처리되므로 UserInfoPage가 보이고 깜빡임.
   // 간단히 라우팅만 하기 때문에 useLayoutEffect 사용하였음.
   useLayoutEffect(() => {
-    console.log(userProfile);
-    console.log(userProfile.gender);
     if (userProfile.gender !== "None" && userProfile.gender) {
       navigate("/");
     }
   }, [userProfile, navigate]);
+
+  useEffect(() => {
+    console.log("현재 유저 프로필:", userProfile);
+    console.log("현재 성별:", userProfile.gender);
+    console.log("현재 성별:", gender);
+    console.log("현재 에러:", error);
+  }, [userProfile, gender, error]);
+
   const refreshAccessToken = async () => {
     try {
       await tokenRefresh(); // 토큰 재발급 호출
