@@ -10,7 +10,7 @@ export function VideoSection({ section }: Props) {
   const description = METRIC_DESCRIPTIONS[section.metricName] || "";
 
   const handleVideoClick = (videoId: string) => {
-    window.open(`https://www.youtube.com/watch?v=${videoId}`, "_blank");
+    window.open(videoId, "_blank");
   };
 
   return (
@@ -39,20 +39,20 @@ export function VideoSection({ section }: Props) {
             key={index}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-800/30 backdrop-blur-sm rounded-lg overflow-hidden border border-gray-700/50 cursor-pointer hover:border-[#EE719E]/50 transition-all"
+            className="cursor-pointer"
             onClick={() => handleVideoClick(video.videoId)}
           >
             <div className="aspect-video relative">
               <img
-                src={`https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`}
-                alt={video.title}
-                className="w-full h-full object-cover"
+                src={video.videoThumbnail}
+                alt={video.videoTitle}
+                className="w-full h-full object-cover rounded-lg"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-all">
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h3 className="text-white font-medium line-clamp-2 text-shadow">
-                    {video.title}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent group-hover:from-black/70 transition-all rounded-lg">
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <h3 className="text-white font-medium line-clamp-2 drop-shadow-lg">
+                    {video.videoTitle}
                   </h3>
                 </div>
               </div>

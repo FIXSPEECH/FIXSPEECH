@@ -1,10 +1,16 @@
 export interface VideoData {
-  title: string;
+  id: number;
+  keywordId: number;
+  videoTitle: string;
   videoId: string;
+  videoThumbnail: string;
 }
 
 export interface SectionData {
   title: string;
+  metricName: string;
+  grade: "excellent" | "good" | "poor";
+  value: number;
   videos: VideoData[];
 }
 
@@ -15,20 +21,12 @@ export interface AIRecommendation {
   keywords: string[];
 }
 
-export interface YouTubeVideo {
-  id: string;
-  title: string;
-  thumbnail: string;
-  channelTitle: string;
-  publishedAt: string;
-}
-
 export interface RecentAnalysis {
-  metrics: {
-    [key: string]: {
-      grade: "excellent" | "good" | "poor";
+  metrics: Record<
+    string,
+    {
       value: number;
-      interpretation: string;
-    };
-  };
+      grade: "excellent" | "good" | "poor";
+    }
+  >;
 }
