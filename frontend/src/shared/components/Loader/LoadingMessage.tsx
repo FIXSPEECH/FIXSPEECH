@@ -3,10 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const loadingMessages = [
-  "목소리 분석 결과를 기반으로 맞춤형 강의를 찾고 있어요...",
   "AI가 당신의 목소리를 더 멋지게 만들어줄 팁을 생각하고 있어요...",
-  "유튜브에서 도움이 될 만한 영상들을 찾고 있어요...",
-  "맞춤형 학습 계획을 세우고 있어요...",
   "곧 준비가 완료됩니다...",
 ];
 
