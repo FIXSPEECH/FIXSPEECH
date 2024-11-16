@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDTO;
+import com.fixspeech.spring_server.domain.user.dto.request.RequestRegisterDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,7 +23,7 @@ public interface UserApi {
 		@ApiResponse(responseCode = "400", description = "잘못된 요청"),
 		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
 	})
-	ResponseEntity<?> registUser(MultipartFile profileImageFile, RequestRegisterDTO requestDto);
+	ResponseEntity<?> registUser(MultipartFile profileImageFile, RequestRegisterDto requestDto);
 
 	@Operation(summary = "토큰 재발급 API", description = "만료된 접근 토큰을 재발급하는 API")
 	@ApiResponses(value = {

@@ -7,17 +7,17 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ResponseLoginDTO {
+public class ResponseLoginDto {
 
 	private Long userId;
 	private String email;
 	private String nickname;
 	private String profileImage;
 
-	public static ResponseLoginDTO fromEntity(Users user) {
+	public static ResponseLoginDto fromEntity(Users user) {
 		String imageUrl = user.getImage();
 		System.out.println(user.getId() + " " + user.getEmail() + " " + user.getNickName());
-		return ResponseLoginDTO.builder()
+		return ResponseLoginDto.builder()
 			.userId(user.getId())
 			.email(user.getEmail())
 			.nickname(user.getNickName())

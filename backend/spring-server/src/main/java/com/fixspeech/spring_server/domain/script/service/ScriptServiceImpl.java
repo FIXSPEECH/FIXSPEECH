@@ -198,7 +198,7 @@ public class ScriptServiceImpl implements ScriptService {
 			scriptId,
 			file.getOriginalFilename(),
 			users.getId(),
-			users.getGender()
+			users.getGender() != null ? users.getGender() : "male"
 		);
 		System.out.println(voiceAnalysisMessage);
 		kafkaTemplate.send("voice-analysis-topic", voiceAnalysisMessage)

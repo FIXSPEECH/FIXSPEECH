@@ -1,22 +1,12 @@
-import { useState, useLayoutEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance, { tokenRefresh } from "../../services/axiosInstance";
-import useAuthStore from "../../shared/stores/authStore";
 
 function UserInfoRegistPage() {
   const [gender, setGender] = useState<"male" | "female" | null>(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const userProfile = useAuthStore((state) => state.userProfile);
 
-  // 필요한 정보가 이미 있다면 메인 페이지로 리다이렉트
-  // useEffect 사용시 DOM 렌더링 후 처리되므로 UserInfoPage가 보이고 깜빡임.
-  // 간단히 라우팅만 하기 때문에 useLayoutEffect 사용하였음.
-  useLayoutEffect(() => {
-    if (userProfile.gender !== "None" && userProfile.gender) {
-      navigate("/");
-    }
-  }, [userProfile, navigate]);
   const refreshAccessToken = async () => {
     try {
       await tokenRefresh(); // 토큰 재발급 호출
@@ -87,7 +77,7 @@ function UserInfoRegistPage() {
 
           <button
             onClick={handleSubmit}
-            className="w-full px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 
+            className="w-full px-6 py-3 bg-cyan-500W/20 hover:bg-cyan-500/30 
               text-cyan-300 rounded-lg border border-cyan-500/50 
               transition-all duration-300"
           >
