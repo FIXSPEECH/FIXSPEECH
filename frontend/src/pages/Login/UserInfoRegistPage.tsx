@@ -13,6 +13,8 @@ function UserInfoRegistPage() {
   // useEffect 사용시 DOM 렌더링 후 처리되므로 UserInfoPage가 보이고 깜빡임.
   // 간단히 라우팅만 하기 때문에 useLayoutEffect 사용하였음.
   useLayoutEffect(() => {
+    console.log(userProfile);
+    console.log(userProfile.gender);
     if (userProfile.gender !== "None" && userProfile.gender) {
       navigate("/");
     }
