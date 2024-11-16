@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDTO;
+import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDto;
 import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 import com.fixspeech.spring_server.domain.user.model.RefreshToken;
 import com.fixspeech.spring_server.domain.user.model.TokenBlacklist;
@@ -53,7 +53,7 @@ public class TokenServiceImpl implements TokenService {
 	 * @return
 	 */
 	@Override
-	public ResponseRefreshTokenDTO reissueOAuthToken(String refreshToken) {
+	public ResponseRefreshTokenDto reissueOAuthToken(String refreshToken) {
 		if(isRefreshTokenBlacklisted(refreshToken)) {
 			return null;
 		}
@@ -79,7 +79,7 @@ public class TokenServiceImpl implements TokenService {
 				OAuthRefreshToken newRt = new OAuthRefreshToken(email, newRefreshToken);
 
 				oAuthRefreshRepository.save(newRt);
-				return new ResponseRefreshTokenDTO(newAccessToken, newRefreshToken);
+				return new ResponseRefreshTokenDto(newAccessToken, newRefreshToken);
 			}
 		}
 		return null;

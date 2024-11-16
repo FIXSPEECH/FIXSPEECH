@@ -1,6 +1,6 @@
 package com.fixspeech.spring_server.domain.user.service;
 
-import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDTO;
+import com.fixspeech.spring_server.domain.user.dto.response.ResponseRefreshTokenDto;
 import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 
 public interface TokenService {
@@ -8,7 +8,7 @@ public interface TokenService {
 
 	String generateRefreshToken(JwtUserClaims jwtUserClaims);
 
-	ResponseRefreshTokenDTO reissueOAuthToken(String refreshToken);
+	ResponseRefreshTokenDto reissueOAuthToken(String refreshToken);
 
 	void blacklistRefreshToken(String refreshToken);
 
