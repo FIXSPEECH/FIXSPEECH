@@ -41,19 +41,548 @@ docker-compose -f ./cert-compose.yml down
 
 
 
-## 3. DB 설치
+## 3. BE
+## application.yml
+```
+spring:
+  profiles:
+    include: oauth
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: spring-server
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: 30           # 최대 커넥션 풀 크기
+      minimum-idle: 10                # 최소 유휴 커넥션 수
+      connection-timeout: 300000      # 커넥션 타임아웃 (300초 = 5분)
+      idle-timeout: 600000           # 유휴 커넥션 타임아웃 (10분)
+      max-lifetime: 1800000          # 커넥션 최대 수명 (30분)
+  jpa:
+    properties:
+      hibernate.format_sql: true
+      dialect: org.hibernate.dialect.MySQL8InnoDBDialect
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  kafka:
+    bootstrap-servers: ${BOOTSTRAP_SERVER}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: "*"
+        message.max.bytes: 52428800  # 50MB
+        max.request.size: 52428800   # 50MB를 bytes로 변환
+        buffer.memory: 52428800
+
+    consumer:
+      group-id: voice-analysis-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        fetch.message.max.bytes: 52428800     # 50MB
+        max.partition.fetch.bytes: 52428800
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      repositories:
+        enabled: false
+
+
+server:
+  port: 8081  # 원하는 포트 번호로 변경
+
+
+
+cloud:
+  aws:
+    s3:
+      bucket: fixspeech
+    stack.auto: false
+    region.static: us-east-1
+    credentials:
+      accessKey: ${S3_ACCESS_KEY}
+      secretKey: ${S3_SECRET_KEY}
+
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+  access-token:
+    expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+  refresh-token:
+    expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+  oauth:
+    access-token:
+      expiration: ${JWT_OAUTH_ACCESS_TOKEN_EXPIRATION}
+    refresh-token:
+      expiration: ${JWT_OAUTH_REFRESH_TOKEN_EXPIRATION}
+      cookie:
+        domain: ${JWT_OAUTH_REFRESH_TOKEN_COOKIE_DOMAIN}
+frontend:
+  url: ${FRONTEND_URL}
+
+cors:
+  allowed-origin: ${CORS_ALLOWED_ORIGIN}
+  allowed-methods: ${CORS_ALLOWED_METHODS}
+
+youtube:
+  api:
+    key: ${YOUTUBE_KEY}
+
+```
+## Dockerfile
+```
+FROM openjdk:17-jdk-alpine
+
+# 작업 디렉토리 설정
+WORKDIR = /app
+
+COPY . .
+
+RUN ls -al
+
+RUN pwd
+# Gradle 빌드
+RUN rm -rf .gradle
+RUN ls -al
+RUN chmod +x ./gradlew
+#RUN ./gradlew clean build
+RUN ./gradlew clean build -x test
+
+
+RUN ls -al ./build/libs/
+RUN cp ./build/libs/app-0.0.1-SNAPSHOT.jar ./build/libs/app.jar
+
+RUN ls -al ./build/libs/
+RUN cp ./build/libs/app.jar ./app.jar
+RUN ls -al
+#COPY ./build/libs/farmer.jar ./app.jar
+
+ENV TZ=Asia/Seoul
+ENTRYPOINT ["java", "-jar", "./app.jar"]
+
+# .env 파일 복사
+COPY src/main/resources/.env src/main/resources/.env
+```
+
+ Docker container 실행
+```
+docker run -d --name spring-contianer \
+-p 8081:8081 \
+--network app-network
+semonemo
+```
+## build.gradle
+```
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.fixspeech'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    // QueryDsl
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.data:spring-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.35.0'
+
+    //youtube
+    // https://mvnrepository.com/artifact/com.google.api-client/google-api-client
+    implementation 'com.google.api-client:google-api-client:2.6.0'
+
+    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+    implementation 'com.google.apis:google-api-services-youtube:v3-rev20230816-2.0.0'
+    implementation 'com.google.http-client:google-http-client-jackson2:1.39.2'
+
+    // kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+```
+## MySQL
+
+MySQL Docker Volume 생성
+
+```
+docker volume create mysql-volume
+```
+MySQL 컨테이너 실행
+```
+docker run --rm -d --name mysql-container \
+-p 3306:3306 \
+-e MYSQL_ROOT_PASSWORD=mysqlPasssword\
+-v mysql-volume:/var/lib/mysql \
+mysql
+```
+## Kafka
+kafka-compose.yml 생성
+```
+version: '3.8'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+```
+ yml 실행
+```
+$ kafka-compose up -d
+```
+## Redis
+## redis.conf 파일 생성
+```
+# 연결 가능한 네트위크(0.0.0.0 = Anywhere)
+bind 0.0.0.0
+
+# 연결 포트
+port 6379
+
+# Master 노드의 기본 사용자 비밀번호
+requirepass {사용할 Redis 비밀번호}
+
+# 최대 사용 메모리 용량(지정하지 않으면 시스템 전체 용량)
+maxmemory 2gb
+
+# 설정된 최대 사용 메모리 용량을 초과했을때 처리 방식
+# - noeviction : 쓰기 동작에 대해 error 반환 (Default)
+# - volatile-lru : expire 가 설정된 key 들중에서 LRU algorithm 에 의해서 선택된 key 제거
+# - allkeys-lru : 모든 key 들 중 LRU algorithm에 의해서 선택된 key 제거
+# - volatile-random : expire 가 설정된 key 들 중 임의의 key 제거
+# - allkeys-random : 모든 key 들 중 임의의 key 제거
+# - volatile-ttl : expire time(TTL)이 가장 적게 남은 key 제거 (minor TTL)
+maxmemory-policy volatile-ttl
+
+# == RDB 관련 설정 ==
+
+# 15분 안에 최소 1개 이상의 key가 변경 되었을 때
+save 900 1
+# 5분 안에 최소 10개 이상의 key가 변경 되었을 때
+save 300 10
+# 60초 안에 최소 10000개 이상의 key가 변경 되었을 때
+save 60 10000
+```
+## Redis 컨테이너 실행
+```
+docker run --restart=always -d --name redis-container 
+>> -p 6379:6379 
+>> -v {redis.conf PATH}:/etc/redis/redis.conf 
+>> -v /var/lib/docker/volumes/redis_data/_data:/data 
+>> redis:latest `
+>> redis-server /etc/redis/redis.conf
+```
+
+## 4. FE
+## package.json
+```
+{
+  "name": "fixspeech",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "gen-pwa": "pwa-assets-generator --preset minimal public/icons/logo.svg"
+  },
+  "dependencies": {
+    "@ant-design/plots": "^1.2.6",
+    "@antv/g2plot": "^2.4.32",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/material": "^6.1.6",
+    "@react-three/drei": "^9.115.0",
+    "@react-three/fiber": "^8.17.10",
+    "@react-three/postprocessing": "^2.16.3",
+    "@types/styled-components": "^5.1.34",
+    "@types/three": "^0.169.0",
+    "antd": "^5.21.6",
+    "axios": "^1.7.7",
+    "cal-heatmap": "^4.2.4",
+    "chart.js": "^4.4.6",
+    "event-source-polyfill": "^1.0.31",
+    "framer-motion": "^11.11.11",
+    "jwt-decode": "^4.0.0",
+    "react": "^18.3.1",
+    "react-audio-visualize": "^1.2.0",
+    "react-calendar-heatmap": "^1.9.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0",
+    "react-speech-recognition": "^3.10.0",
+    "react-toastify": "^10.0.6",
+    "react-tooltip": "^5.28.0",
+    "recharts": "^2.13.3",
+    "styled-components": "^6.1.13",
+    "sweetalert2": "^11.14.5",
+    "three": "^0.170.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.1",
+    "@types/event-source-polyfill": "^1.0.5",
+    "@types/react": "^18.3.10",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "eslint": "^9.11.1",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.12",
+    "globals": "^15.9.0",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.7.0",
+    "vite": "^5.4.8",
+    "vite-plugin-pwa": "^0.20.5"
+  }
+}
 
 ```
 
+
+## 5. Infra
+## Nginx
+## nginx.conf 설정
 ```
+# 백엔드 서버 그룹 정의
+upstream backend {
+    server k11d206.p.ssafy.io:8081;  # 스프링 부트 백엔드
+}
+
+# FastAPI 서버 그룹 정의
+upstream fastapi {
+    server k11d206.p.ssafy.io:8000;  # FastAPI 서버
+}
+
+# HTTP to HTTPS redirection
+server {
+    listen 80;                        # HTTP 포트 80 리스닝
+    listen [::]:80;                   # IPv6 지원
+    server_name k11d206.p.ssafy.io;   # 서버 도메인 이름
+
+    # 모든 HTTP 요청을 HTTPS로 리디렉션 (301 영구 리다이렉트)
+    return 301 https://$host$request_uri;
+    
+    # 검색엔진 크롤러 차단 설정
+    location /robots.txt {
+        return 200 "User-agent: *\nDisallow: /"; # 모든 봇의 접근을 차단
+    }
+}
+
+# HTTPS 설정을 위한 메인 서버 블록
+server {
+    listen 443 ssl;                   # HTTPS 포트 443 리스닝 (SSL/TLS 활성화)
+    server_name k11d206.p.ssafy.io;   # 서버 도메인 이름
+
+    # SSL 인증서 설정 (Let's Encrypt 사용)
+    ssl_certificate /etc/nginx/ssl/fullchain.pem;      # SSL 인증서 경로
+    ssl_certificate_key /etc/nginx/ssl/privkey.pem;    # SSL 개인키 경로
+
+    # SSL 보안 설정 강화
+    ssl_protocols TLSv1.2 TLSv1.3;                    # TLS 버전 지정
+    ssl_prefer_server_ciphers on;                     # 서버 암호화 방식 우선
+    ssl_ciphers HIGH:!aNULL:!MD5;                     # 강력한 암호화 알고리즘 사용
+
+    # 웹 서버 기본 설정
+    root /usr/share/nginx/html;       # 웹 루트 디렉토리
+    index index.html;                 # 기본 인덱스 파일
+
+    # 클라이언트 요청 제한 설정
+    client_max_body_size 100M;         # 최대 업로드 크기 100MB로 제한
+    ###########
+
+     # SSE 연결을 위한 특별한 위치 설정
+    location /api/notifications/subscribe {
+        proxy_pass http://backend/notifications/subscribe;
+        proxy_set_header Connection '';  # Connection 헤더 제거
+        proxy_http_version 1.1;  # HTTP/1.1 사용
+        proxy_buffering off;  # 프록시 버퍼링 비활성화
+        proxy_cache off;  # 캐싱 비활성화
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # SSE를 위한 긴 타임아웃 설정
+        proxy_read_timeout 86400s;  # 24시간
+        proxy_send_timeout 86400s;  # 24시간
+        proxy_connect_timeout 60s;
+
+        # CORS 설정
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' '*' always;
+        
+        # OPTIONS 요청 처리
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' '*';
+            add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS';
+            add_header 'Access-Control-Allow-Headers' '*';
+            add_header 'Access-Control-Max-Age' 1728000;
+            return 204;
+        }
+    }
 
 
+    ###########
 
+    # 기본 CORS 헤더 설정
+    add_header 'Access-Control-Allow-Origin' '*';                          # 모든 도메인 허용
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';        # 허용할 HTTP 메서드
+    add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization'; # 허용할 헤더
 
+    # FastAPI 서버로의 프록시 설정
+    location /fastapi/ {
+        proxy_pass http://fastapi/;    # FastAPI 서버로 요청 전달
+        
+        # 프록시 헤더 설정
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # WebSocket 지원 설정
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
 
+         # CORS 설정을 여기서는 제거하고 FastAPI에서만 처리하도록 함
+        proxy_hide_header 'Access-Control-Allow-Origin';
+        proxy_hide_header 'Access-Control-Allow-Methods';
+        proxy_hide_header 'Access-Control-Allow-Headers';
+    }
 
+    # 스프링 부트 API 요청 처리 설정
+    location /api/ {
+        # 로깅 설정
+        error_log /var/log/nginx/api_error.log debug;  # 에러 로그
+        access_log /var/log/nginx/api_access.log;      # 접근 로그
 
-## 4. Jenkins - CI/CD
+        # 백엔드 서버로 프록시
+        proxy_pass http://backend/;    # 백엔드 서버로 요청 전달
+        
+        # 프록시 버퍼 설정
+        proxy_buffers 16 32k;          # 버퍼 크기 및 개수
+        proxy_buffer_size 32k;         # 초기 버퍼 크기
+        
+        # 프록시 헤더 설정
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # 타임아웃 설정 (300초)
+        proxy_connect_timeout 300;     # 연결 타임아웃
+        proxy_send_timeout 300;        # 전송 타임아웃
+        proxy_read_timeout 300;        # 읽기 타임아웃
+
+        # CORS 프리플라이트 요청 처리
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' '*' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, PATCH, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' '*' always;
+            add_header 'Access-Control-Max-Age' 1728000 always;  # 프리플라이트 캐시 시간 (20일)
+            return 204;  # No Content 응답
+        }
+
+        # 일반 요청에 대한 CORS 헤더
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, PATCH, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' '*' always;
+    }
+
+    # 정적 파일 처리 설정
+    location ~* \.(js|css|html|jpg|jpeg|png|gif|ico)$ {
+        try_files $uri =404;           # 파일이 없으면 404 에러
+    }
+
+    # SPA를 위한 기본 라우팅 설정
+    location / {
+        try_files $uri $uri/ /index.html;  # SPA 라우팅을 위한 폴백
+    }
+
+    # 검색엔진 크롤러 차단 설정
+    location /robots.txt {
+        return 200 "User-agent: *\nDisallow: /";  # 모든 봇의 접근을 차단
+    }
+}
+
+```
 
 ```
 
@@ -70,13 +599,10 @@ docker-compose -f ./cert-compose.yml down
 # 버전
 
 ### Backend
-- OpenJDK : 
-- Spring Boot : 
-- Spring Data JPA : 
-- JUnit : 
-- Nginx : 
-- MySQL : 
-- Node.js : 
+- OpenJDK : 17
+- Spring : 3.3.4
+- Nginx : 1.27.2
+- MySQL : 8.0.21
 - FastAPI : 
 
 ### CI/CD
