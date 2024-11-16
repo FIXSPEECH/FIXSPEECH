@@ -2,6 +2,7 @@ package com.fixspeech.spring_server.domain.user.controller;
 
 import java.util.Optional;
 
+import com.fixspeech.spring_server.utils.ErrorResponseUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -117,6 +118,8 @@ public class UserController implements UserApi {
 			ResponseRefreshTokenDTO responseDTO = tokenService.reissueOAuthToken(refreshToken);
 
 			if (responseDTO == null) {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // 401 상태 코드 설정
+				ErrorResponseUtil.sendErrorResponse(response, ErrorCode.INVALID_JWT_TOKEN);
 				throw new IllegalArgumentException("Refresh Token이 만료되었거나 존재하지 않습니다.");
 			}
 
