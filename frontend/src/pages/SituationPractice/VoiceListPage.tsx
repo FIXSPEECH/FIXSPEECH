@@ -96,7 +96,7 @@ function VoiceList() {
                   <div className="flex items-center">
                     <div className="text-[#FFAB01] text-sm mr-2">등록일: {script.createdAt}</div>
 
-                    <DeleteIcon onClick={() => handleDelete(script.resultId)} />
+                    <DeleteIcon onClick={() => handleDelete(script.resultId)} strokeColor='#FFAB01'/>
                   </div>
                 </div>
               </div>
