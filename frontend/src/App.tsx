@@ -1,4 +1,9 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
 import { Suspense, useEffect } from "react";
 import ParticleBackground from "./shared/components/Visualizer/ParticleBackground";
 import Header from "./shared/components/Header/Header";
@@ -37,6 +42,9 @@ import SituationResult from "./pages/SituationPractice/SituationResultPage";
 
 // 레이아웃 컴포넌트 생성
 const Layout = () => {
+  const location = useLocation();
+  const showHeader = location.pathname !== "/user-info";
+
   const setSelectedColor = useHistoryColorStore(
     (state) => state.setSelectedColor
   );
@@ -81,7 +89,7 @@ const Layout = () => {
     <>
       <ParticleBackground />
       <NotificationListener />
-      <Header />
+      {showHeader && <Header />}
       <ToastContainer />
       <Suspense fallback={<div></div>}>
         <Outlet />
