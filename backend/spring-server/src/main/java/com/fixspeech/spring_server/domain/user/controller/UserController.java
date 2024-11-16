@@ -96,9 +96,11 @@ public class UserController implements UserApi {
 		return ApiResponse.success("사용자 정보 수정 성공");
 	}
 
+
 	/**
-	 * Token 재발급
-	 * @return accessToken
+	 * @param response		response
+	 * @param refreshToken	refresh-token
+	 * @return	accessToken	accessToken
 	 */
 	@PostMapping("public/reissue")
 	public ApiResponse<?> reissueToken(
