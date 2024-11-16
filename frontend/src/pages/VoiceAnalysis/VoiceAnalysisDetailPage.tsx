@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
 import VoiceMetricCard from "../../shared/components/VoiceQuality/VoiceMetricCard";
@@ -6,6 +6,8 @@ import MetricsVisualizer from "../../shared/components/VoiceQuality/MetricsVisua
 import { METRIC_CRITERIA } from "../../shared/constants/voiceMetrics";
 import GradientCirclePlanes from "../../shared/components/Loader/GradientCirclePlanes";
 import useHistoryColorStore from "../../shared/stores/historyColorStore";
+import { Canvas } from "@react-three/fiber";
+import AudioCubeVisualizer from "../../shared/components/Visualizer/AudioCubeVisualizer";
 
 interface AnalysisDetailResponse {
   analyzeResult: {
@@ -35,6 +37,9 @@ const VoiceAnalysisDetailPage = () => {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const { selectedColor } = useHistoryColorStore();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -45,9 +50,23 @@ const VoiceAnalysisDetailPage = () => {
       try {
         const response = await axiosInstance.get(`/record/${id}`);
         setAnalysisData(response.data.data);
-        // 오디오 객체 생성
+
+        // 오디오 객체 생성 및 설정
         const audioObj = new Audio(response.data.data.recordAddress);
+        audioObj.crossOrigin = "anonymous"; // CORS 설정
         setAudio(audioObj);
+        audioRef.current = audioObj;
+
+        // AudioContext 설정
+        const context = new AudioContext();
+        const audioSource = context.createMediaElementSource(audioObj);
+        const audioAnalyser = context.createAnalyser();
+
+        audioSource.connect(audioAnalyser);
+        audioAnalyser.connect(context.destination);
+
+        setAudioContext(context);
+        setAnalyser(audioAnalyser);
       } catch (error) {
         setError("분석 데이터를 불러오는데 실패했습니다.");
       } finally {
@@ -56,6 +75,12 @@ const VoiceAnalysisDetailPage = () => {
     };
 
     fetchAnalysisDetail();
+
+    return () => {
+      if (audioContext) {
+        audioContext.close();
+      }
+    };
   }, [id]);
 
   const handlePlayPause = () => {
@@ -122,20 +147,33 @@ const VoiceAnalysisDetailPage = () => {
           <span className="text-gray-400">{analysisData.createdAt}</span>
         </div>
 
-        {/* 오디오 플레이어 */}
-        <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 mb-8 flex justify-between">
-          <button
-            onClick={handlePlayPause}
-            className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors"
-          >
-            {isPlaying ? "일시정지" : "음성 재생"}
-          </button>
-          <button
-            onClick={() => navigate("/analysis")}
-            className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors"
-          >
-            목록으로 돌아가기
-          </button>
+        {/* 오디오 플레이어 섹션에 Visualizer 추가 */}
+        <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 mb-8">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handlePlayPause}
+              className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors"
+            >
+              {isPlaying ? "일시정지" : "음성 재생"}
+            </button>
+
+            {/* Visualizer 캔버스 */}
+            <div className="h-12 w-12 bg-gray-900/30 rounded-lg overflow-hidden">
+              <Canvas>
+                <AudioCubeVisualizer
+                  analyser={analyser}
+                  isPlaying={isPlaying}
+                />
+              </Canvas>
+            </div>
+
+            <button
+              onClick={() => navigate("/analysis")}
+              className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors ml-auto"
+            >
+              목록으로 돌아가기
+            </button>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">

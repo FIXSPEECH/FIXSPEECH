@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import {
   BoxGeometry,
@@ -51,83 +51,21 @@ const VISUALIZER_CONFIG = {
   MIN_SATURATION: 0.7, // 최소 채도
 };
 
-const AudioCubeVisualizer = () => {
+interface AudioCubeVisualizerProps {
+  analyser: AnalyserNode | null;
+  isPlaying: boolean;
+}
+
+const AudioCubeVisualizer = ({
+  analyser,
+  isPlaying,
+}: AudioCubeVisualizerProps) => {
   const groupRef = useRef<Group>(null!);
   const meshRef = useRef<InstancedMesh>(null!);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
   const dataArrayRef = useRef<Uint8Array | null>(null);
 
-  const [isListening, setIsListening] = useState(false);
+  // const [isListening, setIsListening] = useState(false);
   const tmpMatrix = useMemo(() => new Matrix4(), []);
-
-  // 오디오 컨텍스트 초기화 및 마이크 연결
-  useEffect(() => {
-    const initAudio = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        audioContextRef.current = new AudioContext();
-        analyserRef.current = audioContextRef.current.createAnalyser();
-        const source = audioContextRef.current.createMediaStreamSource(stream);
-
-        analyserRef.current.fftSize = VISUALIZER_CONFIG.FFT_SIZE;
-        source.connect(analyserRef.current);
-
-        const bufferLength = analyserRef.current.frequencyBinCount;
-        dataArrayRef.current = new Uint8Array(bufferLength);
-
-        setIsListening(true);
-      } catch (err) {
-        console.error("마이크 접근 오류:", err);
-      }
-    };
-
-    initAudio();
-
-    return () => {
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
-    };
-  }, []);
-
-  // 큐브 색상 초기화
-  useEffect(() => {
-    if (!meshRef.current) return;
-
-    const { N_PER_SIDE } = VISUALIZER_CONFIG;
-    const center = (N_PER_SIDE - 1) / 2;
-
-    for (let row = 0; row < N_PER_SIDE; row++) {
-      for (let col = 0; col < N_PER_SIDE; col++) {
-        for (let depth = 0; depth < N_PER_SIDE; depth++) {
-          const instanceIdx = row * N_PER_SIDE ** 2 + col * N_PER_SIDE + depth;
-
-          const distanceFromCenter =
-            Math.sqrt(
-              Math.pow(row - center, 2) +
-                Math.pow(col - center, 2) +
-                Math.pow(depth - center, 2)
-            ) /
-            (center * Math.sqrt(3));
-
-          const angleFromCenter =
-            Math.atan2(row - center, col - center) / (2 * Math.PI) + 0.5;
-
-          const color = new Color();
-          color.lerpColors(
-            VISUALIZER_CONFIG.COLOR_START,
-            VISUALIZER_CONFIG.COLOR_END,
-            (angleFromCenter + distanceFromCenter) * 0.5
-          );
-          meshRef.current.setColorAt(instanceIdx, color);
-        }
-      }
-    }
-    meshRef.current.instanceColor!.needsUpdate = true;
-  }, []);
 
   // 애니메이션 프레임 업데이트
   useFrame(() => {
@@ -137,9 +75,9 @@ const AudioCubeVisualizer = () => {
     groupRef.current.rotation.y += VISUALIZER_CONFIG.ROTATION_SPEED;
     groupRef.current.rotation.x += VISUALIZER_CONFIG.ROTATION_SPEED * 0.5;
 
-    if (!isListening || !analyserRef.current || !dataArrayRef.current) return;
+    if (!isPlaying || !analyser || !dataArrayRef.current) return;
 
-    analyserRef.current.getByteFrequencyData(dataArrayRef.current);
+    analyser.getByteFrequencyData(dataArrayRef.current);
     const { N_PER_SIDE, CUBE_SIDE_LENGTH, CUBE_SPACING_SCALAR } =
       VISUALIZER_CONFIG;
     const faceSize = N_PER_SIDE * (1 + CUBE_SPACING_SCALAR) * CUBE_SIDE_LENGTH;
