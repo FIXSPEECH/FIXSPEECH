@@ -95,7 +95,7 @@ function SelectResult() {
                     <div className="text-[#FFAB01] text-sm mr-2">
                       등록일: {script.createdAt}
                     </div>
-                    <DeleteIcon onClick={() => handleDelete(script.scriptId)} />
+                    <DeleteIcon onClick={() => handleDelete(script.scriptId)} strokeColor='#FFAB01'/>
                   </div>
                 </div>
               </div>
