@@ -18,6 +18,7 @@ interface VoiceData {
     metrics: {
       [key: string]: Metric;
     };
+    overallScore:number;
   };
   title: string;
   recordAddress: string;
@@ -98,6 +99,7 @@ function RecentVoice() {
     try {
       const response = await axiosInstance.get<ApiResponse>("/record/recent");
       if (response.data.status === "C000") {
+        // console.log(response.data)
         setVoiceData(response.data.data);
       }
     } catch (error) {
@@ -109,23 +111,6 @@ function RecentVoice() {
     fetchVoiceData();
   }, []);
 
-  const getOverallScore = () => {
-    if (!voiceData?.analyzeResult?.metrics) return 0;
-
-    const metrics = voiceData.analyzeResult.metrics;
-    const gradePoints = {
-      excellent: 3,
-      good: 2,
-      poor: 1,
-    };
-
-    const total = Object.values(metrics).reduce(
-      (sum, metric) => sum + gradePoints[metric?.grade || "poor"],
-      0
-    );
-
-    return Math.round((total / (Object.keys(metrics).length * 3)) * 100);
-  };
 
   return (
     <div className="mx-[2%] overflow-hidden">
@@ -145,7 +130,7 @@ function RecentVoice() {
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <div className="text-3xl font-bold text-blue-400/50 mb-1">
-                  {voiceData ? getOverallScore() : "--"}점
+                  {voiceData ? voiceData.analyzeResult.overallScore : "--"}점
                 </div>
                 <p className="text-gray-400 text-xs">종합 점수</p>
               </div>

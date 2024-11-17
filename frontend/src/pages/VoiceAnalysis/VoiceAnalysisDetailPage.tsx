@@ -18,6 +18,8 @@ interface AnalysisDetailResponse {
         interpretation: string;
       };
     };
+    recommendations:string[];
+    overallScore:number;
   };
   title: string;
   recordAddress: string;
@@ -76,17 +78,6 @@ const VoiceAnalysisDetailPage = () => {
     if (score >= 60)
       return { color: "#FFD700", shadow: "0 0 20px rgba(255, 215, 0, 0.5)" };
     return { color: "#FF4D4D", shadow: "0 0 20px rgba(255, 77, 77, 0.5)" };
-  };
-
-  // 점수 계산 함수 추가
-  const calculateOverallScore = (
-    metrics: AnalysisDetailResponse["analyzeResult"]["metrics"]
-  ) => {
-    const grades = Object.values(metrics).map((m) => m.grade);
-    const excellent = grades.filter((g) => g === "excellent").length;
-    const good = grades.filter((g) => g === "good").length;
-
-    return (excellent * 100 + good * 70) / grades.length;
   };
 
   if (loading)
@@ -149,15 +140,14 @@ const VoiceAnalysisDetailPage = () => {
                   className="text-6xl font-bold mb-2"
                   style={{
                     color: getScoreColor(
-                      calculateOverallScore(analysisData.analyzeResult.metrics)
+                      (analysisData.analyzeResult.overallScore)
                     ).color,
-                    textShadow: getScoreColor(
-                      calculateOverallScore(analysisData.analyzeResult.metrics)
+                    textShadow: getScoreColor(analysisData.analyzeResult.overallScore
                     ).shadow,
                   }}
                 >
-                  {calculateOverallScore(
-                    analysisData.analyzeResult.metrics
+                  {(
+                    analysisData.analyzeResult.overallScore
                   ).toFixed(1)}
                 </div>
                 <p className="text-gray-400">100점 만점</p>
@@ -176,6 +166,29 @@ const VoiceAnalysisDetailPage = () => {
 
           {/* 상세 분석 결과 */}
           <div className="lg:col-span-2">
+            {/* recommendations */}
+            <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 hover:border-cyan-500/50 mb-8">
+              <h2 className="text-lg font-bold mb-4">추천사항</h2>
+              <div className="flex gap-6">
+                <div className="flex-1">
+                  {analysisData.analyzeResult.recommendations?.length > 0 ? (
+                    <ul className="list-disc pl-5 space-y-2">
+                      {analysisData.analyzeResult.recommendations.map((rec, idx) => (
+                        <li key={idx} className="text-gray-300 p-2 rounded bg-gray-700/30 border border-gray-600/50">
+                          {rec}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="text-gray-300 text-center p-4 bg-emerald-500/10 rounded border border-emerald-500/30">
+                      <p className="mb-2 text-emerald-400">✨ 훌륭한 음성 품질을 보여주고 계십니다!</p>
+                      <p className="text-emerald-300">현재의 좋은 발성을 유지하면서 더욱 자신감 있게 말씀해보세요.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(analysisData.analyzeResult.metrics).map(
                 ([name, data]) => (
