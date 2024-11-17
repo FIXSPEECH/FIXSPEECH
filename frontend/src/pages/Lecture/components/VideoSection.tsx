@@ -40,7 +40,7 @@ export function VideoSection({ section }: Props) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {section.videos.map((video, index) => (
+        {section.videos.map((video) => (
           <motion.button
             key={video.videoId} // index를 key로 사용하지 않도록 수정
             initial={{ opacity: 0, y: 20 }}
