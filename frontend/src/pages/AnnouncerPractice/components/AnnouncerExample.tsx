@@ -144,7 +144,7 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
       const response = await announcerFinishPost();
       void response; // 주석된 콘솔 출력 유지용. 빌드오류 방지용 코드로 역할 없음
       // console.log(response)
-    } catch (e) {
+    } catch (_e) {
       // console.log(e)
     }
   };
@@ -159,34 +159,43 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
   return (
     <>
       <div className="flex justify-center items-center w-screen">
-        <div style={{ width: `${size}rem`, height: `${size}rem` }}>
+        <div className="flex items-center">
           {announcerUrl && (
             <div>
               <audio
                 ref={audioRef}
                 src={announcerUrl}
                 onEnded={() => setIsPlaying(false)} // 오디오가 끝나면 상태를 다시 false로 설정
+                aria-label="아나운서 음성 예시"
               />
-              <VolumeDownIcon
+              <button
                 onClick={handlePlayAudio}
-                style={{ cursor: "pointer", color, fontSize: `${size}rem` }}
-                className="mb-6"
-              />
+                aria-label={isPlaying ? "음성 일시정지" : "음성 재생"}
+              >
+                <VolumeDownIcon
+                  style={{ cursor: "pointer", color, fontSize: `${size}rem` }}
+                  className="mb-6"
+                />
+              </button>
             </div>
           )}
-        </div>
-
-        <div className="text-[#B18CFE] break-words mt-10 sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl text-center mr-20 ">
-          {example}
+          <div className="text-[#B18CFE] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl text-center ml-8">
+            {example}
+          </div>
         </div>
       </div>
 
       {/* ArrowRight 컴포넌트 */}
       <div className="ml-auto mr-10 flex">
-        <ArrowRight onClick={isNext ? getExample : undefined} color="#B18CFE" />
+        <ArrowRight
+          onClick={isNext ? getExample : undefined}
+          color="#B18CFE"
+          aria-label="다음 문장으로 이동"
+          aria-disabled={!isNext}
+        />
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center" aria-live="polite">
         {isLoading && <SpinnerOrbits size={100} />}
       </div>
 

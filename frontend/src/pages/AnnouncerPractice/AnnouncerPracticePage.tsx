@@ -52,10 +52,11 @@ function AnnouncerPractice() {
         }}
         style={{ marginLeft: "3%" }}
         onClick={handleClick}
+        aria-label="연습 종료하기"
       >
         종료하기
       </Button>
-      <div className="min-h-[70vh] flex justify-center">
+      <main className="min-h-[70vh] flex justify-center">
         <div className="flex flex-col justify-center align-middle">
           <AnnouncerExample color={"#B18CFE"} size={3} />
           {/* <Recorder color={"#D5C6F5"} barColor={"rgb(177,140,254)"} width={300} height={75} visualizeWidth="300px" modalType="record"/> */}
@@ -77,24 +78,26 @@ function AnnouncerPractice() {
               <div
                 className="w-full md:w-[600px]" // 기본은 600px, 모바일에서는 전체 너비
                 style={{ height: "auto" }} // 모바일 크기 줄임
+                role="region"
+                aria-label="음성 비교 차트"
               >
                 <VoiceComparisonChart
                   userF0Data={user}
                   announcerF0Data={announcer}
                 />
-                <div className="text-[#B18CFE] flex justify-center mt-5">
+                <p className="text-[#B18CFE] flex justify-center mt-5">
                   {" "}
                   *해당 그래프의 주파수는 말의 억양을 나타내고 있습니다.
-                </div>
-                <div className="text-[#B18CFE] flex justify-center mb-5">
+                </p>
+                <p className="text-[#B18CFE] flex justify-center mb-5">
                   {" "}
                   아나운서와 비슷한 억양으로 말해보세요.
-                </div>
+                </p>
               </div>
             ) : null}
           </div>
         </div>
-      </div>
+      </main>
 
       <FinishModal isOpen={showModal} onClose={closeModal} />
     </>
