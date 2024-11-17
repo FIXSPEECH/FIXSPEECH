@@ -33,8 +33,8 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	 */
 	@Override
 	public SmallAnnouncerVoiceSampleResponseDto getOneAnnouncerData(String gender) {
-		List<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findBySpeakerGender(gender.equals("male") ? "남성" : "여성");
-		log.info("아나운서 음성 크기={}", announcerVoiceSamples.size());
+		List<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findBySpeakerGender(
+			gender.equals("male") ? "남성" : "여성");
 
 		if (announcerVoiceSamples.isEmpty()) {
 			return null; // 해당 성별의 아나운서 음성 샘플이 없다면 null 반환
@@ -42,7 +42,7 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 
 		// 랜덤 인덱스 생성
 		long idx = (long)(Math.random() * announcerVoiceSamples.size());
-		AnnouncerVoiceSample announcerVoiceSample = announcerVoiceSamples.get((int) idx);
+		AnnouncerVoiceSample announcerVoiceSample = announcerVoiceSamples.get((int)idx);
 
 		// 조회한 아나운서 음성 샘플을 DTO로 변환하여 반환
 		return SmallAnnouncerVoiceSampleResponseDto.from(announcerVoiceSample);
@@ -60,14 +60,10 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 		Page<AnnouncerVoiceSample> announcerVoiceSamples = announcerVoiceSampleRepository.findAll(pageable);
 
 		// AnnouncerVoiceSample -> AnnouncerVoiceSampleResponseDto로 변환하여 Page로 반환
-		Page<SmallAnnouncerVoiceSampleResponseDto> announcerVoiceSampleResponseDtos = announcerVoiceSamples.map(SmallAnnouncerVoiceSampleResponseDto::from);
-		if (announcerVoiceSampleResponseDtos.isEmpty()) {
-			log.info("없음");
-		}
-		log.info("pageEnd");
+		Page<SmallAnnouncerVoiceSampleResponseDto> announcerVoiceSampleResponseDtos = announcerVoiceSamples.map(
+			SmallAnnouncerVoiceSampleResponseDto::from);
 		return announcerVoiceSampleResponseDtos;
 	}
-
 
 	/**
 	 * 사용자가 녹음한 아나운서 음성 분석 결과 단일 조회
@@ -76,7 +72,8 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	 */
 	@Override
 	public UserAnnouncerVoiceComparisonResponseDto getOneUserToAnnouncerVoiceComparison(Long id) {
-		UserAnnouncerVoiceComparisonResult userAnnouncerVoiceComparisonResult = userAnnouncerVoiceComparisonRepository.findById(id).orElse(null);
+		UserAnnouncerVoiceComparisonResult userAnnouncerVoiceComparisonResult = userAnnouncerVoiceComparisonRepository.findById(
+			id).orElse(null);
 		if (userAnnouncerVoiceComparisonResult == null) {
 			return null;
 		}
@@ -92,9 +89,11 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	 * @return Page<UserAnnouncerVoiceComparisonResponseDto>
 	 */
 	@Override
-	public Page<UserAnnouncerVoiceComparisonResponseDto> getAllUserToAnnouncerVoiceComparison(int pageNo, String criteria, Long userId) {
+	public Page<UserAnnouncerVoiceComparisonResponseDto> getAllUserToAnnouncerVoiceComparison(int pageNo,
+		String criteria, Long userId) {
 		Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
-		Page<UserAnnouncerVoiceComparisonResult> all = userAnnouncerVoiceComparisonRepository.findByUserId(pageable, userId);
+		Page<UserAnnouncerVoiceComparisonResult> all = userAnnouncerVoiceComparisonRepository.findByUserId(pageable,
+			userId);
 		return all.map(UserAnnouncerVoiceComparisonResponseDto::from);
 	}
 
@@ -107,7 +106,9 @@ public class AnnouncerServiceImpl implements AnnouncerService {
 	 * @return 저장된 정보의 PK
 	 */
 	@Override
-	public Long saveComparisonResult(CompareResultRequestDto compareResultRequestDto, String recordAddress, Long userId) {
-		return userAnnouncerVoiceComparisonRepository.save(CompareResultRequestDto.toEntity(compareResultRequestDto, userId, recordAddress)).getId();
+	public Long saveComparisonResult(CompareResultRequestDto compareResultRequestDto, String recordAddress,
+		Long userId) {
+		return userAnnouncerVoiceComparisonRepository.save(
+			CompareResultRequestDto.toEntity(compareResultRequestDto, userId, recordAddress)).getId();
 	}
 }
