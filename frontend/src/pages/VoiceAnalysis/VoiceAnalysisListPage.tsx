@@ -6,9 +6,8 @@ import Pagination from "@mui/material/Pagination";
 import MetricsVisualizer from "../../shared/components/VoiceQuality/MetricsVisualizer";
 import { DeleteIcon } from "../../shared/components/Icons/DeleteIcon";
 import Swal from "sweetalert2";
-import "../SituationPractice/SwalStyles.css"
+import "../SituationPractice/SwalStyles.css";
 import { AnalysisDelete } from "../../services/VoiceAnalysis/VoiceAnalysisPost";
-
 
 function VoiceAnalysisListPage() {
   const navigate = useNavigate();
@@ -16,7 +15,6 @@ function VoiceAnalysisListPage() {
     null
   );
   const [page, setPage] = useState(1);
-  
 
   const fetchAnalysisList = async (pageNum: number) => {
     try {
@@ -46,7 +44,6 @@ function VoiceAnalysisListPage() {
     return "개선 필요";
   };
 
-
   const handleDelete = (recordId: number) => {
     Swal.fire({
       title: "대본을 삭제하시겠습니까?",
@@ -67,9 +64,10 @@ function VoiceAnalysisListPage() {
 
           setAnalysisData((prevData) => ({
             ...prevData!,
-            content: prevData!.content.filter(item => item.recordId !== recordId),
+            content: prevData!.content.filter(
+              (item) => item.recordId !== recordId
+            ),
           }));
-          
         } catch (e) {
           console.log(e);
         }
@@ -79,40 +77,39 @@ function VoiceAnalysisListPage() {
   };
 
   return (
-    <div className="voice-analysis-list p-8 lg:max-w-5xl lg:mx-auto">
-      <h2 className="text-3xl font-bold text-white mb-6">음성 분석 목록</h2>
+    <div className="voice-analysis-list p-4 md:p-8 lg:max-w-5xl lg:mx-auto">
+      <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 md:mb-6">
+        음성 분석 목록
+      </h2>
       {analysisData?.content.length ? (
         <>
-          <div className="analysis-items bg-white/10 backdrop-blur-sm rounded-lg p-6 space-y-4">
+          <div className="analysis-items bg-white/10 backdrop-blur-sm rounded-lg p-4 md:p-6 space-y-4">
             {analysisData.content.map((item) => (
               <div
                 key={item.recordId}
-                className="p-4 border-b border-white/30 hover:bg-white/10 transition-colors cursor-pointer"
+                className="p-3 md:p-4 border-b border-white/30 hover:bg-white/10 transition-colors cursor-pointer"
                 onClick={() => navigate(`/analysis/${item.recordId}`)}
               >
-                <div className="flex justify-between items-start gap-4">
-                  <div className="flex-1">
-
-
-
-                    <div className="flex justify-between items-center mb-3">
-                      <div className="flex items-center gap-2">
-                          <h3 className="text-xl font-semibold text-white">
-                            {item.title}
-                          </h3>
-                          <DeleteIcon onClick={() => handleDelete(item.recordId)} strokeColor='#4CC9FE' />
+                <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                  <div className="flex-1 w-full">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
+                      <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                        <h3 className="text-lg md:text-xl font-semibold text-white">
+                          {item.title}
+                        </h3>
+                        <DeleteIcon
+                          onClick={() => handleDelete(item.recordId)}
+                          strokeColor="#4CC9FE"
+                        />
                       </div>
                       <span className="text-sm text-white/80">
                         {item.createdAt}
                       </span>
                     </div>
 
-
-
-
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4">
                       <div
-                        className={`px-4 py-1.5 rounded-full text-center whitespace-nowrap ${
+                        className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-center whitespace-nowrap ${
                           calculateOverallGrade(item.analyzeResult.metrics) ===
                           "최상"
                             ? "bg-emerald-500/30 text-emerald-300 border border-emerald-400/50"
@@ -125,7 +122,7 @@ function VoiceAnalysisListPage() {
                       >
                         {calculateOverallGrade(item.analyzeResult.metrics)}
                       </div>
-                      <div className="flex gap-4 text-white/90">
+                      <div className="flex flex-col sm:flex-row gap-2 md:gap-4 text-white/90 text-sm md:text-base">
                         <div className="flex items-center gap-2">
                           <span>명료도:</span>
                           <span
@@ -145,7 +142,7 @@ function VoiceAnalysisListPage() {
                             }
                           </span>
                         </div>
-                        <span className="text-white/30">|</span>
+                        <span className="hidden sm:block text-white/30">|</span>
                         <div className="flex items-center gap-2">
                           <span>발화 에너지:</span>
                           <span
@@ -168,7 +165,7 @@ function VoiceAnalysisListPage() {
                             }
                           </span>
                         </div>
-                        <span className="text-white/30">|</span>
+                        <span className="hidden sm:block text-white/30">|</span>
                         <div className="flex items-center gap-2">
                           <span>멜로디:</span>
                           <span
@@ -194,7 +191,7 @@ function VoiceAnalysisListPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="w-[100px] h-[100px] flex-shrink-0">
+                  <div className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] flex-shrink-0 mx-auto md:mx-0">
                     <MetricsVisualizer
                       metrics={item.analyzeResult.metrics}
                       showLabels={false}
@@ -232,7 +229,7 @@ function VoiceAnalysisListPage() {
           </div>
         </>
       ) : (
-        <p className="text-center text-white p-10 bg-white/10 backdrop-blur-sm rounded-lg mt-6">
+        <p className="text-center text-white p-6 md:p-10 bg-white/10 backdrop-blur-sm rounded-lg mt-4 md:mt-6">
           분석 기록이 없습니다.
         </p>
       )}
