@@ -107,3 +107,84 @@ SSAFY 11기 2학기 자율 프로젝트
 # System Architecture
 
 ![image.png](./docs/FIXSPEECH_시스템아키텍쳐.png)
+
+## 프로젝트 구조
+
+<table style="align=center">
+<tr style="vertical-align: top;">
+<td>
+<div>
+<p style="font-weight: bold">frontend</p>
+
+```bash
+frontend
+├── public
+│   ├── buttons
+│   └── icons
+└── src
+    ├── pages
+    │   ├── AnnouncerPractice
+    │   ├── Game
+    │   ├── Lecture
+    │   ├── Login
+    │   ├── MainPage
+    │   ├── PronounceTraining
+    │   ├── SituationPractice
+    │   └── VoiceAnalysis
+    ├── services
+    │   ├── AnnouncerPractice
+    │   ├── Game
+    │   ├── PronouncePractice
+    │   ├── SituationPractice
+    │   └── VoiceAnalysis
+    └── shared
+        ├── components
+        │   ├── Header
+        │   ├── Icons
+        │   ├── Loader
+        │   ├── PracticePronounce
+        │   ├── Visualizer
+        │   └── VoiceQuality
+        ├── constants
+        ├── routes
+        ├── sounds
+        ├── stores
+        ├── styles
+        └── types
+```
+
+</div>
+</td>
+<td>
+<div>
+<p style="font-weight: bold">backend</p>
+
+```bash
+backend
+├── config
+│   ├── kafka
+│   ├── redis
+│   └── s3
+├── domain
+│   ├── announcer
+│   ├── game
+│   ├── grass
+│   ├── notification
+│   ├── oauth
+│   ├── record
+│   ├── script
+│   ├── training
+│   ├── user
+│   └── youtube
+├── filter
+├── global
+│   ├── common
+│   └── exception
+└── utils
+
+```
+
+</div>
+</td>
+</tr>
+</table>
