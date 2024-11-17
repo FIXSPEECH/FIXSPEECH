@@ -122,7 +122,7 @@ public class ScriptServiceImpl implements ScriptService {
 	}
 
 	@Override
-	public void save(String s3Url, Long scriptId, Map<String, Object> responseBody) {
+	public Long save(String s3Url, Long scriptId, Map<String, Object> responseBody) {
 		Script script = findScript(scriptId);
 		ScriptAnalyzeResult scriptJson = ScriptAnalyzeResult.builder()
 			.recordAddress(s3Url)
@@ -130,6 +130,8 @@ public class ScriptServiceImpl implements ScriptService {
 			.data(responseBody)
 			.build();
 		scriptAnalyzeResultRepository.save(scriptJson);
+		ScriptAnalyzeResult newResult = scriptAnalyzeResultRepository.findTopByScriptOrderByCreatedAtDesc(script);
+		return newResult.getId();
 	}
 
 	@Override

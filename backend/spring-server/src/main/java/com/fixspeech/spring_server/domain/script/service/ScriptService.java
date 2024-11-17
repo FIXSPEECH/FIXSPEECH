@@ -24,7 +24,7 @@ public interface ScriptService {
 
 	void deleteScript(Users users, Long scriptId);
 
-	void save(String s3Url, Long scriptId, Map<String, Object> responseBody);
+	Long save(String s3Url, Long scriptId, Map<String, Object> responseBody);
 
 	ScriptAnalyzeResponseDto getResult(Long resultId, Users users);
 
