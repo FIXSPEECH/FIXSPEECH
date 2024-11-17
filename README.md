@@ -108,9 +108,9 @@ SSAFY 11기 2학기 자율 프로젝트
 
 ![image.png](./docs/FIXSPEECH_시스템아키텍쳐.png)
 
-## 프로젝트 구조
+# Project Folder Structure
 
-<table style="align=center">
+<table>
 <tr style="vertical-align: top;">
 <td>
 <div>
