@@ -161,8 +161,8 @@ public class ScriptController implements ScriptApi {
 			// ScriptJson 엔티티 생성 및 저장
 			Map<String, Object> responseBody = response.getBody();
 			responseBody.put("scriptId", message.scriptId());
-			scriptService.save(s3Url, message.scriptId(), responseBody);
-
+			Long resultId = scriptService.save(s3Url, message.scriptId(), responseBody);
+			responseBody.put("resultId", resultId);
 			//분석 완료 알림
 			emitterService.notify(message.userId(), new HashMap<String, Object>() {{
 				put("type", "Analyze Complete");
