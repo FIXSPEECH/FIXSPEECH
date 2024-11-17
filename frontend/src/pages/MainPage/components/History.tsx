@@ -43,13 +43,13 @@ function History() {
 
   const fetchGrassData = async () => {
     try {
-      console.log("[GET] /grass API 요청");
+      // console.log("[GET] /grass API 요청");
       const response = await axiosInstance.get<ApiResponse>("/grass");
-      console.log("[GET] /grass API 응답:", response.data);
+      // console.log("[GET] /grass API 응답:", response.data);
 
       if (response.data.status === "C000") {
         setGrassValues(response.data.data);
-        console.log("잔디 데이터 설정 완료:", response.data.data);
+        // console.log("잔디 데이터 설정 완료:", response.data.data);
       } else {
         console.warn(
           "잔디 데이터 조회 실패 - 응답 코드:",

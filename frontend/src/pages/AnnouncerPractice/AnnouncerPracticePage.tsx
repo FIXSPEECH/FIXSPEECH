@@ -15,20 +15,21 @@ function AnnouncerPractice() {
   const navigate = useNavigate();
   const { user, announcer } = useGraphStore();
 
-  const finishPost = async() => {
-    try{
-      const response = await announcerFinishPost() 
-      console.log(response)
-    } catch(e) {
-      console.log(e)
+  const finishPost = async () => {
+    try {
+      const response = await announcerFinishPost();
+      void response; // 주석된 콘솔 출력 유지용. 빌드오류 방지용 코드로 역할 없음
+      // console.log(response)
+    } catch (_e) {
+      // console.log(e)
     }
-  }
+  };
 
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
     setIsNumberZero();
     navigate("/");
-    finishPost()
+    finishPost();
   };
 
   const handleClick = () => {
@@ -74,15 +75,21 @@ function AnnouncerPractice() {
             {user && announcer && user.length > 0 && announcer.length > 0 ? (
               // <div style={{ width: "600px" }}>
               <div
-              className="w-full md:w-[600px]" // 기본은 600px, 모바일에서는 전체 너비
-              style={{  height: "auto" }} // 모바일 크기 줄임
-            >
+                className="w-full md:w-[600px]" // 기본은 600px, 모바일에서는 전체 너비
+                style={{ height: "auto" }} // 모바일 크기 줄임
+              >
                 <VoiceComparisonChart
                   userF0Data={user}
                   announcerF0Data={announcer}
                 />
-                 <div className='text-[#B18CFE] flex justify-center mt-5'> *해당 그래프의 주파수는 말의 억양을 나타내고 있습니다.</div>
-                 <div className='text-[#B18CFE] flex justify-center mb-5'> 아나운서와 비슷한 억양으로 말해보세요.</div>
+                <div className="text-[#B18CFE] flex justify-center mt-5">
+                  {" "}
+                  *해당 그래프의 주파수는 말의 억양을 나타내고 있습니다.
+                </div>
+                <div className="text-[#B18CFE] flex justify-center mb-5">
+                  {" "}
+                  아나운서와 비슷한 억양으로 말해보세요.
+                </div>
               </div>
             ) : null}
           </div>

@@ -22,10 +22,10 @@ function VoiceList() {
     const VoiceList = async () => {
       try {
         const response = await VoiceListGet(0, 10, Id);
-        console.log(response);
+        // console.log(response);
         setScripts(response);
-      } catch (e) {
-        console.log(e);
+      } catch (_e) {
+        // console.log(e);
       }
     };
 
@@ -44,7 +44,7 @@ function VoiceList() {
 
   // VoiceList.tsx 컴포넌트로 이동
   const handleClick = (resultId: number) => {
-    console.log("resultid", resultId);
+    // console.log("resultid", resultId);
     navigate(`/situation/voice/result/${resultId}`);
   };
 
@@ -64,23 +64,29 @@ function VoiceList() {
       if (result.isConfirmed) {
         try {
           const response = await ScriptVoiceResultDelete(resultId);
-          console.log(response);
+          void response; // 주석된 콘솔 출력 유지용. 빌드오류 방지용 코드로 역할 없음
+          // console.log(response);
 
           // 삭제 후 scripts 상태 업데이트 (삭제된 스크립트를 배열에서 제거)
-          setScripts((prevScripts: any) => prevScripts.filter((script: any) => script.resultId !== resultId));
-        } catch (e) {
-          console.log(e);
+          setScripts((prevScripts: any) =>
+            prevScripts.filter((script: any) => script.resultId !== resultId)
+          );
+        } catch (_e) {
+          // console.log(e);
         }
-      } else if (result.isDenied) {
       }
     });
   };
 
   return (
     <div className="h-screen p-8 lg:max-w-5xl lg:mx-auto">
-      <div className="text-[#FFAB01] text-3xl font-bold mb-8">{scriptTitle}</div>
+      <div className="text-[#FFAB01] text-3xl font-bold mb-8">
+        {scriptTitle}
+      </div>
       {scripts.length === 0 ? (
-        <div className="text-[#FFAB01] text-2xl flex justify-center items-center h-[70vh]">저장된 음성녹음이 없습니다</div>
+        <div className="text-[#FFAB01] text-2xl flex justify-center items-center h-[70vh]">
+          저장된 음성녹음이 없습니다
+        </div>
       ) : (
         <>
           <div className="space-y-3">
@@ -92,11 +98,18 @@ function VoiceList() {
               >
                 <div className="flex justify-between items-center">
                   <div className="text-white text-xl">{script.score}점</div>
-                  <div className="text-[#FFAB01] text-lg">분석결과 확인하기</div>
+                  <div className="text-[#FFAB01] text-lg">
+                    분석결과 확인하기
+                  </div>
                   <div className="flex items-center">
-                    <div className="text-[#FFAB01] text-sm mr-2">등록일: {script.createdAt}</div>
+                    <div className="text-[#FFAB01] text-sm mr-2">
+                      등록일: {script.createdAt}
+                    </div>
 
-                    <DeleteIcon onClick={() => handleDelete(script.resultId)} strokeColor='#FFAB01'/>
+                    <DeleteIcon
+                      onClick={() => handleDelete(script.resultId)}
+                      strokeColor="#FFAB01"
+                    />
                   </div>
                 </div>
               </div>
@@ -110,7 +123,7 @@ function VoiceList() {
               width: "fit-content",
               margin: "0 auto",
               marginTop: "2%",
-              paddingBottom: "5%"
+              paddingBottom: "5%",
             }}
           >
             <Pagination

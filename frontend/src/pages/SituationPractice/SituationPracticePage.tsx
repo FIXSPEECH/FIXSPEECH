@@ -30,7 +30,7 @@ function SituationPractice() {
 
   const { startSSE, stopSSE } = useSSEStore(); // SSE 시작 및 종료 함수
 
-  console.log("id 타입", typeof Id);
+  // console.log("id 타입", typeof Id);
 
   // postVoice 함수: 오디오 업로드 및 SSE 연결 활성화
   const postVoice = async () => {
@@ -58,8 +58,8 @@ function SituationPractice() {
 
       // 응답 상태 설정
       setStatus(response.status);
-    } catch (e) {
-      console.log(e);
+    } catch (_e) {
+      // console.log(e);
       stopSSE(); // 오류 발생 시 SSE 종료
     }
   };
@@ -99,8 +99,8 @@ function SituationPractice() {
         if (response.status === "C000") {
           setData(response.data);
         }
-      } catch (e) {
-        console.log(e);
+      } catch (_e) {
+        // console.log(e);
       }
     };
 
