@@ -24,28 +24,37 @@ function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="w-[300px] h-[300px]">
+    <main className="flex flex-col items-center justify-center">
+      <div 
+        className="w-[300px] h-[300px]"
+        aria-hidden="true"
+      >
         <AudioVertexVisualizer size="large" />
       </div>
-      <div className="flex flex-col items-center gap-5 mt-10">
-        <button onClick={handleLogin} className="neon-kakao-button">
+      <div className="flex flex-col items-center gap-5 mt-10" role="group" aria-label="로그인 옵션">
+        <button 
+          onClick={handleLogin} 
+          className="neon-kakao-button"
+          aria-label="카카오 계정으로 로그인"
+        >
           카카오 로그인
         </button>
         <button
           onClick={() => handleTestLogin("male")}
           className="neon-male-button"
+          aria-label="남성 사용자로 체험하기"
         >
           체험하기(남성)
         </button>
         <button
           onClick={() => handleTestLogin("female")}
           className="neon-female-button"
+          aria-label="여성 사용자로 체험하기"
         >
           체험하기(여성)
         </button>
       </div>
-    </div>
+    </main>
   );
 }
 
