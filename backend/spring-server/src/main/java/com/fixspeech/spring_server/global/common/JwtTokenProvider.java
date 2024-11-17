@@ -14,11 +14,9 @@ import com.fixspeech.spring_server.config.CustomUserDetailsService;
 import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -85,14 +83,9 @@ public class JwtTokenProvider {
 				.build()
 				.parseSignedClaims(token);
 			return true;
-		} catch (ExpiredJwtException e) {
-			log.error("JWT 만료: {}", e.getMessage());
-		} catch (SignatureException e) {
-			log.error("서명 검증 실패: {}", e.getMessage());
 		} catch (Exception e) {
-			log.error("사용자 토큰 검증 실패: {}", e.getMessage());
+			return false;
 		}
-		return false;
 	}
 
 	public Claims getClaims(String token) {
@@ -110,14 +103,11 @@ public class JwtTokenProvider {
 
 	public Authentication getAuthentication(String token) {
 		String userEmail = this.getUserEmail(token);
-		log.info("userEmail={}", userEmail);
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
-		log.info("userDetails={}", userDetails);
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 
 	private String generateOAuthToken(JwtUserClaims jwtUserClaims, long expiration) {
-		log.info("jwtUserClains={}", jwtUserClaims);
 		return Jwts.builder()
 			.issuer("FixSpeech")        // 토큰을 발행한 주체 (발급자)
 			.subject("JWT token")        // 토큰의 주제 (설명)

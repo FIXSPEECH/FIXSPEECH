@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -192,7 +193,7 @@ public class ScriptServiceImpl implements ScriptService {
 		byte[] fileBytes = file.getBytes();
 		String redisKey = "file:" + UUID.randomUUID() + ":" + file.getOriginalFilename();
 		redisTemplate.opsForValue().set(redisKey, fileBytes);
-
+		redisTemplate.expire(redisKey, 600, TimeUnit.SECONDS);
 		VoiceAnalysisMessage voiceAnalysisMessage = new VoiceAnalysisMessage(
 			redisKey,
 			scriptId,
@@ -200,9 +201,7 @@ public class ScriptServiceImpl implements ScriptService {
 			users.getId(),
 			users.getGender() != null ? users.getGender() : "male"
 		);
-		System.out.println(voiceAnalysisMessage);
 		kafkaTemplate.send("voice-analysis-topic", voiceAnalysisMessage)
-			.thenAccept(result -> log.info("Message sent successfully for user: {}", users.getId()))
 			.exceptionally(ex -> {
 				throw new CustomException(ErrorCode.FAIL_TO_SEND_MESSAGE);
 			});

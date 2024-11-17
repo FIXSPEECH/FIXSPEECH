@@ -2,7 +2,6 @@ package com.fixspeech.spring_server.domain.user.controller;
 
 import java.util.Optional;
 
-import com.fixspeech.spring_server.utils.ErrorResponseUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +27,7 @@ import com.fixspeech.spring_server.global.common.ApiResponse;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
 import com.fixspeech.spring_server.global.exception.ErrorCode;
 import com.fixspeech.spring_server.utils.CookieUtil;
+import com.fixspeech.spring_server.utils.ErrorResponseUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -64,10 +64,6 @@ public class UserController implements UserApi {
 		@RequestPart(value = "image", required = false) MultipartFile profileImageFile,
 		@RequestPart(value = "registUserDto") RequestRegisterDto requestDto) {
 		try {
-			log.info("requestDto: {}", requestDto);
-			// String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
-			// requestDto.setPassword(encodedPassword);
-
 			if (profileImageFile != null) {
 				// s3 저장 로직
 				// 이미지 설정
@@ -75,7 +71,6 @@ public class UserController implements UserApi {
 			userService.registUser(requestDto);
 			return new ResponseEntity<>("Success", HttpStatus.OK);
 		} catch (Exception e) {
-			log.info("회원가입 오류 발생: {}", e);
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -90,23 +85,23 @@ public class UserController implements UserApi {
 	public ApiResponse<?> update(@AuthenticationPrincipal UserDetails userDetails, @RequestBody RequestUpdateDto dto) {
 		Users user = userService.findByEmail(userDetails.getUsername()).orElse(null);
 
-		if (user == null) return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+		if (user == null)
+			return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
 
 		userService.update(dto, user);
 		return ApiResponse.success("사용자 정보 수정 성공");
 	}
 
-
 	/**
-	 * @param response		response
-	 * @param refreshToken	refresh-token
-	 * @return	accessToken	accessToken
+	 * @param response        response
+	 * @param refreshToken    refresh-token
+	 * @return accessToken    accessToken
 	 */
 	@PostMapping("public/reissue")
 	public ApiResponse<?> reissueToken(
 		HttpServletResponse response,
 		@CookieValue(value = "refresh-token", required = false) String refreshToken
-		) {
+	) {
 		try {
 			if (refreshToken == null || refreshToken.isEmpty()) {
 				return ApiResponse.createError(ErrorCode.INVALID_TOKEN_ERROR);
@@ -135,14 +130,13 @@ public class UserController implements UserApi {
 
 	/**
 	 * 사용자 로그아웃
-	 * @param request	request
-	 * @param response	response
+	 * @param request    request
+	 * @param response    response
 	 * @return 로그아웃 성공 메세지
 	 */
 	@PostMapping("/public/logout")
 	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = CookieUtil.extractRefreshToken(request);
-		log.info(refreshToken);
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
 			tokenService.blacklistRefreshToken(refreshToken);
 			CookieUtil.deleteRefreshCookie(request, response);

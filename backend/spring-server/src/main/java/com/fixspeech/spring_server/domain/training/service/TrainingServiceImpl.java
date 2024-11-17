@@ -26,7 +26,6 @@ public class TrainingServiceImpl implements TrainingService {
 		Long sentenceId = (long)(Math.random() * (lastIdx - firstIdx + 1) + firstIdx);
 		String redisKey = "training_sentence:" + users.getId();
 		if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
-			System.out.println(redisTemplate.opsForValue().get(redisKey));
 			redisTemplate.delete(redisKey);
 		}
 
@@ -34,10 +33,6 @@ public class TrainingServiceImpl implements TrainingService {
 			.orElseThrow(() -> new RuntimeException("Sentence Not Found"));
 		redisTemplate.opsForValue().set(redisKey, trainingSentence.getScript().replaceAll(" ", ""));
 
-		String retrievedValue = redisTemplate.opsForValue().get(redisKey);
-
-		// 출력
-		System.out.println("저장된 값: " + retrievedValue);
 		return trainingSentence.getScript();
 	}
 
@@ -45,7 +40,6 @@ public class TrainingServiceImpl implements TrainingService {
 	public TrainingResponseDto checkClarity(Users users, String s) {
 		String newString = s.replaceAll(" ", "");
 		String originalString = redisTemplate.opsForValue().get("training_sentence:" + users.getId());
-		System.out.println(newString + " " + originalString);
 		List<Integer> list = new ArrayList<>();
 		int length = originalString.length();
 		int cnt = 0;
@@ -57,7 +51,6 @@ public class TrainingServiceImpl implements TrainingService {
 				cnt++;
 			}
 		}
-		System.out.println(length + " " + cnt);
 		int score = (length - cnt) * 100 / length;
 		TrainingResponseDto trainingResponseDto = new TrainingResponseDto(
 			score,

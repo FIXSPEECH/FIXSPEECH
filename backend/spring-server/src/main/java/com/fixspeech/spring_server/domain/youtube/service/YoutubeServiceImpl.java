@@ -60,7 +60,6 @@ public class YoutubeServiceImpl implements YoutubeService {
 		search.setKey(apiKey);
 
 		List<SearchType> searchTypes = searchTypeRepository.findAll();
-		System.out.println(searchTypes.toString());
 		for (SearchType searchType : searchTypes) {
 
 			// 검색어 설정
@@ -106,7 +105,6 @@ public class YoutubeServiceImpl implements YoutubeService {
 			UserVoiceListResponseDto userVoiceListResponseDto = userVoiceService.getRecent(users);
 			Map<String, Object> metrics = ((Map<String, Object>)userVoiceListResponseDto.analyzeResult()
 				.get("metrics"));
-			System.out.println(metrics.toString());
 			List<String> poorMetrics = new ArrayList<>();
 
 			// Find metrics with 'poor' grade
@@ -115,7 +113,6 @@ public class YoutubeServiceImpl implements YoutubeService {
 				if ("poor".equals(metricData.get("grade"))) {
 					poorMetrics.add(entry.getKey());
 				}
-				System.out.println(metricData.toString());
 			}
 
 			// If no poor metrics found or no recent data, use default metrics

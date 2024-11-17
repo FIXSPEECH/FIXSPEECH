@@ -42,24 +42,24 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException, ServletException {
-		OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+		OAuth2User oAuth2User = (OAuth2User)authentication.getPrincipal();
 
 		String providerType = determineProviderType(request);
 
 		String email = extractEmail(oAuth2User, providerType);
 
 		Users user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));;
+			.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		;
 		JwtUserClaims jwtUserClaims = JwtUserClaims.fromUsersEntity(user);
 
 		String refreshToken = jwtTokenProvider.generateRefreshToken(jwtUserClaims);
 
-		log.info("refreshToken={}", refreshToken);
 		saveRefreshToken(user, refreshToken);
 		addRefreshTokenToCookie(request, response, refreshToken);
 
 		String accessToken = jwtTokenProvider.generateAccessToken(jwtUserClaims);
-		log.info("accessToken={}", accessToken);
+
 		String targetUrl = getTargetUrl(accessToken);
 
 		// 리다이렉트
@@ -76,7 +76,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		oAuthRefreshRepository.save(refreshToken);
 	}
 
-	private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
+	private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response,
+		String refreshToken) {
 		CookieUtil.deleteRefreshCookie(request, response);
 		CookieUtil.addRefreshCookie(response, refreshToken);
 	}

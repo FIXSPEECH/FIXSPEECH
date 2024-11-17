@@ -29,13 +29,7 @@ public class EmitterService {
 
 	public void notify(Long userId, Object data) {
 		SseEmitter emitter = this.emitters.get(userId);
-		if (emitter != null) {
-			System.out.println("Sending notification to user: " + userId);
-			System.out.println("Notification data: " + data);
-			sendToClient(emitter, userId, data);
-		} else {
-			System.out.println("No emitter found for user: " + userId);
-		}
+		sendToClient(emitter, userId, data);
 	}
 
 	private void sendToClient(SseEmitter emitter, Long userId, Object data) {
