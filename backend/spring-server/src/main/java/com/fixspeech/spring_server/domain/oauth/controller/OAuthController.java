@@ -24,16 +24,16 @@ public class OAuthController {
 
 	/**
 	 * 로그인 페이지로 리다이렉트
-	 * @param provider		제공자(kakao, naver...)
-	 * @param request		request
-	 * @param response		response
-	 * @throws IOException	IOException
+	 * @param provider        제공자(kakao, naver...)
+	 * @param request        request
+	 * @param response        response
+	 * @throws IOException    IOException
 	 */
 	@GetMapping("/login/{provider}")
-	public void getOAuthLoginUrl(@PathVariable String provider, HttpServletRequest request, HttpServletResponse response) throws
+	public void getOAuthLoginUrl(@PathVariable String provider, HttpServletRequest request,
+		HttpServletResponse response) throws
 		IOException {
 		String redirectUrl = oauth2BaseUrl + "/oauth2/authorization/" + provider;
-		log.info("provider 조회: {}", provider);
 		response.sendRedirect(redirectUrl);
 	}
 }

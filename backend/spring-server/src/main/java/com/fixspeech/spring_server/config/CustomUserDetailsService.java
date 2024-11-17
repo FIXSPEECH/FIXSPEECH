@@ -28,12 +28,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
 		Users users = userRepository.findByEmail(userEmail).orElseThrow(() ->
 			new UsernameNotFoundException("User not found with userEmail: " + userEmail));
-		log.info("users={}", users.getEmail());
 
 		List<GrantedAuthority> authorities = Collections.singletonList(
 			new SimpleGrantedAuthority(users.getRole().toString()));
-		log.info("users.getEmail={}", users.getEmail());
-		log.info("authorities={}", authorities);
 
 		return new User(users.getEmail(), "", authorities);
 	}

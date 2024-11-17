@@ -37,20 +37,20 @@ public class GrassController {
 	@GetMapping
 	public ApiResponse<?> findUserGrass(@AuthenticationPrincipal UserDetails userDetails) {
 		try {
-			log.info("사용자 정보 = {}", userDetails.getUsername());
 
 			String email = userDetails.getUsername();
 			Users user = userService.findByEmail(email).orElse(null);
-			if (user == null) return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+			if (user == null)
+				return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
 
 			// 사용자 grass 정보 조회
 			List<Grass> grasses = userService.findUserGrassByEmail(user.getId()).orElse(null);
 
-			if (grasses == null) return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
+			if (grasses == null)
+				return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
 
 			List<ResponseGrassDTO> responseGrassDTOList = ResponseGrassDTO.fromEntities(grasses);
 			// ResponseGrassDTO responseGrassDTO = ResponseGrassDTO.fromEntity(grass).
-			log.info("user grass 정보 = {}", responseGrassDTOList);
 			return ApiResponse.createSuccess(responseGrassDTOList, "사용자 잔디 기록 조회 성공");
 		} catch (Exception e) {
 			return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
@@ -59,10 +59,10 @@ public class GrassController {
 
 	@PostMapping
 	public ApiResponse<?> addGrassRecord(@AuthenticationPrincipal UserDetails userDetails) {
-		log.info("사용자 정보 = {}", userDetails);
 		String email = userDetails.getUsername();
 		Users user = userService.findByEmail(email).orElse(null);
-		if (user == null) return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
+		if (user == null)
+			return ApiResponse.createError(ErrorCode.USER_NOT_FOUND);
 
 		grassService.addGrassRecord(user.getId());
 
