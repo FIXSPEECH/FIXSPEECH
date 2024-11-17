@@ -18,8 +18,10 @@ interface PronounceExampleProps {
 }
 
 function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
-  const { audioURL, isRecording, setIsRecording, setAudioURL } = useVoiceStore();
-  const { isNumber, setIsNumber, setIsCorrect, setIsNumberZero } = usePronounceScoreStore();
+  const { audioURL, isRecording, setIsRecording, setAudioURL } =
+    useVoiceStore();
+  const { isNumber, setIsNumber, setIsCorrect, setIsNumberZero } =
+    usePronounceScoreStore();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false); // 현재 재생 상태
   const [example, setExample] = useState<string>("");
@@ -39,7 +41,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
     try {
       const response = await sttPost(data);
-      console.log(response.data);
+      // console.log(response.data);
       setDifferences(response.data.differences || []);
       if (response.data.similarity === 1) {
         setIsCorrect();
@@ -51,17 +53,18 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
       }
 
       setIsNext(true);
-    } catch (e) {
-      console.log(e);
+    } catch (_e) {
+      // console.log(e);
     }
   };
 
   const finishPost = async () => {
     try {
       const response = await pronounceFinishPost();
-      console.log(response.data);
-    } catch (e) {
-      console.log(e);
+      void response; // 주석된 콘솔 출력 유지용. 빌드오류 방지용 코드로 역할 없음
+      // console.log(response.data);
+    } catch (_e) {
+      // console.log(e);
     }
   };
 
@@ -96,8 +99,8 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
     try {
       const response = await ExampleGet(trainingId);
       setExample(response.data);
-    } catch (e) {
-      console.log(e);
+    } catch (_e) {
+      // console.log(e);
     }
 
     setIsRecording(false);
@@ -130,7 +133,11 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
       const { operation, user_postion, answer_position, answer_text } = diff;
 
       // 일치하지 않는 텍스트 앞의 정상적인 텍스트 추가
-      if (user_postion && user_postion[0] !== null && user_postion[0] > lastIndex) {
+      if (
+        user_postion &&
+        user_postion[0] !== null &&
+        user_postion[0] > lastIndex
+      ) {
         highlightedText.push(userStt.slice(lastIndex, user_postion[0]));
       } else if (user_postion === null && lastIndex < answer_position[0]) {
         highlightedText.push(userStt.slice(lastIndex));
@@ -142,21 +149,28 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
       } else if (operation === "replace" || operation === "insert") {
         // 잘못된 단어나 삽입된 단어 강조 표시
         highlightedText.push(
-          <span key={`replace-insert-${index}`} className="text-red-500 underline font-bold">
+          <span
+            key={`replace-insert-${index}`}
+            className="text-red-500 underline font-bold"
+          >
             {userStt.slice(user_postion[0], user_postion[1])}
           </span>
         );
       } else if (operation === "delete") {
         // 삭제된 텍스트를 강조 표시 (answer_text 사용)
         highlightedText.push(
-          <span key={`delete-${index}`} className="text-red-500 underline font-bold">
+          <span
+            key={`delete-${index}`}
+            className="text-red-500 underline font-bold"
+          >
             {answer_text}
           </span>
         );
       }
 
       // 업데이트된 lastIndex 처리
-      lastIndex = user_postion && user_postion[1] !== null ? user_postion[1] : lastIndex;
+      lastIndex =
+        user_postion && user_postion[1] !== null ? user_postion[1] : lastIndex;
     });
 
     // 마지막 남은 텍스트 추가

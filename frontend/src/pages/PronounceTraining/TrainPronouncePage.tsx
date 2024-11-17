@@ -13,15 +13,15 @@ function TrainPronounce() {
   const { setIsNumberZero } = usePronounceScoreStore();
   const navigate = useNavigate();
 
-
-  const finishPost = async() => {
-    try{
-      const response = await pronounceFinishPost() 
-      console.log(response.data)
-    } catch(e) {
-      console.log(e)
+  const finishPost = async () => {
+    try {
+      const response = await pronounceFinishPost();
+      void response; // 주석된 콘솔 출력 유지용. 빌드오류 방지용 코드로 역할 없음
+      // console.log(response.data)
+    } catch (_e) {
+      // console.log(e)
     }
-  }
+  };
 
   const closeModal = () => {
     setShowModal(false); // 모달 닫기
@@ -29,7 +29,6 @@ function TrainPronounce() {
     finishPost();
     navigate("/training");
   };
-
 
   const handleClick = () => {
     setShowModal(true);

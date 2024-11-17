@@ -12,7 +12,7 @@ function VoiceRecord() {
   const userGender = useAuthStore((state) => state.userProfile?.gender);
 
   const handleRecordingComplete = async (audioFile: File) => {
-    console.log("녹음 완료:", audioFile);
+    // console.log("녹음 완료:", audioFile);
 
     try {
       // FormData 생성

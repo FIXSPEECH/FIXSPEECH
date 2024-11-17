@@ -60,7 +60,8 @@ function VoiceAnalysisListPage() {
       if (result.isConfirmed) {
         try {
           const response = await AnalysisDelete(recordId);
-          console.log(response);
+          void response; // 주석된 콘솔 출력 유지용. 빌드오류 방지용 코드로 역할 없음
+          // console.log(response);
 
           setAnalysisData((prevData) => ({
             ...prevData!,
@@ -68,10 +69,9 @@ function VoiceAnalysisListPage() {
               (item) => item.recordId !== recordId
             ),
           }));
-        } catch (e) {
-          console.log(e);
+        } catch (_e) {
+          // console.log(e);
         }
-      } else if (result.isDenied) {
       }
     });
   };

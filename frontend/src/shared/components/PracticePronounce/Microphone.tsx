@@ -26,14 +26,13 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
-  const [interimTranscript, setInterimTranscript] = useState("");
-  const [finalTranscript, setFinalTranscript] = useState("");
+  const [_interimTranscript, setInterimTranscript] = useState("");
+  const [_finalTranscript, setFinalTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
-  const {setUserStt} = useSttStore();
+  const { setUserStt } = useSttStore();
 
-
-  console.log(interimTranscript)
-  console.log(finalTranscript)
+  // console.log(interimTranscript)
+  // console.log(finalTranscript)
 
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -60,7 +59,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
 
         setInterimTranscript(interimTranscript);
         setFinalTranscript(newFinalTranscript);
-        setUserStt(newFinalTranscript)
+        setUserStt(newFinalTranscript);
       };
 
       recognition.onerror = (event: any) => {
@@ -79,7 +78,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
     const isWav =
       view.getUint32(0, false) === 0x52494646 &&
       view.getUint32(8, false) === 0x57415645;
-    console.log("isWavFile check: ", isWav);
+    // console.log("isWavFile check: ", isWav);
     return isWav;
   };
 
@@ -129,7 +128,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
         // WAV 파일인지 확인
         const isWav = await isWavFile(wavBlob);
         if (isWav) {
-          console.log("This is a valid WAV file.");
+          // console.log("This is a valid WAV file.");
           setAudioBlob(wavBlob);
           const audioUrl = URL.createObjectURL(wavBlob);
           setAudioURL(audioUrl);
@@ -157,11 +156,11 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
     if (!isRecording) {
       recognitionRef.current?.start();
       startRecording();
-      console.log("[System] 음성 인식이 시작되었습니다.");
+      // console.log("[System] 음성 인식이 시작되었습니다.");
     } else {
       recognitionRef.current?.stop();
       stopRecording();
-      console.log("[System] 음성 인식이 중지되었습니다.");
+      // console.log("[System] 음성 인식이 중지되었습니다.");
     }
   };
 
@@ -290,7 +289,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
           Your browser does not support the audio element.
         </audio>
       )} */}
-{/* 
+      {/* 
       <div className="text-white">(중간) {interimTranscript}</div>
       <div className="text-white">(파이널) {finalTranscript}</div> */}
       {/* stt 결과 post 보내고 나면

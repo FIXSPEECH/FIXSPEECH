@@ -295,9 +295,9 @@ function Scene({
 
       // AudioContext 시작
       await context.resume();
-      console.log("마이크 연결 성공!");
-    } catch (err) {
-      console.error("마이크 접근 실패:", err);
+      // console.log("마이크 연결 성공!");
+    } catch (_err) {
+      // console.error("마이크 접근 실패:", err);
       // 실패 시 3초 후 재시도
       setTimeout(initAudio, 3000);
     }
