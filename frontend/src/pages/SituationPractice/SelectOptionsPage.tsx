@@ -33,7 +33,8 @@ function TrainSelect() {
         <Typography
           variant="h5"
           className="text-white text-center mb-10"
-          style={{ wordBreak: "keep-all" }}
+          style={{ wordBreak: "keep-all",
+            fontFamily: "inherit"}}
         >
           *원하는 기능을 선택해주세요.
         </Typography>

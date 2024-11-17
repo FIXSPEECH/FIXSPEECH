@@ -4,6 +4,13 @@
 
 :root{
   background-color: #2C2C2E;
+  font-family: "GmarketSansTTFMedium";
+}
+
+@font-face{
+  font-family: "GmarketSansTTFMedium";
+  font-weight: normal;
+  src: url("./fonts/GmarketSansTTFMedium.ttf") format("truetype")
 }
 
 /* :root {
