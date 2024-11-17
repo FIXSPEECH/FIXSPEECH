@@ -29,7 +29,8 @@ function TrainSelect() {
         <Typography
           variant="h5"
           className="text-white text-center mb-10"
-          style={{ wordBreak: "keep-all" }}
+          style={{ wordBreak: "keep-all",
+            fontFamily: "inherit" }}
         >
           *원하는 훈련 종류를 선택해주세요.
         </Typography>
