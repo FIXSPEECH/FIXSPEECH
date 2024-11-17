@@ -30,8 +30,7 @@ interface AnalysisDetailResponse {
 const VoiceAnalysisDetailPage = () => {
   const { resultId } = useParams();
   const navigate = useNavigate();
-  const [analysisData, setAnalysisData] =
-    useState<AnalysisDetailResponse | null>(null);
+  const [analysisData, setAnalysisData] = useState<AnalysisDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
@@ -45,9 +44,7 @@ const VoiceAnalysisDetailPage = () => {
   useEffect(() => {
     const fetchAnalysisDetail = async () => {
       try {
-        const response = await axiosInstance.get(
-          `script/result/detail/${resultId}`
-        );
+        const response = await axiosInstance.get(`script/result/detail/${resultId}`);
         setAnalysisData(response.data.data);
         // console.log(response.data.data);
         const audioObj = new Audio(response.data.data.recordAddress);
@@ -73,16 +70,10 @@ const VoiceAnalysisDetailPage = () => {
     }
   };
 
-  const getScoreColor = (metrics: AnalysisDetailResponse["metrics"]) => {
-    const grades = Object.values(metrics).map((m) => m.grade);
-    const excellent = grades.filter((g) => g === "excellent").length;
-    const good = grades.filter((g) => g === "good").length;
-
-    if (excellent >= 5)
-      return { color: "#00FF88", shadow: "0 0 20px rgba(0, 255, 136, 0.5)" };
-    if (excellent + good >= 5)
-      return { color: "#FFD700", shadow: "0 0 20px rgba(255, 215, 0, 0.5)" };
-    return { color: "#FF4D4D", shadow: "0 0 20px rgba(255, 77, 77, 0.5)" };
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return { color: "#00FF88", shadow: "0 0 20px rgba(0, 255, 136, 0.5)" }; // 90점 이상: 초록색
+    if (score >= 70) return { color: "#FFD700", shadow: "0 0 20px rgba(255, 215, 0, 0.5)" }; // 70-89점: 금색
+    return { color: "#FF4D4D", shadow: "0 0 20px rgba(255, 77, 77, 0.5)" }; // 70점 미만: 빨간색
   };
 
   if (loading)
@@ -129,32 +120,25 @@ const VoiceAnalysisDetailPage = () => {
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1 space-y-8">
-            <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50">
-              <h2 className="text-lg font-bold mb-4">전체 평가</h2>
+            <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 hover:border-cyan-500/50">
+              <h2 className="text-lg font-bold mb-4">전체 점수</h2>
               <div className="text-center">
                 <div
                   className="text-6xl font-bold mb-2"
                   style={{
-                    color: getScoreColor(analysisData.metrics).color,
-                    textShadow: getScoreColor(analysisData.metrics).shadow,
+                    color: getScoreColor(analysisData.overallScore).color,
+                    textShadow: getScoreColor(analysisData.overallScore).shadow,
                   }}
                 >
-                  {
-                    Object.values(analysisData.metrics).filter(
-                      (m) => m.grade === "excellent"
-                    ).length
-                  }
+                  {analysisData.overallScore.toFixed(1)}
                 </div>
-                <p className="text-gray-400">우수 항목 개수</p>
+                <p className="text-gray-400">100점 만점</p>
               </div>
             </div>
 
             <div className="aspect-square w-full bg-gray-800/30 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-gray-700/50">
               <h2 className="text-lg font-bold mb-4">메트릭 시각화</h2>
-              <MetricsVisualizer
-                metrics={analysisData.metrics}
-                colorScheme={selectedColor}
-              />
+              <MetricsVisualizer metrics={analysisData.metrics} colorScheme={selectedColor} />
             </div>
             <div className="aspect-square w-full bg-gray-800/30 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-gray-700/50">
               <h2 className="text-lg font-bold mb-4">대본 내용</h2>
@@ -163,15 +147,34 @@ const VoiceAnalysisDetailPage = () => {
           </div>
 
           <div className="lg:col-span-2">
+            <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 hover:border-cyan-500/50 mb-8">
+              <h2 className="text-lg font-bold mb-4">추천사항</h2>
+              <div className="flex gap-6">
+                <div className="flex-1">
+                  {analysisData.recommendations?.length > 0 ? (
+                    <ul className="list-disc pl-5 space-y-2">
+                      {analysisData.recommendations.map((rec, idx) => (
+                        <li key={idx} className="text-gray-300 p-2 rounded bg-gray-700/30 border border-gray-600/50">
+                          {rec}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="text-gray-300 text-center p-4 bg-emerald-500/10 rounded border border-emerald-500/30">
+                      <p className="mb-2 text-emerald-400">✨ 훌륭한 음성 품질을 보여주고 계십니다!</p>
+                      <p className="text-emerald-300">현재의 좋은 발성을 유지하면서 더욱 자신감 있게 말씀해보세요.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(analysisData.metrics).map(([name, data]) => (
                 <VoiceMetricCard
                   key={name}
                   name={name}
                   data={data}
-                  criteria={
-                    METRIC_CRITERIA[name as keyof typeof METRIC_CRITERIA]
-                  }
+                  criteria={METRIC_CRITERIA[name as keyof typeof METRIC_CRITERIA]}
                 />
               ))}
             </div>

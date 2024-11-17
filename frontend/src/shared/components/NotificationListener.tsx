@@ -50,7 +50,7 @@ const NotificationListener = () => {
             <span
               style={{ textDecoration: "underline", cursor: "pointer" }}
               onClick={() =>
-                navigator(`/situation/voice/result/${data.data.scriptId}`)
+                navigator(`/situation/voice/result/${data.data.resultId}`)
               }
             >
               지금가기
