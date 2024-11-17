@@ -32,7 +32,7 @@ export function postGameResult(result: gameResult) {
   return axiosInstance
     .post(`/game`, result)
     .then((response) => {
-      console.log("결과저장 성공");
+      // console.log("결과저장 성공");
       return Promise.resolve(response.data);
     })
     .catch((e) => {
@@ -40,8 +40,8 @@ export function postGameResult(result: gameResult) {
     });
 }
 
-export function getGameRanking(level:number){
-    return axiosInstance
+export function getGameRanking(level: number) {
+  return axiosInstance
     .get(`/game/${level}/result`)
     .then((response) => {
       return Promise.resolve(response.data);

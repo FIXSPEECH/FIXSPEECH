@@ -10,7 +10,7 @@ function Access() {
     const token = queryParams.get("accessToken"); // 쿼리 문자열에서 토큰 가져오기
 
     if (token) {
-      console.log("토큰 발견:", token);
+      // console.log("토큰 발견:", token);
       setToken(token);
 
       // 토큰 디코딩 후 gender 확인
@@ -26,7 +26,7 @@ function Access() {
         window.location.replace("/login");
       }
     } else {
-      console.log("토큰을 찾을 수 없습니다");
+      // console.log("토큰을 찾을 수 없습니다");
       window.location.replace("/login");
     }
   }, [setToken]);

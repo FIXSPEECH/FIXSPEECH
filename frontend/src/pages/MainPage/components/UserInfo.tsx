@@ -10,11 +10,11 @@ function UserInfo() {
   const handleLogout = async () => {
     try {
       await axiosInstance.post("/user/logout");
-      console.log("로그아웃 성공");
+      // console.log("로그아웃 성공");
       setToken(null);
     } catch (error) {
       console.error("로그아웃 통신 실패:", error);
-      console.log("토큰 초기화");
+      // console.log("토큰 초기화");
       setToken(null);
     }
   };

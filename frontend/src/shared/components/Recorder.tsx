@@ -71,7 +71,7 @@ function Recorder({
     const isWav =
       view.getUint32(0, false) === 0x52494646 &&
       view.getUint32(8, false) === 0x57415645;
-    console.log("isWavFile check: ", isWav);
+    // console.log("isWavFile check: ", isWav);
     return isWav;
   };
 
@@ -132,7 +132,7 @@ function Recorder({
         // WAV 파일인지 확인
         const isWav = await isWavFile(wavBlob);
         if (isWav) {
-          console.log("This is a valid WAV file.");
+          // console.log("This is a valid WAV file.");
           setAudioBlob(wavBlob);
           const audioUrl = URL.createObjectURL(wavBlob);
           setAudioURL(audioUrl);
@@ -160,13 +160,13 @@ function Recorder({
     if (!isRecording) {
       recognitionRef.current?.start();
       startRecording();
-      console.log("[System] 음성 인식이 시작되었습니다.");
+      // console.log("[System] 음성 인식이 시작되었습니다.");
     } else {
       recognitionRef.current?.stop();
       setIsRecording(false);
       stopRecording();
       setShowModal(true);
-      console.log("[System] 음성 인식이 중지되었습니다.");
+      // console.log("[System] 음성 인식이 중지되었습니다.");
     }
   };
 
@@ -193,7 +193,7 @@ function Recorder({
     }
   };
 
-  console.log("barcolor", barColor);
+  // console.log("barcolor", barColor);
 
   const audioBufferToWav = (buffer: AudioBuffer) => {
     let numOfChannels = buffer.numberOfChannels,

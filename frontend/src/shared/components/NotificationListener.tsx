@@ -5,16 +5,19 @@ import { EventSourcePolyfill } from "event-source-polyfill";
 import { useNavigate } from "react-router-dom";
 import { useSSEStore } from "../stores/sseStore";
 import useAuthStore from "../stores/authStore";
-import notificationSound from "../sounds/notificationSound.mp3"
+import notificationSound from "../sounds/notificationSound.mp3";
 
 const NotificationListener = () => {
-  const { isSSEActive, stopSSE, setAlert, message, type, clearAlert } = useSSEStore();
+  const { isSSEActive, stopSSE, setAlert, message, type, clearAlert } =
+    useSSEStore();
   const token = useAuthStore.getState().token;
   const navigator = useNavigate();
 
   const playNotificationSound = () => {
     const audio = new Audio(notificationSound);
-    audio.play().catch((error) => console.log("사운드 재생 오류:", error));
+    audio.play().catch((_error) => {
+      // console.log("사운드 재생 오류:", _error);
+    });
   };
 
   useEffect(() => {
@@ -33,44 +36,48 @@ const NotificationListener = () => {
       }
     );
 
-    console.log("SSE 연결 시작");
+    // console.log("SSE 연결 시작");
 
     // "analysisComplete" 이벤트 수신 시 알림 표시
     eventSource.addEventListener("analysisComplete", (event: any) => {
       const data = JSON.parse(event.data);
       if (data.type === "Analyze Complete") {
-        playNotificationSound()
-        toast.success(<>
-          분석 완료되었습니다.
-          <br />
-          <span
-            style={{ textDecoration: "underline", cursor: "pointer" }}
-            onClick={() => navigator(`/situation/voice/result/${data.data.scriptId}`)}
-          >
-            지금가기
-          </span>
-        </>);
+        playNotificationSound();
+        toast.success(
+          <>
+            분석 완료되었습니다.
+            <br />
+            <span
+              style={{ textDecoration: "underline", cursor: "pointer" }}
+              onClick={() =>
+                navigator(`/situation/voice/result/${data.data.scriptId}`)
+              }
+            >
+              지금가기
+            </span>
+          </>
+        );
       } else if (data.type === "ANALYSIS_ERROR") {
-        playNotificationSound()
+        playNotificationSound();
         toast.error(`분석 중 오류가 발생했습니다`);
       }
 
       // 이벤트 수신 후 SSE 연결 종료
-      console.log("SSE 이벤트 수신 완료 후 연결 닫기");
+      // console.log("SSE 이벤트 수신 완료 후 연결 닫기");
       eventSource.close();
       stopSSE();
     });
 
     // 에러 발생 시 SSE 연결 종료
     eventSource.onerror = () => {
-      console.log("SSE 연결 에러 발생 - 연결 닫기");
+      // console.log("SSE 연결 에러 발생 - 연결 닫기");
       eventSource.close();
       setAlert("분석 중 오류가 발생했습니다", "error");
       stopSSE();
     };
 
     return () => {
-      console.log("SSE 연결 종료");
+      // console.log("SSE 연결 종료");
       eventSource.close();
     };
   }, [isSSEActive, token, setAlert, stopSSE]);
@@ -78,7 +85,7 @@ const NotificationListener = () => {
   // 알림 표시
   useEffect(() => {
     if (message) {
-      playNotificationSound()
+      playNotificationSound();
       if (type === "success") toast.success(message);
       if (type === "error") toast.error(message);
       clearAlert();
@@ -89,4 +96,3 @@ const NotificationListener = () => {
 };
 
 export default NotificationListener;
-

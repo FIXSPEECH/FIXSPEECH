@@ -18,10 +18,10 @@ function SelectScript() {
     const getScript = async () => {
       try {
         const response = await ScriptListGet();
-        console.log(response);
+        // console.log(response);
         setScripts(response);
       } catch (e) {
-        console.log(e);
+        // console.log(e);
       }
     };
 
@@ -58,16 +58,16 @@ function SelectScript() {
       if (result.isConfirmed) {
         try {
           const response = await ScriptDelte(scriptId);
-          console.log(response);
+          void response; // 주석된 콘솔 출력 유지용. 빌드오류 방지용 코드로 역할 없음
+          // console.log(response);
 
           // 삭제 후 scripts 상태 업데이트 (삭제된 스크립트를 배열에서 제거)
           setScripts((prevScripts: any) =>
             prevScripts.filter((script: any) => script.scriptId !== scriptId)
           );
-        } catch (e) {
-          console.log(e);
+        } catch (_e) {
+          // console.log(e);
         }
-      } else if (result.isDenied) {
       }
     });
   };
@@ -78,7 +78,9 @@ function SelectScript() {
         저장된 대본 목록
       </div>
       {scripts.length === 0 ? (
-        <div className="text-[#FFAB01] text-2xl flex justify-center items-center h-[70vh]">저장된 대본이 없습니다</div>
+        <div className="text-[#FFAB01] text-2xl flex justify-center items-center h-[70vh]">
+          저장된 대본이 없습니다
+        </div>
       ) : (
         <>
           <div className="space-y-3">
@@ -94,7 +96,10 @@ function SelectScript() {
                     <div className="text-[#FFAB01] text-sm mr-2">
                       등록일: {script.createdAt}
                     </div>
-                    <DeleteIcon onClick={() => handleDelete(script.scriptId)} strokeColor='#FFAB01' />
+                    <DeleteIcon
+                      onClick={() => handleDelete(script.scriptId)}
+                      strokeColor="#FFAB01"
+                    />
                   </div>
                 </div>
               </div>
@@ -108,7 +113,7 @@ function SelectScript() {
               width: "fit-content",
               margin: "0 auto",
               marginTop: "2%",
-              paddingBottom: "5%"
+              paddingBottom: "5%",
             }}
           >
             <Pagination

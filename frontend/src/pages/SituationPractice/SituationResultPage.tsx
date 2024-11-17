@@ -30,7 +30,8 @@ interface AnalysisDetailResponse {
 const VoiceAnalysisDetailPage = () => {
   const { resultId } = useParams();
   const navigate = useNavigate();
-  const [analysisData, setAnalysisData] = useState<AnalysisDetailResponse | null>(null);
+  const [analysisData, setAnalysisData] =
+    useState<AnalysisDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
@@ -44,12 +45,14 @@ const VoiceAnalysisDetailPage = () => {
   useEffect(() => {
     const fetchAnalysisDetail = async () => {
       try {
-        const response = await axiosInstance.get(`script/result/detail/${resultId}`);
+        const response = await axiosInstance.get(
+          `script/result/detail/${resultId}`
+        );
         setAnalysisData(response.data.data);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         const audioObj = new Audio(response.data.data.recordAddress);
         setAudio(audioObj);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         setError("분석 데이터를 불러오는데 실패했습니다.");
       } finally {
@@ -166,7 +169,9 @@ const VoiceAnalysisDetailPage = () => {
                   key={name}
                   name={name}
                   data={data}
-                  criteria={METRIC_CRITERIA[name as keyof typeof METRIC_CRITERIA]}
+                  criteria={
+                    METRIC_CRITERIA[name as keyof typeof METRIC_CRITERIA]
+                  }
                 />
               ))}
             </div>

@@ -10,9 +10,9 @@ function UserInfoRegistPage() {
   const refreshAccessToken = async () => {
     try {
       await tokenRefresh(); // 토큰 재발급 호출
-      console.log("토큰 재발급 성공");
-    } catch (error) {
-      console.error("토큰 재발급 실패", error);
+      // console.log("토큰 재발급 성공");
+    } catch (_error) {
+      // console.error("토큰 재발급 실패", error);
       // 여기서 필요한 추가 처리 가능
     }
   };
