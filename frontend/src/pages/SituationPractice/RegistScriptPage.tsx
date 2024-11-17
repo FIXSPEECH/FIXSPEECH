@@ -145,7 +145,7 @@ function RegistScript() {
             row
             aria-labelledby="demo-row-radio-buttons-group-label"
             name="row-radio-buttons-group"
-            onChange={handleAccentChange}
+            onChange={handleAccentChange}            
             sx={{
               // 라디오 버튼 색상 설정
               "& .MuiRadio-root": {
@@ -161,16 +161,8 @@ function RegistScript() {
               width: "100%",
             }}
           >
-            <FormControlLabel
-              value="power"
-              control={<Radio />}
-              label="힘있게 말하기"
-            />
-            <FormControlLabel
-              value="mild"
-              control={<Radio />}
-              label="부드럽게 말하기"
-            />
+            <FormControlLabel value="power" control={<Radio />} label="힘있게 말하기" />
+            <FormControlLabel value="mild" control={<Radio />} label="부드럽게 말하기" />
           </RadioGroup>
 
           {/* 시간 선택 */}
@@ -215,6 +207,9 @@ function RegistScript() {
                 label="0 분"
                 value={minute.toString()}
                 onChange={handleMinutesChange}
+                style={{
+                  fontFamily: "inherit",
+                }}
               >
                 <MenuItem value={0}>0 분</MenuItem>
                 <MenuItem value={1}>1 분</MenuItem>
@@ -256,6 +251,9 @@ function RegistScript() {
             >
               <InputLabel id="demo-select-small-label">초</InputLabel>
               <Select
+                style={{
+                  fontFamily: "inherit",
+                }}
                 labelId="demo-select-small-label"
                 id="demo-select-small"
                 value={second.toString()}
@@ -275,12 +273,13 @@ function RegistScript() {
       </div>
 
       {/* 연습 시작 버튼 */}
-      <div
-        style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}
-      >
+      <div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
         <Button
           variant="contained"
           onClick={handlePracticeClick}
+          style={{
+            fontFamily: "inherit",
+          }}
           sx={{
             backgroundColor: "#FFAB01",
             borderColor: "#FCDA95",

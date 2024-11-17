@@ -232,6 +232,8 @@ export default function Game() {
                           color: "white",
                           flex: "1",
                           fontWeight: "bold",
+                          fontFamily: "inherit"
+                          
                         }}
                         onClick={() => handleStageSelection(stageId)}
                       >
@@ -247,6 +249,7 @@ export default function Game() {
                         color: "white",
                         width: "100%",                    
                         fontWeight: "bold",
+                        fontFamily: "inherit"
                       }}
                       onClick={() => navigate("/game/ranking")}
                     >
