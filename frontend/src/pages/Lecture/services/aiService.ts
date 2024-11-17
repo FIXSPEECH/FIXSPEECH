@@ -6,7 +6,7 @@ const openai = new OpenAI({
 });
 
 const AI_CACHE_KEY = "ai_recommendation_cache";
-const AI_CACHE_DURATION = 48 * 60 * 60 * 1000; // 48시간
+const AI_CACHE_DURATION = 18 * 60 * 60 * 1000; // 18시간
 
 const getAICache = (analysisId: string) => {
   const cached = localStorage.getItem(AI_CACHE_KEY);
