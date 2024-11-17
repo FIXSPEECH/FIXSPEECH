@@ -150,9 +150,15 @@ public class UserVoiceServiceImpl implements UserVoiceService {
 		// 새로운 데이터 구조에 맞게 변환
 		Map<String, Object> metrics = (Map<String, Object>)rawData.get("metrics");
 
+		Integer overallScore = (Integer)rawData.get("overall_score");
+
+		// recommendations는 List
+		List<String> recommendations = (List<String>)rawData.get("recommendations");
 		// 새로운 응답 데이터 구조 생성
 		Map<String, Object> responseData = Map.of(
-			"metrics", metrics
+			"metrics", metrics,
+			"overallScore", overallScore,
+			"recommendations", recommendations
 		);
 		UserVoiceListResponseDto userVoiceListResponseDto = new UserVoiceListResponseDto(
 			responseData,
