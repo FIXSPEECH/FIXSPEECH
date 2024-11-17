@@ -7,18 +7,17 @@ import java.util.Map;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.fixspeech.spring_server.domain.oauth.OAuthAttributes;
 import com.fixspeech.spring_server.domain.user.model.JwtUserClaims;
 import com.fixspeech.spring_server.domain.user.model.Role;
 import com.fixspeech.spring_server.domain.user.model.Users;
 import com.fixspeech.spring_server.domain.user.repository.UserRepository;
 import com.fixspeech.spring_server.global.common.JwtTokenProvider;
-import com.fixspeech.spring_server.domain.oauth.OAuthAttributes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,13 +33,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		OAuth2User oAuth2User = super.loadUser(userRequest);
-		OAuth2AccessToken accessToken = userRequest.getAccessToken();
-		String tokenValue = accessToken.getTokenValue(); // 토큰 값
-		log.info("tokenValue={}", tokenValue);
 		return saveOrUpdate(userRequest, oAuth2User);
 	}
 
-	private OAuth2User saveOrUpdate(OAuth2UserRequest userRequest ,OAuth2User oAuth2User) {
+	private OAuth2User saveOrUpdate(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
 		String userNameAttributeName = userRequest.getClientRegistration()
 			.getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
@@ -68,12 +64,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 					.provider(registrationId)
 					.providerId(attributes.getProviderId())
 					.role(Role.ROLE_USER)
-				.build()
-		);
+					.build()
+			);
 
 		// 정보 저장 혹은 변경
 		userRepository.save(user);
-		
+
 		// 토큰 발급
 		JwtUserClaims jwtUserClaims = JwtUserClaims.fromUsersEntity(user);
 		String refreshToken = jwtTokenProvider.generateRefreshToken(jwtUserClaims);

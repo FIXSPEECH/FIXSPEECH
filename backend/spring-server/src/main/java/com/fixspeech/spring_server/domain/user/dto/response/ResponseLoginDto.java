@@ -16,7 +16,6 @@ public class ResponseLoginDto {
 
 	public static ResponseLoginDto fromEntity(Users user) {
 		String imageUrl = user.getImage();
-		System.out.println(user.getId() + " " + user.getEmail() + " " + user.getNickName());
 		return ResponseLoginDto.builder()
 			.userId(user.getId())
 			.email(user.getEmail())

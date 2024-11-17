@@ -31,7 +31,6 @@ public class RedisConfig {
 
 	@Bean
 	public RedissonClient redisClient() {
-		// System.out.println(host + ":" + port + " " + password);
 		Config config = new Config();
 		config.useSingleServer()
 			.setAddress("redis://" + host + ":" + port)
