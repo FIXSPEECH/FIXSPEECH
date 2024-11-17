@@ -151,10 +151,13 @@ export default function LecturePage() {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-transparent text-white">
+    <main className="min-h-[calc(100vh-4rem)] bg-transparent text-white">
       <Box sx={{ maxWidth: "1200px", margin: "0 auto" }}>
         {error && (
-          <div className="text-red-500 mb-4 p-4 bg-red-500/10 rounded">
+          <div
+            role="alert"
+            className="text-red-500 mb-4 p-4 bg-red-500/10 rounded"
+          >
             {error}
           </div>
         )}
@@ -167,6 +170,6 @@ export default function LecturePage() {
           customizedContent={customizedContent}
         />
       </Box>
-    </div>
+    </main>
   );
 }

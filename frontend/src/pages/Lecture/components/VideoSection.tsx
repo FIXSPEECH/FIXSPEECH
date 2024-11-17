@@ -10,7 +10,8 @@ export function VideoSection({ section }: Props) {
   const description = METRIC_DESCRIPTIONS[section.metricName] || "";
 
   const handleVideoClick = (videoId: string) => {
-    window.open(videoId, "_blank");
+    // 새 창 열 때 보안과 접근성을 위해 rel 속성 추가 필요
+    window.open(videoId, "_blank", "noopener noreferrer");
   };
 
   return (
@@ -18,6 +19,8 @@ export function VideoSection({ section }: Props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="mb-8"
+      role="region"
+      aria-label={section.title}
     >
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
@@ -25,7 +28,10 @@ export function VideoSection({ section }: Props) {
             {section.title}
           </h2>
           {section.grade === "poor" && (
-            <span className="px-3 py-1 rounded-full text-sm bg-red-500/20 text-red-400">
+            <span
+              className="px-3 py-1 rounded-full text-sm bg-red-500/20 text-red-400"
+              role="status"
+            >
               개선 필요
             </span>
           )}
@@ -34,18 +40,19 @@ export function VideoSection({ section }: Props) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {section.videos.map((video, index) => (
-          <motion.div
-            key={index}
+        {section.videos.map((video) => (
+          <motion.button
+            key={video.videoId} // index를 key로 사용하지 않도록 수정
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="cursor-pointer"
             onClick={() => handleVideoClick(video.videoId)}
+            className="cursor-pointer text-left w-full"
+            aria-label={`${video.videoTitle} 동영상 보기`}
           >
             <div className="aspect-video relative">
               <img
                 src={video.videoThumbnail}
-                alt={video.videoTitle}
+                alt="" // 제목이 아래에 표시되므로 장식용 이미지로 처리
                 className="w-full h-full object-cover rounded-lg"
                 loading="lazy"
               />
@@ -57,7 +64,7 @@ export function VideoSection({ section }: Props) {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </motion.button>
         ))}
       </div>
     </motion.div>
