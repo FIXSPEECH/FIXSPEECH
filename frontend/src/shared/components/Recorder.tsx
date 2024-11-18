@@ -256,7 +256,8 @@ function Recorder({
 
   return (
     <div className="text-center mt-20">
-      <button onClick={isRecording ? stopRecording : startRecording}>
+      <button 
+      onClick={handleStartStop}>
         {isRecording ? (
           <>
             <div
@@ -303,7 +304,7 @@ function Recorder({
                   zIndex: 3, // 아이콘을 마스킹 레이어 위에 올리기 위해 z-index 사용
                 }}
                 className="cursor-pointer"
-                onClick={handleStartStop}
+                // onClick={handleStartStop}
               />
             </div>
           </>
@@ -311,7 +312,7 @@ function Recorder({
           <MicNoneIcon
             style={{ color, fontSize: `5rem` }}
             className="cursor-pointer"
-            onClick={handleStartStop}
+            // onClick={handleStartStop}
           />
         )}
       </button>
