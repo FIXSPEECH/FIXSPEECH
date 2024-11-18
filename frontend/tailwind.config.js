@@ -18,6 +18,8 @@ module.exports = {
         color48484A: "#48484A",
         color3A3A3C: "#3A3A3C",
         color828282: "#828282",
+        colorE6FFF7: "#E6FFF7",
+        color4DFFB5: "#4DFFB5",
       },
     },
   },
