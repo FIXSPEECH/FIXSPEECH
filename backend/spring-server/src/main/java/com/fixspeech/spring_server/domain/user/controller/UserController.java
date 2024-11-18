@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -142,6 +143,7 @@ public class UserController implements UserApi {
 	 * @return 로그아웃 성공 메세지
 	 */
 	@PostMapping("/logout")
+	@CrossOrigin(origins = "https://k11d206.p.ssafy.io")
 	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String refreshToken = CookieUtil.extractRefreshToken(request);
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
