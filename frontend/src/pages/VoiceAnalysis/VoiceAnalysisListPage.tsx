@@ -77,10 +77,10 @@ function VoiceAnalysisListPage() {
   };
 
   return (
-    <div className="voice-analysis-list p-4 md:p-8 lg:max-w-5xl lg:mx-auto">
-      <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 md:mb-6">
+    <div className="voice-analysis-list p-4 md:p-8 lg:max-w-5xl lg:mx-auto" role="main">
+      <h1 className="text-2xl md:text-3xl font-bold text-white mb-4 md:mb-6">
         음성 분석 목록
-      </h2>
+      </h1>
       {analysisData?.content.length ? (
         <>
           <div className="analysis-items bg-white/10 backdrop-blur-sm rounded-lg p-4 md:p-6 space-y-4">
@@ -89,14 +89,22 @@ function VoiceAnalysisListPage() {
                 key={item.recordId}
                 className="p-3 md:p-4 border-b border-white/30 hover:bg-white/10 transition-colors cursor-pointer"
                 onClick={() => navigate(`/analysis/${item.recordId}`)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    navigate(`/analysis/${item.recordId}`);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`${item.title} 분석 결과 보기`}
               >
                 <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                   <div className="flex-1 w-full">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
                       <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                        <h3 className="text-lg md:text-xl font-semibold text-white">
+                        <h2 className="text-lg md:text-xl font-semibold text-white">
                           {item.title}
-                        </h3>
+                        </h2>
                         <DeleteIcon
                           onClick={() => handleDelete(item.recordId)}
                           strokeColor="#4CC9FE"
@@ -119,6 +127,8 @@ function VoiceAnalysisListPage() {
                             ? "bg-blue-500/30 text-blue-300 border border-blue-400/50"
                             : "bg-rose-500/30 text-rose-300 border border-rose-400/50"
                         }`}
+                        role="status"
+                        aria-label={`전체 평가: ${calculateOverallGrade(item.analyzeResult.metrics)}`}
                       >
                         {calculateOverallGrade(item.analyzeResult.metrics)}
                       </div>
@@ -142,7 +152,7 @@ function VoiceAnalysisListPage() {
                             }
                           </span>
                         </div>
-                        <span className="hidden sm:block text-white/30">|</span>
+                        <span className="hidden sm:block text-white/30" aria-hidden="true">|</span>
                         <div className="flex items-center gap-2">
                           <span>발화 에너지:</span>
                           <span
@@ -165,7 +175,7 @@ function VoiceAnalysisListPage() {
                             }
                           </span>
                         </div>
-                        <span className="hidden sm:block text-white/30">|</span>
+                        <span className="hidden sm:block text-white/30" aria-hidden="true">|</span>
                         <div className="flex items-center gap-2">
                           <span>멜로디:</span>
                           <span
@@ -205,13 +215,14 @@ function VoiceAnalysisListPage() {
                           ? "blue"
                           : "red"
                       }
+                      aria-label={`${item.title}의 메트릭 시각화`}
                     />
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <div className="flex justify-center mt-6">
+          <nav className="flex justify-center mt-6" aria-label="페이지 네비게이션">
             <Pagination
               count={analysisData.totalPages}
               page={page}
@@ -226,10 +237,10 @@ function VoiceAnalysisListPage() {
                 },
               }}
             />
-          </div>
+          </nav>
         </>
       ) : (
-        <p className="text-center text-white p-6 md:p-10 bg-white/10 backdrop-blur-sm rounded-lg mt-4 md:mt-6">
+        <p className="text-center text-white p-6 md:p-10 bg-white/10 backdrop-blur-sm rounded-lg mt-4 md:mt-6" role="status">
           분석 기록이 없습니다.
         </p>
       )}

@@ -45,16 +45,31 @@ function VoiceRecord() {
   };
 
   return (
-    <div className="relative h-[calc(100vh-14vh)] w-screen overflow-hidden flex flex-col items-center p-5">
-      <div className="text-white text-center mt-[8vh]">
+    <div 
+      className="relative h-[calc(100vh-14vh)] w-screen overflow-hidden flex flex-col items-center p-5"
+      role="main"
+      aria-label="음성 녹음 페이지"
+    >
+      <div 
+        className="text-white text-center mt-[8vh]"
+        role="heading"
+        aria-level={1}
+      >
         아이콘을 누르고 제시된 문장을 읽어주세요.
       </div>
 
-      <div className="text-[#B9E5E8] text-center mt-[4vh]">
+      <div 
+        className="text-[#B9E5E8] text-center mt-[4vh]"
+        role="heading" 
+        aria-level={2}
+      >
         거친 돌이 다듬어져 조각이 되듯
       </div>
 
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full overflow-hidden">
+      <div 
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full overflow-hidden"
+        aria-hidden="true"
+      >
         <Canvas camera={{ position: [3, 3, 3], fov: 70 }}>
           <AudioSphereVisualizer />
         </Canvas>
@@ -64,6 +79,7 @@ function VoiceRecord() {
         <AudioRecorder
           onRecordingComplete={handleRecordingComplete}
           disabled={false}
+          aria-label="음성 녹음 버튼"
         />
       </div>
     </div>
