@@ -75,10 +75,10 @@ function SelectResult() {
   };
 
   return (
-    <div className="h-screen p-8 lg:max-w-5xl lg:mx-auto">
-      <div className="text-[#FFAB01] text-3xl font-bold mb-8">
+    <div className="h-screen p-8 lg:max-w-5xl lg:mx-auto" role="main">
+      <h1 className="text-[#FFAB01] text-3xl font-bold mb-8">
         음성 녹음 목록
-      </div>
+      </h1>
       {scripts.length === 0 ? (
         <div className="text-[#FFAB01] text-2xl flex justify-center items-center h-[70vh]">
           저장된 대본이 없습니다
@@ -88,9 +88,17 @@ function SelectResult() {
           <div className="space-y-3">
             {currentScripts.map((script: any) => (
               <div
-                key={script.id}
+                key={script.scriptId}
                 className="p-5 rounded-lg border border-[#FFAB01] hover:border-2 cursor-pointer transition-all"
                 onClick={() => handleClick(script.scriptId, script.title)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleClick(script.scriptId, script.title);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`${script.title} 대본 보기`}
               >
                 <div className="flex justify-between items-center">
                   <div className="text-white text-xl">{script.title}</div>
@@ -124,6 +132,7 @@ function SelectResult() {
               onChange={paginate}
               shape="rounded"
               size="large"
+              aria-label="페이지 이동"
               sx={{
                 "& .MuiPaginationItem-root": { color: "#FFAB01" },
                 "& .MuiPaginationItem-ellipsis": { color: "#FFAB01" },

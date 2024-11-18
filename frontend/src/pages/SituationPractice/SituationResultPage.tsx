@@ -102,7 +102,7 @@ const VoiceAnalysisDetailPage = () => {
   if (!analysisData || !analysisData.metrics) return null;
 
   return (
-    <div className="min-h-screen bg-transparent text-white p-8">
+    <div className="min-h-screen bg-transparent text-white p-8" role="main">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">{analysisData.scriptName}</h1>
@@ -113,6 +113,7 @@ const VoiceAnalysisDetailPage = () => {
           <button
             onClick={handlePlayPause}
             className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors"
+            aria-label={isPlaying ? "음성 일시정지" : "음성 재생"}
           >
             {isPlaying ? "일시정지" : "음성 재생"}
           </button>
@@ -129,6 +130,8 @@ const VoiceAnalysisDetailPage = () => {
                     color: getScoreColor(analysisData.overallScore).color,
                     textShadow: getScoreColor(analysisData.overallScore).shadow,
                   }}
+                  role="status"
+                  aria-label={`전체 점수: ${analysisData.overallScore.toFixed(1)}점`}
                 >
                   {analysisData.overallScore.toFixed(1)}
                 </div>
@@ -138,11 +141,11 @@ const VoiceAnalysisDetailPage = () => {
 
             <div className="aspect-square w-full bg-gray-800/30 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-gray-700/50">
               <h2 className="text-lg font-bold mb-4">메트릭 시각화</h2>
-              <MetricsVisualizer metrics={analysisData.metrics} colorScheme={selectedColor} />
+              <MetricsVisualizer metrics={analysisData.metrics} colorScheme={selectedColor} aria-label="메트릭 시각화 그래프" />
             </div>
             <div className="aspect-square w-full bg-gray-800/30 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-gray-700/50">
               <h2 className="text-lg font-bold mb-4">대본 내용</h2>
-              <p>{analysisData.scriptContent}</p>
+              <p role="article">{analysisData.scriptContent}</p>
             </div>
           </div>
 
@@ -152,7 +155,7 @@ const VoiceAnalysisDetailPage = () => {
               <div className="flex gap-6">
                 <div className="flex-1">
                   {analysisData.recommendations?.length > 0 ? (
-                    <ul className="list-disc pl-5 space-y-2">
+                    <ul className="list-disc pl-5 space-y-2" role="list">
                       {analysisData.recommendations.map((rec, idx) => (
                         <li key={idx} className="text-gray-300 p-2 rounded bg-gray-700/30 border border-gray-600/50">
                           {rec}
@@ -160,7 +163,7 @@ const VoiceAnalysisDetailPage = () => {
                       ))}
                     </ul>
                   ) : (
-                    <div className="text-gray-300 text-center p-4 bg-emerald-500/10 rounded border border-emerald-500/30">
+                    <div className="text-gray-300 text-center p-4 bg-emerald-500/10 rounded border border-emerald-500/30" role="status">
                       <p className="mb-2 text-emerald-400">✨ 훌륭한 음성 품질을 보여주고 계십니다!</p>
                       <p className="text-emerald-300">현재의 좋은 발성을 유지하면서 더욱 자신감 있게 말씀해보세요.</p>
                     </div>
@@ -185,6 +188,7 @@ const VoiceAnalysisDetailPage = () => {
           <button
             onClick={() => navigate("/situation/result")}
             className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors"
+            aria-label="목록으로 돌아가기"
           >
             목록으로 돌아가기
           </button>

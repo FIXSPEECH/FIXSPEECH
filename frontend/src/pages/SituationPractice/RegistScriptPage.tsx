@@ -108,14 +108,15 @@ function RegistScript() {
 
   return (
     <>
-      <div className="min-h-[70vh] flex justify-center">
+      <div className="min-h-[70vh] flex justify-center" role="main">
         <div className="flex flex-col align-middle">
           {/* 제목 입력 */}
           <div className="text-[#FFAB01] sm:text-lg md:text-lg lg:text-xl xl:text-xl mb-4">
             *연습할 대본의 제목을 입력해주세요.
           </div>
           <TextField
-            id="outlined-multiline-flexible"
+            id="title-input"
+            aria-label="대본 제목 입력"
             label="제목을 입력해주세요."
             onChange={handleTitleChange}
             sx={CustomTextFieldStyle}
@@ -127,7 +128,8 @@ function RegistScript() {
             *연습할 대본을 입력해주세요.
           </div>
           <TextField
-            id="outlined-multiline-static"
+            id="content-input"
+            aria-label="대본 내용 입력"
             label="대본을 입력해주세요."
             multiline
             rows={4}
@@ -143,8 +145,8 @@ function RegistScript() {
           </div>
           <RadioGroup
             row
-            aria-labelledby="demo-row-radio-buttons-group-label"
-            name="row-radio-buttons-group"
+            aria-label="강세 선택"
+            name="accent-selection"
             onChange={handleAccentChange}            
             sx={{
               // 라디오 버튼 색상 설정
@@ -200,10 +202,11 @@ function RegistScript() {
               }}
               size="small"
             >
-              <InputLabel id="demo-select-small-label">분</InputLabel>
+              <InputLabel id="minutes-select-label">분</InputLabel>
               <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
+                labelId="minutes-select-label"
+                id="minutes-select"
+                aria-label="분 선택"
                 label="0 분"
                 value={minute.toString()}
                 onChange={handleMinutesChange}
@@ -249,15 +252,16 @@ function RegistScript() {
               }}
               size="small"
             >
-              <InputLabel id="demo-select-small-label">초</InputLabel>
+              <InputLabel id="seconds-select-label">초</InputLabel>
               <Select
                 style={{
                   fontFamily: "inherit",
                 }}
-                labelId="demo-select-small-label"
-                id="demo-select-small"
+                labelId="seconds-select-label"
+                id="seconds-select"
+                aria-label="초 선택"
                 value={second.toString()}
-                label="Age"
+                label="초"
                 onChange={handleSecondsChange}
               >
                 <MenuItem value={0}>0 초</MenuItem>
@@ -277,6 +281,7 @@ function RegistScript() {
         <Button
           variant="contained"
           onClick={handlePracticeClick}
+          aria-label="연습 시작하기"
           style={{
             fontFamily: "inherit",
           }}

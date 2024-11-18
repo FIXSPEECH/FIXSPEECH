@@ -108,24 +108,25 @@ function SituationPractice() {
   }, [Id]);
 
   return (
-    <div className="flex min-h-[80vh] items-center">
+    <div className="flex min-h-[80vh] items-center" role="main">
       {data ? (
         <>
           <Script content={data.content} />
           <div className="flex-col w-2/5 justify-center align-middle">
             <Timer seconds={data.second} />
             <Recorder
-              color={"#FFAB01"}
+              color={"#FFAB01"} 
               barColor={"rgb(239,204,135)"}
               width={200}
               height={60}
               visualizeWidth="200px"
               modalType="regist"
+              aria-label="음성 녹음"
             />
           </div>
         </>
       ) : (
-        <div>Loading...</div> // 데이터 로딩 중에 표시될 내용
+        <div role="status" aria-live="polite">Loading...</div> // 데이터 로딩 중에 표시될 내용
       )}
     </div>
   );
