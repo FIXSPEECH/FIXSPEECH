@@ -9,6 +9,6 @@ export const METRIC_DESCRIPTIONS: Record<string, string> = {
     "말하기 속도의 안정성을 나타내는 지표입니다.",
   "발화의 에너지(Utterance Energy)":
     "말하기의 힘과 에너지를 측정하는 지표입니다.",
-  "억양 패턴 일관성(Intonation Pattern Consistency)":
+  "억양 패턴 일관성 (Intonation Pattern Consistency)":
     "억양의 일관성을 나타내는 지표입니다.",
 };
