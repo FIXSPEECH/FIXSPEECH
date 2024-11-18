@@ -270,14 +270,16 @@ function Recorder({
               {mediaRecorder && (
                 <>
                   {/* 파형 시각화 컴포넌트 */}
-                  <LiveAudioVisualizer
-                    mediaRecorder={mediaRecorder}
-                    width={width}
-                    height={height}
-                    barColor={barColor}
-                    gap={3}
-                    barWidth={5}
-                  />
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <LiveAudioVisualizer
+                      mediaRecorder={mediaRecorder}
+                      width={width}
+                      height={height}
+                      barColor={barColor}
+                      gap={3}
+                      barWidth={5}
+                    />
+                  </div>
                   {/* 아이콘의 크기와 위치에 따라 마스킹할 영역 */}
                   <div
                     style={{
