@@ -20,22 +20,25 @@ function UserInfo() {
   };
 
   return (
-    <div className="p-5 w-full flex justify-center">
+    <div className="p-5 w-full flex justify-center" role="main" aria-label="사용자 정보">
       <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4 max-w-full">
         <Avatar
           alt={userProfile.nickName || "사용자"}
           src={userProfile.image || "/static/images/avatar/1.jpg"}
           sx={{ width: 70, height: 70 }}
+          role="img"
+          aria-label={`${userProfile.nickName || "사용자"}의 프로필 이미지`}
         />
         <div className="flex flex-col items-center sm:items-start gap-3">
-          <span className="text-white text-lg font-medium">
+          <h1 className="text-white text-lg font-medium">
             반가워요, {userProfile.nickName || "사용자"}님!
-          </span>
+          </h1>
           <div className="flex flex-wrap items-center gap-2">
             <button
               className="px-4 py-2 text-sm text-white bg-white/20 hover:bg-white/30 
                 rounded-md transition-colors"
               onClick={() => navigate("/record")}
+              aria-label="내 목소리 분석하기"
             >
               내 목소리 분석하기
             </button>
@@ -43,6 +46,7 @@ function UserInfo() {
               className="px-4 py-2 text-sm text-white bg-white/20 hover:bg-white/30 
                 rounded-md transition-colors"
               onClick={handleLogout}
+              aria-label="로그아웃"
             >
               로그아웃
             </button>
