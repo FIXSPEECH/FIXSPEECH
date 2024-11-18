@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { motion, useAnimation, Variants } from 'framer-motion';
+import { motion, useAnimation, Variants } from "framer-motion";
 
 const pathVariants: Variants = {
-  normal: { d: 'M5 12h14' },
+  normal: { d: "M5 12h14" },
   animate: {
-    d: ['M5 12h14', 'M5 12h9', 'M5 12h14'],
+    d: ["M5 12h14", "M5 12h9", "M5 12h14"],
     transition: {
       duration: 0.4,
     },
@@ -13,9 +13,9 @@ const pathVariants: Variants = {
 };
 
 const secondaryPathVariants: Variants = {
-  normal: { d: 'm12 5 7 7-7 7', translateX: 0 },
+  normal: { d: "m12 5 7 7-7 7", translateX: 0 },
   animate: {
-    d: 'm12 5 7 7-7 7',
+    d: "m12 5 7 7-7 7",
     translateX: [0, -3, 0],
     transition: {
       duration: 0.4,
@@ -26,22 +26,33 @@ const secondaryPathVariants: Variants = {
 interface ArrowRightIconProps {
   onClick?: () => void; // onClick prop 추가
   color: string;
+  ariaLabel?: string;
 }
 
-const ArrowRightIcon = ({onClick, color}: ArrowRightIconProps) => {
+const ArrowRightIcon = ({
+  onClick,
+  color,
+  ariaLabel = "다음으로 이동",
+}: ArrowRightIconProps) => {
   const controls = useAnimation();
 
   return (
     <div
-      className="cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center "
-      onMouseEnter={() => controls.start('animate')}
-      onMouseLeave={() => controls.start('normal')}
+      className="cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center"
+      onMouseEnter={() => controls.start("animate")}
+      onMouseLeave={() => controls.start("normal")}
       onClick={onClick} // onClick을 div에 연결
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          onClick?.();
+        }
+      }}
+      aria-label={ariaLabel}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        // width="28"
-        // height="28"
         className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14"
         viewBox="0 0 24 24"
         fill="none"
@@ -49,6 +60,7 @@ const ArrowRightIcon = ({onClick, color}: ArrowRightIconProps) => {
         strokeLinecap="round"
         strokeLinejoin="round"
         stroke={color}
+        aria-hidden="true"
       >
         <motion.path d="M5 12h14" variants={pathVariants} animate={controls} />
         <motion.path
@@ -61,4 +73,4 @@ const ArrowRightIcon = ({onClick, color}: ArrowRightIconProps) => {
   );
 };
 
-export  default  ArrowRightIcon ;
+export default ArrowRightIcon;

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import type { Variants } from 'framer-motion';
-import { motion, useAnimation } from 'framer-motion';
+import type { Variants } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 
 const lidVariants: Variants = {
   normal: { y: 0 },
@@ -9,18 +9,22 @@ const lidVariants: Variants = {
 };
 
 const springTransition = {
-  type: 'spring',
+  type: "spring",
   stiffness: 500,
   damping: 30,
 };
 
 interface DeleteIconProps {
-    onClick?: () => void; // onClick prop 추가
-    strokeColor?:string;
-  }
+  onClick?: () => void; // onClick prop 추가
+  strokeColor?: string;
+  ariaLabel?: string;
+}
 
-  
-const DeleteIcon = ({onClick, strokeColor}: DeleteIconProps) => {
+const DeleteIcon = ({
+  onClick,
+  strokeColor,
+  ariaLabel = "삭제하기", // 기본값 추가
+}: DeleteIconProps) => {
   const controls = useAnimation();
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -33,9 +37,17 @@ const DeleteIcon = ({onClick, strokeColor}: DeleteIconProps) => {
   return (
     <div
       className="cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center"
-      onMouseEnter={() => controls.start('animate')}
-      onMouseLeave={() => controls.start('normal')}
+      onMouseEnter={() => controls.start("animate")}
+      onMouseLeave={() => controls.start("normal")}
       onClick={handleDeleteClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          onClick?.();
+        }
+      }}
+      aria-label={ariaLabel}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -47,6 +59,7 @@ const DeleteIcon = ({onClick, strokeColor}: DeleteIconProps) => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden="true"
       >
         <motion.g
           variants={lidVariants}
@@ -59,8 +72,8 @@ const DeleteIcon = ({onClick, strokeColor}: DeleteIconProps) => {
         <motion.path
           d="M19 8v12c0 1-1 2-2 2H7c-1 0-2-1-2-2V8"
           variants={{
-            normal: { d: 'M19 8v12c0 1-1 2-2 2H7c-1 0-2-1-2-2V8' },
-            animate: { d: 'M19 9v12c0 1-1 2-2 2H7c-1 0-2-1-2-2V9' },
+            normal: { d: "M19 8v12c0 1-1 2-2 2H7c-1 0-2-1-2-2V8" },
+            animate: { d: "M19 9v12c0 1-1 2-2 2H7c-1 0-2-1-2-2V9" },
           }}
           animate={controls}
           transition={springTransition}
