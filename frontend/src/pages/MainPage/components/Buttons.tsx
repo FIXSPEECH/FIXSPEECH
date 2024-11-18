@@ -78,7 +78,7 @@ function Buttons() {
       <Grid container spacing={2}>
         {gridItems.map((item, index) => (
           <Grid
-            component="div"
+            component="button" // div -> button으로 변경 (시맨틱 마크업)
             role="button"
             tabIndex={0}
             key={index}
@@ -102,6 +102,8 @@ function Buttons() {
             }}
           >
             <div
+              role="heading" // 제목 역할 추가
+              aria-level={3} // 제목 레벨 지정
               style={{
                 color: "white",
                 fontSize: "1.5rem",
@@ -113,7 +115,8 @@ function Buttons() {
             </div>
             <img
               src={item.imageSrc}
-              alt={item.label}
+              alt="" // 장식용 이미지이므로 빈 alt
+              role="presentation" // 장식용 이미지 명시
               style={{
                 width: "100%",
                 marginTop: item.imgMargin,
@@ -125,6 +128,7 @@ function Buttons() {
         ))}
       </Grid>
     </Box>
+
   );
 }
 

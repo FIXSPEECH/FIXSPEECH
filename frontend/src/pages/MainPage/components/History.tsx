@@ -69,7 +69,9 @@ function History() {
   return (
     <div
       className="relative w-2/3 mt-5 m-5 mx-auto px-[3%]"
-      aria-hidden="true" // 스크린 리더가 읽지 않도록 설정
+      aria-hidden="true" 
+      role="region" // aria-hidden 대신 적절한 role 부여
+      aria-label="학습 기록 히트맵" // 히트맵의 목적 설명
     >
       {/* 색상 변경 버튼 */}
       <button
@@ -84,11 +86,15 @@ function History() {
           style={{
             backgroundColor: COLOR_SCHEMES[selectedColor].baseColor,
           }}
+          role="presentation" // 순수 시각적 요소임을 명시
         />
       </button>
 
       {/* 히트맵 컨테이너 */}
-      <div className="w-full aspect-[4/1] ">
+      <div 
+        className="w-full aspect-[4/1]"
+        role="presentation" // 순수 컨테이너임을 명시
+      >
         <CalendarHeatmap
           tabIndex={-1}
           startDate={new Date(new Date().setMonth(new Date().getMonth() - 4))}
@@ -112,6 +118,7 @@ function History() {
                       : value.date.toISOString().split("T")[0]
                   }: ${value.count}회`,
           })}
+          aria-label="학습 기록 달력 히트맵" // 히트맵 컴포넌트에 레이블 추가
         />
       </div>
       <Tooltip id="grass-tooltip" />
