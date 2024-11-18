@@ -181,7 +181,7 @@ public class ScriptController implements ScriptApi {
 
 			throw new CustomException(ErrorCode.FAIL_TO_ANALYZE_SCRIPT);
 		}
-		redisTemplate.delete(message.redisKey());
+		// redisTemplate.delete(message.redisKey());
 	}
 
 	//대본 음성데이터 상세 조회
