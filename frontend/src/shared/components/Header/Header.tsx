@@ -59,6 +59,7 @@ function Header() {
     <header
       className="flex justify-between items-center px-[3%] py-[1.5%] text-2xl font-bold"
       role="banner"
+      aria-label="사이트 헤더"
     >
       <Link
         to="/"
@@ -73,6 +74,7 @@ function Header() {
           to={url}
           className={`${colorClass} hover:opacity-80 transition-opacity`}
           aria-label={`${title} 페이지로 이동`}
+          aria-current={location.pathname === url ? "page" : undefined}
         >
           {title}
         </Link>

@@ -126,8 +126,8 @@ const MetricsVisualizer = ({
   };
 
   return (
-    <div className="aspect-square w-full">
-      <Radar data={chartData} options={options} />
+    <div className="aspect-square w-full" role="presentation">
+      <Radar data={chartData} options={options} aria-label="음성 품질 메트릭스 차트" />
     </div>
   );
 };
