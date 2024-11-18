@@ -55,8 +55,10 @@ public class SecurityConfig {
 			.csrf(AbstractHttpConfigurer::disable)
 			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests(requests -> requests
-				.requestMatchers("/user/logout", "/login", "/api/login", "/login/kakao", "/oauth/login/**", "/api/oauth/login/**", "/user/public/reissue")
-//				.requestMatchers("*/*", "*", "**", "**/**")r
+				.requestMatchers("/user/logout", "/login", "/api/login", "/login/kakao",
+					"/oauth/login/**", "/api/oauth/login/**", "/user/public/reissue",
+					"/swagger-ui/**", "/v3/api-docs/**")
+//				.requestMatchers("*/*", "*", "**", "**/**")
 				.permitAll()
 				.anyRequest()
 				.authenticated()
