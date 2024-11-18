@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 
 function Login() {
   const [currentSection, setCurrentSection] = useState(0);
-  const totalSections = 5; // 섹션 수 증가
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const totalSections = 5;
 
   const handleLogin = () => {
     window.location.href =
@@ -30,10 +31,38 @@ function Login() {
     }
   };
 
+  const handleTouchStart = (e: TouchEvent) => {
+    setTouchStart(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    if (touchStart === null) return;
+
+    const touchEnd = e.changedTouches[0].clientY;
+    const diff = touchStart - touchEnd;
+
+    if (Math.abs(diff) < 50) return;
+
+    if (diff > 0 && currentSection < totalSections - 1) {
+      setCurrentSection((prev) => prev + 1);
+    } else if (diff < 0 && currentSection > 0) {
+      setCurrentSection((prev) => prev - 1);
+    }
+
+    setTouchStart(null);
+  };
+
   useEffect(() => {
     window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, [currentSection]);
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [currentSection, touchStart]);
 
   return (
     <div className="h-[calc(100vh-5rem)] overflow-hidden">
