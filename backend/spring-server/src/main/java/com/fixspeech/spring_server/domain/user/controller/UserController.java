@@ -143,7 +143,6 @@ public class UserController implements UserApi {
 	 * @return 로그아웃 성공 메세지
 	 */
 	@PostMapping("/logout")
-	@CrossOrigin(origins = "https://k11d206.p.ssafy.io")
 	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String refreshToken = CookieUtil.extractRefreshToken(request);
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
