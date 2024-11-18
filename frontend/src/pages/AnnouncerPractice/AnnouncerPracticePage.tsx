@@ -71,6 +71,11 @@ function AnnouncerPractice() {
               height={75}
               visualizeWidth="300px"
               modalType="record"
+              beforeRecordText={`*아나운서의 음성을 듣고, 비슷하게 따라해보세요.
+                아이콘을 누르고 제시된 문장을 읽어주세요.`}
+               
+              recordingText={`*문장을 다 읽고 난 뒤, 아이콘을 다시 눌러 제출해주세요.
+                FIXSPEECH가 아나운서 음성과 여러분의 음성이 얼마나 비슷한지 알려줄거에요.`}
             />
 
             {user && announcer && user.length > 0 && announcer.length > 0 ? (

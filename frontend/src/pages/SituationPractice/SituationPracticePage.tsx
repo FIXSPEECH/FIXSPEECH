@@ -122,6 +122,8 @@ function SituationPractice() {
               visualizeWidth="200px"
               modalType="regist"
               aria-label="음성 녹음"
+              beforeRecordText={`*마이크를 눌러 녹음을 시작해주세요.`}
+              recordingText={`*마이크를 눌러 녹음을 완료해주세요.`}
             />
           </div>
         </>
