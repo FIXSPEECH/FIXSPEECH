@@ -93,8 +93,9 @@ const MetricsVisualizer = ({
         pointLabels: {
           display: showLabels,
           font: {
-            size: 8,
+            size: 10,
           },
+          color: "#FFFFFF",
         },
         min: 0,
         max: 1,
