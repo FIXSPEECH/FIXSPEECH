@@ -126,7 +126,7 @@ public class ScriptController implements ScriptApi {
 
 	}
 
-	@KafkaListener(topics = "voice-analysis-topic", groupId = "voice-analysis-group", concurrency = "5")
+	@KafkaListener(topics = "voice-analysis-topic", groupId = "voice-analysis-group", concurrency = "6")
 	public void processVoiceAnalysis(VoiceAnalysisMessage message) {
 		try {
 			byte[] fileData = redisTemplate.opsForValue().get(message.redisKey());
