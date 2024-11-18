@@ -2,24 +2,30 @@ import { useEffect, useState } from "react";
 import "./Login.css";
 import AudioVertexVisualizer from "../../shared/components/Visualizer/AudioVertexVisualizer";
 import { motion } from "framer-motion";
+import useAuthStore from "../../shared/stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const setToken = useAuthStore((state) => state.setToken);
+  const navigate = useNavigate();
+
   const [currentSection, setCurrentSection] = useState(0);
-  const totalSections = 5; // 섹션 수 증가
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const totalSections = 5;
 
   const handleLogin = () => {
     window.location.href =
       import.meta.env.VITE_API_URL + "/oauth2/authorization/kakao";
   };
-  // // 테스트 로그인 처리
-  // const handleTestLogin = (gender: "male" | "female") => {
-  //   const testToken =
-  //     gender === "male"
-  //       ? import.meta.env.VITE_TEST_TOKEN_MALE
-  //       : import.meta.env.VITE_TEST_TOKEN_FEMALE;
-  //   setToken(testToken);
-  //   navigate("/");
-  // };
+  // 테스트 로그인 처리
+  const handleTestLogin = (gender: "male" | "female") => {
+    const testToken =
+      gender === "male"
+        ? import.meta.env.VITE_TEST_TOKEN_MALE
+        : import.meta.env.VITE_TEST_TOKEN_FEMALE;
+    setToken(testToken);
+    navigate("/");
+  };
 
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
@@ -30,10 +36,38 @@ function Login() {
     }
   };
 
+  const handleTouchStart = (e: TouchEvent) => {
+    setTouchStart(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    if (touchStart === null) return;
+
+    const touchEnd = e.changedTouches[0].clientY;
+    const diff = touchStart - touchEnd;
+
+    if (Math.abs(diff) < 50) return;
+
+    if (diff > 0 && currentSection < totalSections - 1) {
+      setCurrentSection((prev) => prev + 1);
+    } else if (diff < 0 && currentSection > 0) {
+      setCurrentSection((prev) => prev - 1);
+    }
+
+    setTouchStart(null);
+  };
+
   useEffect(() => {
     window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, [currentSection]);
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [currentSection, touchStart]);
 
   return (
     <div className="h-[calc(100vh-5rem)] overflow-hidden">
@@ -143,6 +177,20 @@ function Login() {
               카카오 로그인
             </button>
           </motion.div>
+          <button
+            onClick={() => handleTestLogin("male")}
+            className="neon-male-button mx-10"
+            aria-label="남성 사용자로 체험하기"
+          >
+            체험하기(남성)
+          </button>
+          <button
+            onClick={() => handleTestLogin("female")}
+            className="neon-female-button"
+            aria-label="여성 사용자로 체험하기"
+          >
+            체험하기(여성)
+          </button>
         </section>
       </div>
 
