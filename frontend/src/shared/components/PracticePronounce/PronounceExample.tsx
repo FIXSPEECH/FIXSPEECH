@@ -183,7 +183,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
   return (
     <>
-      <div className="flex justify-center items-center w-screen">
+      <div className="flex justify-center items-center w-screen" role="main">
         <div style={{ width: `${size}rem`, height: `${size}rem` }}>
           {!isRecording && audioURL && (
             <div>
@@ -191,29 +191,50 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
                 ref={audioRef}
                 src={audioURL}
                 onEnded={() => setIsPlaying(false)} // 오디오가 끝나면 상태를 다시 false로 설정
+                aria-label="녹음 오디오"
               />
-              <VolumeDownIcon
+              <button
                 onClick={handlePlayAudio}
-                style={{ cursor: "pointer", color, fontSize: `${size}rem` }}
+                aria-label="오디오 재생"
                 className="mb-6"
-              />
+              >
+                <VolumeDownIcon
+                  style={{ cursor: "pointer", color, fontSize: `${size}rem` }}
+                />
+              </button>
             </div>
           )}
         </div>
 
-        <div className="text-[#FF8C82] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
+        <div 
+          className="text-[#FF8C82] sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20 max-w-[50%]"
+          aria-label="예문"
+          style={{
+            wordBreak: "keep-all"
+          }}
+        >
           {example}
         </div>
       </div>
 
       {/* 틀린 단어들 강조하여 출력 */}
-      <div className="mt-4 text-white sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20">
+      <div 
+        className="mt-4 text-white sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20"
+        aria-label="사용자 발음 결과"
+      >
         {renderHighlightedUserText()}
       </div>
 
       {/* ArrowRight 컴포넌트 */}
       <div className="ml-auto mr-10 flex">
-        <ArrowRight onClick={isNext ? getExample : undefined} color="#FF8C82" />
+        <button
+          onClick={isNext ? getExample : undefined}
+          disabled={!isNext}
+          aria-label="다음 예문"
+          tabIndex={0}
+        >
+          <ArrowRight color="#FF8C82" />
+        </button>
       </div>
 
       {/* FinishModal */}
