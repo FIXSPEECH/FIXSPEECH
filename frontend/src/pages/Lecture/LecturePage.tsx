@@ -7,6 +7,7 @@ import type { RecentAnalysis, SectionData } from "./types/lecture";
 import axiosInstance from "../../services/axiosInstance";
 import { getAIRecommendations } from "./services/aiService";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 interface ApiResponse {
   status: string;
@@ -26,6 +27,7 @@ export default function LecturePage() {
     ai: true,
     custom: true,
   });
+  const [hasAnalysisData, setHasAnalysisData] = useState(true);
 
   // 유튜브 데이터 로드
   const loadYoutubeData = async (analysis: RecentAnalysis) => {
@@ -134,13 +136,17 @@ export default function LecturePage() {
         }
       } catch (error) {
         console.error("데이터 로드 실패:", error);
-        if (axios.isAxiosError(error) && error.response?.status === 403) {
-          setError("접근 권한이 없습니다. 다시 로그인해주세요.");
-          setTimeout(() => {
-            window.location.href = "/login";
-          }, 2000);
-        } else {
-          setError("데이터를 불러오는 중 오류가 발생했습니다.");
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 403) {
+            setError("접근 권한이 없습니다. 다시 로그인해주세요.");
+            setTimeout(() => {
+              window.location.href = "/login";
+            }, 2000);
+          } else if (error.response?.data.errorCode === "R006") {
+            setHasAnalysisData(false);
+          } else {
+            setError("데이터를 불러오는 중 오류가 발생했습니다.");
+          }
         }
       } finally {
         setIsLoading(false);
@@ -149,6 +155,29 @@ export default function LecturePage() {
 
     loadData();
   }, []);
+
+  if (!hasAnalysisData) {
+    return (
+      <main className="min-h-[calc(100vh-4rem)] bg-transparent text-white flex items-center justify-center">
+        <div className="text-center p-8 bg-gray-800/30 backdrop-blur-sm rounded-lg border border-gray-700/50">
+          <h2 className="text-2xl font-semibold text-[#EE719E] mb-4">
+            음성 분석이 필요해요
+          </h2>
+          <p className="text-gray-300 mb-6">
+            먼저 음성 분석을 진행해야 맞춤형 결과를 얻을 수 있어요
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-6 py-3 bg-[#EE719E] text-white rounded-lg font-medium"
+            onClick={() => (window.location.href = "/record")}
+          >
+            음성 분석하러 가기
+          </motion.button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-[calc(100vh-4rem)] bg-transparent text-white">
