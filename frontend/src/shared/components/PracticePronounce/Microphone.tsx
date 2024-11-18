@@ -220,12 +220,17 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
   };
 
   return (
-    <div className="text-center mt-20">
-      <button onClick={isRecording ? stopRecording : startRecording}>
+    <div className="text-center mt-20" role="region" aria-label="음성 녹음 컨트롤">
+      <button 
+        onClick={isRecording ? stopRecording : startRecording}
+        aria-label={isRecording ? "녹음 중지" : "녹음 시작"}
+        aria-pressed={isRecording}
+      >
         {isRecording ? (
           <>
             <div
               style={{ position: "relative", width: "300px", height: "75px" }}
+              role="presentation"
             >
               {mediaRecorder && (
                 <>
@@ -237,6 +242,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
                     barColor="rgb(236,90,77)"
                     gap={3}
                     barWidth={5}
+                    aria-hidden="true"
                   />
                   {/* 아이콘의 크기와 위치에 따라 마스킹할 영역 */}
                   <div
@@ -250,6 +256,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
                       backgroundColor: "rgba(255, 255, 255, 0)", // 투명한 배경
                       zIndex: 2, // 아이콘 위에 오도록 z-index 설정
                     }}
+                    aria-hidden="true"
                   />
                 </>
               )}
@@ -265,6 +272,8 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
                 }}
                 className="cursor-pointer"
                 onClick={handleStartStop}
+                role="presentation"
+                aria-hidden="true"
               />
             </div>
           </>
@@ -273,14 +282,25 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
             style={{ color, fontSize: `${size}rem` }}
             className="cursor-pointer"
             onClick={handleStartStop}
+            role="presentation"
+            aria-hidden="true"
           />
         )}
       </button>
 
-      <div className="text-white break-words mt-2 text-xs sm:text-sm md:text-base lg:text-text-base xl:text-lg">
+      <div 
+        className="text-white break-words mt-2 text-xs sm:text-sm md:text-base lg:text-text-base xl:text-lg"
+        role="status"
+        aria-live="polite"
+      >
         {audioURL
           ? "*다시 녹음하려면 아이콘을 눌러주세요."
-          : "*아이콘을 누르고 제시된 문장을 읽어주세요."}
+          :  <>
+              <div>*아이콘을 누르고 제시된 문장을 읽어주세요.</div>
+              <div>문장을 다 읽고 난 뒤, 아이콘을 다시 눌러 제출해주세요.</div>
+              <div>내 발음을 주어진 문장과 비교해보세요.</div>
+            </>
+           }
       </div>
 
       {/* 녹음된 오디오를 재생할 수 있는 오디오 플레이어 */}

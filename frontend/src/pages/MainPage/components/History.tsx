@@ -69,7 +69,6 @@ function History() {
   return (
     <div
       className="relative w-2/3 mt-5 m-5 mx-auto px-[3%]"
-      aria-hidden="true" 
       role="region" // aria-hidden 대신 적절한 role 부여
       aria-label="학습 기록 히트맵" // 히트맵의 목적 설명
     >

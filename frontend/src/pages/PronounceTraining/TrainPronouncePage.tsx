@@ -39,7 +39,7 @@ function TrainPronounce() {
       <Button
         variant="outlined"
         sx={{
-          color: "#FF8C82",
+          color: "#FF8C82", 
           borderColor: "#FF8C82",
           fontSize: {
             sm: "1.125rem", // sm:text-lg
@@ -50,11 +50,12 @@ function TrainPronounce() {
         }}
         style={{ marginLeft: "3%" }}
         onClick={handleClick}
+        aria-label="연습 종료하기"
       >
         종료하기
       </Button>
-      <div className="min-h-[70vh] flex justify-center">
-        <div className="flex flex-col justify-center align-middle">
+      <main className="min-h-[70vh] flex justify-center">
+        <div className="flex flex-col justify-center align-middle" role="region" aria-label="발음 연습 영역">
           <PronounceExample
             color={"#FF8C82"}
             size={3}
@@ -62,7 +63,7 @@ function TrainPronounce() {
           />
           <Microphone color={"#FF8C82"} size={5} />
         </div>
-      </div>
+      </main>
 
       <FinishModal isOpen={showModal} onClose={closeModal} />
     </>

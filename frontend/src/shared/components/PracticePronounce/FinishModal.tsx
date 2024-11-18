@@ -31,15 +31,23 @@ export default function AlertDialog({ isOpen, onClose }: FinishModalProps) {
         }}
       >
         <DialogTitle id="alert-dialog-title">
-          {"연습이 완료되었습니다!"}
+          연습이 완료되었습니다!
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            축하합니다! {isNumber} 개의 문장연습을 모두 마쳤습니다.
+          <DialogContentText 
+            id="alert-dialog-description"
+            role="status"
+            aria-live="polite"
+          >
+            축하합니다! {isNumber}개의 문장연습을 모두 마쳤습니다.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} sx={{ color: "#EC5A4D" }}>
+          <Button 
+            onClick={onClose}
+            sx={{ color: "#EC5A4D" }}
+            aria-label="연습 종료하기"
+          >
             종료하기
           </Button>
         </DialogActions>
