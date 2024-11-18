@@ -243,13 +243,16 @@ export default function Game() {
                   </div>
                   <div className="flex justify-center w-full max-w-md mt-4">
                     <Button
-                      variant="contained"
+                      variant="outlined"
                       style={{
-                        backgroundColor: "#FFAB01",
+                        backgroundColor: "black",
                         color: "white",
                         width: "100%",                    
                         fontWeight: "bold",
-                        fontFamily: "inherit"
+                        fontFamily: "inherit",
+                        border: "2px solid #FFAB01",
+                        boxShadow: "0 0 10px #FFAB01, 0 0 20px #FFAB01",
+                        transition: "all 0.3s ease"
                       }}
                       onClick={() => navigate("/game/ranking")}
                     >

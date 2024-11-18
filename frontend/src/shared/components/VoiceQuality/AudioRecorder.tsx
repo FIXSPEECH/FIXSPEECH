@@ -126,6 +126,8 @@ const AudioRecorder = ({
     <button
       onClick={isRecording ? stopRecording : startRecording}
       disabled={disabled}
+      aria-label={isRecording ? "녹음 중지" : "녹음 시작"}
+      type="button"
       className={`px-6 py-2 rounded-lg transition-colors ${
         disabled
           ? "bg-gray-600 cursor-not-allowed"
