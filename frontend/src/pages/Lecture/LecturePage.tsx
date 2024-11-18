@@ -109,7 +109,7 @@ export default function LecturePage() {
       "휴지 타이밍(Pause Timing)": 6,
       "속도 변동성(Rate Variability)": 7,
       "발화의 에너지(Utterance Energy)": 8,
-      "억양 패턴 일관성(Intonation Pattern Consistency)": 9,
+      "억양 패턴 일관성 (Intonation Pattern Consistency)": 9,
     };
     return metricMap[metric] || 1;
   };

@@ -186,20 +186,20 @@ const VoiceRecordResultPage = () => {
 
               <div className="space-y-4 text-center mb-4 flex flex-col items-center">
                 <p className="text-gray-300 mb-6">
-                  다음과 같은 이유로 현재 음성 분석이 진행되지 않았어요:
+                  다음과 같은 이유로 음성 분석이 어려울 수 있어요:
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-400/20 text-gray-400 text-sm">
-                    • 음성 분석 모델이 현재 많은 요청을 처리하고 있어요
+                    • 음성 파일이 너무 길거나 짧을 수 있어요
+                  </div>
+                  <div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-400/20 text-gray-400 text-sm">
+                    • 주변 소음이 많은 경우 지표 분석값을 얻기 어려워요
                   </div>
                   <div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-400/20 text-gray-400 text-sm">
                     • 네트워크 연결이 불안정할 수 있어요
                   </div>
                   <div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-400/20 text-gray-400 text-sm">
-                    • 음성 파일이 너무 길거나 짧을 수 있어요
-                  </div>
-                  <div className="p-3 bg-indigo-900/20 rounded-lg border border-indigo-400/20 text-gray-400 text-sm">
-                    • 서버가 일시적으로 과부하 상태일 수 있어요
+                    • 음성 크기가 너무 작거나 크면 분석이 어려워요.
                   </div>
                 </div>
               </div>

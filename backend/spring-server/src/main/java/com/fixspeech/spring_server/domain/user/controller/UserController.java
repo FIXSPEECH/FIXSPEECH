@@ -1,13 +1,16 @@
 package com.fixspeech.spring_server.domain.user.controller;
 
+import java.io.IOException;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,6 +46,11 @@ public class UserController implements UserApi {
 	private final UserService userService;
 	private final TokenService tokenService;
 	private final JwtTokenProvider jwtTokenProvider;
+
+	@Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+	private String restApiKey;
+	@Value("${frontend.url}")
+	private String logoutRedirectUri;
 
 	/**
 	 * 사용자 상세 정보 입력 여부 확인
@@ -130,16 +138,18 @@ public class UserController implements UserApi {
 
 	/**
 	 * 사용자 로그아웃
-	 * @param request    request
-	 * @param response    response
+	 * @param request	request
+	 * @param response	response
 	 * @return 로그아웃 성공 메세지
 	 */
-	@PostMapping("/public/logout")
-	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) {
+	@PostMapping("/logout")
+	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String refreshToken = CookieUtil.extractRefreshToken(request);
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
 			tokenService.blacklistRefreshToken(refreshToken);
 			CookieUtil.deleteRefreshCookie(request, response);
+			String url = "https://kauth.kakao.com/oauth/logout?client_id=" + restApiKey + "&logout_redirect_uri=" + logoutRedirectUri;
+			response.sendRedirect(url);
 			return ApiResponse.success("로그아웃 성공");
 		}
 		return ApiResponse.createError(ErrorCode.BAD_REQUEST_ERROR);
