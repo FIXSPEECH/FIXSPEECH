@@ -137,8 +137,8 @@ public class UserController implements UserApi {
 
 	/**
 	 * 사용자 로그아웃
-	 * @param request    request
-	 * @param response    response
+	 * @param request	request
+	 * @param response	response
 	 * @return 로그아웃 성공 메세지
 	 */
 	@PostMapping("/logout")
