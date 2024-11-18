@@ -41,7 +41,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
     try {
       const response = await sttPost(data);
-      // console.log(response.data);
+      console.log(response.data);
       setDifferences(response.data.differences || []);
       if (response.data.similarity === 1) {
         setIsCorrect();
@@ -126,60 +126,53 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
   // 틀린 단어를 하이라이트하여 userStt 텍스트로 변환하는 함수
   const renderHighlightedUserText = () => {
-    let highlightedText = [];
-    let lastIndex = 0;
-
-    differences.forEach((diff, index) => {
-      const { operation, user_postion, answer_position, answer_text } = diff;
-
-      // 일치하지 않는 텍스트 앞의 정상적인 텍스트 추가
-      if (
-        user_postion &&
-        user_postion[0] !== null &&
-        user_postion[0] > lastIndex
-      ) {
-        highlightedText.push(userStt.slice(lastIndex, user_postion[0]));
-      } else if (user_postion === null && lastIndex < answer_position[0]) {
-        highlightedText.push(userStt.slice(lastIndex));
-      }
+    const highlightedText = differences.map((diff, index) => {
+      const { operation, user_text, answer_text,} = diff;
 
       if (operation === "equal") {
-        // 일치하는 텍스트 추가
-        highlightedText.push(userStt.slice(user_postion[0], user_postion[1]));
-      } else if (operation === "replace" || operation === "insert") {
-        // 잘못된 단어나 삽입된 단어 강조 표시
-        highlightedText.push(
+        // 동일한 텍스트
+        return <span key={`equal-${index}`}>{user_text}{" "}</span>;
+      } else if (operation === "replace") {
+        // 대체된 텍스트 (사용자 텍스트 강조)
+        return (
           <span
-            key={`replace-insert-${index}`}
+            key={`replace-${index}`}
             className="text-red-500 underline font-bold"
           >
-            {userStt.slice(user_postion[0], user_postion[1])}
+            {user_text}{" "}
+          </span>
+        );
+      } else if (operation === "insert") {
+        // 삽입된 텍스트 (원본 텍스트 강조)
+        return (
+          <span
+            key={`insert-${index}`}
+            className="text-red-500 italic font-bold"
+          >
+            {user_text}{" "}
           </span>
         );
       } else if (operation === "delete") {
-        // 삭제된 텍스트를 강조 표시 (answer_text 사용)
-        highlightedText.push(
+        // 삭제된 텍스트 (사용자 입력 없음, 원본 텍스트 표시)
+        return (
           <span
             key={`delete-${index}`}
-            className="text-red-500 underline font-bold"
+            className="text-red-500 line-through font-bold"
           >
-            {answer_text}
+            {answer_text}{" "}
           </span>
         );
       }
-
-      // 업데이트된 lastIndex 처리
-      lastIndex =
-        user_postion && user_postion[1] !== null ? user_postion[1] : lastIndex;
+      return null; // 알 수 없는 operation
     });
-
-    // 마지막 남은 텍스트 추가
-    if (lastIndex < userStt.length) {
-      highlightedText.push(userStt.slice(lastIndex));
-    }
-
+  
     return highlightedText;
   };
+  
+  
+  
+  
+  
 
   return (
     <>
@@ -207,7 +200,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
         </div>
 
         <div 
-          className="text-[#FF8C82] sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20 max-w-[50%]"
+          className="text-[#FF8C82] sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center max-w-[50%]"
           aria-label="예문"
           style={{
             wordBreak: "keep-all"
@@ -219,7 +212,7 @@ function PronounceExample({ color, trainingId, size }: PronounceExampleProps) {
 
       {/* 틀린 단어들 강조하여 출력 */}
       <div 
-        className="mt-4 text-white sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center mr-20"
+        className="mt-4 text-white sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center"
         aria-label="사용자 발음 결과"
       >
         {renderHighlightedUserText()}
