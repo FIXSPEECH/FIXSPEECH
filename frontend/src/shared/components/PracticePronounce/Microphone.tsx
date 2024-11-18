@@ -222,9 +222,10 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
   return (
     <div className="text-center mt-20" role="region" aria-label="음성 녹음 컨트롤">
       <button 
-        onClick={isRecording ? stopRecording : startRecording}
+        // onClick={isRecording ? stopRecording : startRecording}
         aria-label={isRecording ? "녹음 중지" : "녹음 시작"}
         aria-pressed={isRecording}
+        onClick={handleStartStop} 
       >
         {isRecording ? (
           <>
@@ -271,7 +272,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
                   zIndex: 3, // 아이콘을 마스킹 레이어 위에 올리기 위해 z-index 사용
                 }}
                 className="cursor-pointer"
-                onClick={handleStartStop}
+                // onClick={handleStartStop}
                 role="presentation"
                 aria-hidden="true"
               />
@@ -281,7 +282,7 @@ function AudioRecorder({ color, size }: MicrophoneProps) {
           <MicNoneIcon
             style={{ color, fontSize: `${size}rem` }}
             className="cursor-pointer"
-            onClick={handleStartStop}
+            // onClick={handleStartStop}
             role="presentation"
             aria-hidden="true"
           />
