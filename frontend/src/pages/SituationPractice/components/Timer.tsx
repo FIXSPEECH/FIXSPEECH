@@ -69,12 +69,13 @@ function Timer({ seconds }: Timer) {
 
   return (
     <>
-      <div className="relative flex justify-center items-center">
+      <div className="relative flex justify-center items-center" role="timer" aria-label="연습 타이머">
         <svg
           // width="200" // 크기를 키우기 위해 width 증가
           // height="200" // 크기를 키우기 위해 height 증가
           viewBox="0 0 120 120"
           className="sm:w-40 sm:h-40 md:w-50 md:h-50 lg:w-60 lg:h-60 xl:w-70 xl:h-70 transform rotate-180"
+          aria-hidden="true" // 장식용 SVG이므로 스크린리더에서 제외
         >
           {/* 전체 원형 테두리 (배경) */}
           <circle
@@ -103,7 +104,12 @@ function Timer({ seconds }: Timer) {
           />
         </svg>
         {/* 타이머 텍스트 크기 증가 */}
-        <div className="absolute text-5xl text-[#EFCC87] font-bold">
+        <div 
+          className="absolute text-5xl text-[#EFCC87] font-bold"
+          role="timer"
+          aria-live="polite"
+          aria-label={`남은 시간 ${Math.floor(timeLeft / 60)}분 ${timeLeft % 60}초`}
+        >
           {`${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? "0" : ""}${
             timeLeft % 60
           }`}
@@ -114,6 +120,7 @@ function Timer({ seconds }: Timer) {
         isOpen={showModal}
         onClose={closeModal}
         onReset={ResetModal}
+        aria-label="연습 완료 모달"
       />
     </>
   );

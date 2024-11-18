@@ -79,10 +79,10 @@ function VoiceList() {
   };
 
   return (
-    <div className="h-screen p-8 lg:max-w-5xl lg:mx-auto">
-      <div className="text-[#FFAB01] text-3xl font-bold mb-8">
+    <div className="h-screen p-8 lg:max-w-5xl lg:mx-auto" role="main">
+      <h1 className="text-[#FFAB01] text-3xl font-bold mb-8">
         {scriptTitle}
-      </div>
+      </h1>
       {scripts.length === 0 ? (
         <div className="text-[#FFAB01] text-2xl flex justify-center items-center h-[70vh]">
           저장된 음성녹음이 없습니다
@@ -95,6 +95,14 @@ function VoiceList() {
                 key={script.resultid}
                 className="p-5 rounded-lg border border-[#FFAB01] hover:border-2 cursor-pointer transition-all"
                 onClick={() => handleClick(script.resultId)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleClick(script.resultId);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`${script.score}점 분석결과 보기`}
               >
                 <div className="flex justify-between items-center">
                   <div className="text-white text-xl">{script.score}점</div>
@@ -109,6 +117,7 @@ function VoiceList() {
                     <DeleteIcon
                       onClick={() => handleDelete(script.resultId)}
                       strokeColor="#FFAB01"
+                      aria-label={`${script.score}점 분석결과 삭제`}
                     />
                   </div>
                 </div>
@@ -132,6 +141,7 @@ function VoiceList() {
               onChange={paginate}
               shape="rounded"
               size="large"
+              aria-label="페이지 이동"
               sx={{
                 "& .MuiPaginationItem-root": { color: "#FFAB01" },
                 "& .MuiPaginationItem-ellipsis": { color: "#FFAB01" },
