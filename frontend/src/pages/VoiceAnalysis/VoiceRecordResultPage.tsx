@@ -161,13 +161,13 @@ const VoiceRecordResultPage = () => {
 
   // UI 렌더링
   return (
-    <div className="min-h-screen bg-transparent text-white p-8">
+    <div className="min-h-screen bg-transparent text-white p-8" role="main">
       <div className="max-w-7xl mx-auto">
         {/* <h1 className="text-3xl font-bold mb-8">음성 분석</h1> */}
 
         {/* 로딩 상태 표시 */}
         {loading && (
-          <div className="flex flex-col items-center justify-center py-8">
+          <div className="flex flex-col items-center justify-center py-8" role="status" aria-live="polite">
             <GradientCirclePlanes />
             <p className="mt-8 text-white text-lg font-medium">
               분석 중입니다{loadingDots}
@@ -177,7 +177,7 @@ const VoiceRecordResultPage = () => {
 
         {/* 에러 메시지 표시 */}
         {error && (
-          <div className="bg-indigo-950/30 border border-indigo-400/30 rounded-lg ">
+          <div className="bg-indigo-950/30 border border-indigo-400/30 rounded-lg" role="alert">
             <div className="flex flex-col items-center ">
               <h2 className="text-2xl font-semibold text-indigo-300 flex items-center">
                 <GradientCirclePlanes />
@@ -210,6 +210,7 @@ const VoiceRecordResultPage = () => {
                   className="px-6 py-3 bg-indigo-500/20 hover:bg-indigo-500/30 
                     text-indigo-300 rounded-lg border border-indigo-500/50 
                     transition-all duration-300 hover:scale-105"
+                  aria-label="다시 녹음하기"
                 >
                   다시 녹음하기
                 </button>
@@ -237,6 +238,8 @@ const VoiceRecordResultPage = () => {
                       textShadow: getScoreColor(response.data.overall_score)
                         .shadow,
                     }}
+                    role="status"
+                    aria-label={`전체 점수: ${response.data.overall_score.toFixed(1)}점`}
                   >
                     {response.data.overall_score.toFixed(1)}
                   </div>
@@ -250,6 +253,7 @@ const VoiceRecordResultPage = () => {
                 <MetricsVisualizer
                   metrics={response.data.metrics}
                   colorScheme={selectedColor}
+                  aria-label="음성 분석 메트릭 시각화"
                 />
               </div>
             </div>
@@ -262,7 +266,7 @@ const VoiceRecordResultPage = () => {
                 <div className="flex gap-6">
                   <div className="flex-1">
                     {response.data.recommendations?.length > 0 ? (
-                      <ul className="list-disc pl-5 space-y-2">
+                      <ul className="list-disc pl-5 space-y-2" role="list">
                         {response.data.recommendations.map((rec, idx) => (
                           <li
                             key={idx}
@@ -273,7 +277,7 @@ const VoiceRecordResultPage = () => {
                         ))}
                       </ul>
                     ) : (
-                      <div className="text-gray-300 text-center p-4 bg-emerald-500/10 rounded border border-emerald-500/30">
+                      <div className="text-gray-300 text-center p-4 bg-emerald-500/10 rounded border border-emerald-500/30" role="status">
                         <p className="mb-2 text-emerald-400">
                           ✨ 훌륭한 음성 품질을 보여주고 계십니다!
                         </p>
@@ -302,7 +306,7 @@ const VoiceRecordResultPage = () => {
               </div>
 
               {/* 처리 시간 표시 */}
-              <div className="mt-8 text-sm text-gray-400">
+              <div className="mt-8 text-sm text-gray-400" role="status" aria-label={`처리 시간: ${response.data.processing_time_seconds.toFixed(3)}초`}>
                 처리 시간: {response.data.processing_time_seconds.toFixed(3)}초
               </div>
 
@@ -311,6 +315,7 @@ const VoiceRecordResultPage = () => {
                 <button
                   onClick={handleGoHome}
                   className="px-6 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/50 transition-colors font-medium"
+                  aria-label="학습하러 가기"
                 >
                   학습하러 가기
                 </button>
