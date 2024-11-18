@@ -203,7 +203,7 @@ public class ScriptServiceImpl implements ScriptService {
 			users.getId(),
 			users.getGender() != null ? users.getGender() : "male"
 		);
-		kafkaTemplate.send("voice-analysis-topic", voiceAnalysisMessage)
+		kafkaTemplate.send("voice-analysis", voiceAnalysisMessage)
 			.exceptionally(ex -> {
 				throw new CustomException(ErrorCode.FAIL_TO_SEND_MESSAGE);
 			});
