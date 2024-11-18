@@ -129,7 +129,7 @@ function RecentVoice() {
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <div className="text-3xl font-bold text-blue-400/50 mb-1">
+                <div role="text" aria-label="종합 점수" className="text-3xl font-bold text-blue-400/50 mb-1">
                   {voiceData ? voiceData.analyzeResult.overallScore : "--"}점
                 </div>
                 <p className="text-gray-400 text-xs">종합 점수</p>
@@ -144,6 +144,7 @@ function RecentVoice() {
                     : "opacity-50 cursor-not-allowed"
                 }`}
                 title={voiceData ? "자세히 보기" : "분석 결과 없음"}
+                aria-label={voiceData ? "자세히 보기" : "분석 결과 없음"}
                 disabled={!voiceData}
               >
                 <svg
@@ -152,6 +153,8 @@ function RecentVoice() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
+                  role="img"
+                  aria-hidden="true"
                 >
                   <path
                     d="M9 5l7 7-7 7"
@@ -170,11 +173,13 @@ function RecentVoice() {
                   metrics={voiceData.analyzeResult?.metrics || {}}
                   showLabels={false}
                   colorScheme={selectedColor}
+                  aria-label="메트릭 시각화"
                 />
               ) : (
                 <div
                   className="w-full h-full rounded-lg bg-gray-800/30 
                   border border-gray-700/50 flex items-center justify-center"
+                  role="presentation"
                 >
                   <p className="text-gray-400 text-sm text-center px-4">
                     레이더 차트가 여기에 표시됩니다
@@ -208,7 +213,9 @@ function RecentVoice() {
                         paginate(-1);
                       }
                     }}
-                    className="absolute w-full grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-2  gap-4"
+                    className="absolute w-full grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-2 gap-4"
+                    role="list"
+                    aria-label="메트릭 목록"
                   >
                     {currentMetrics.map((metricKey, index) => (
                       <motion.div
@@ -219,6 +226,7 @@ function RecentVoice() {
                         className="bg-gray-800/30 backdrop-blur-sm p-3 rounded-lg 
                           shadow-lg border border-gray-700/50 hover:border-cyan-500/50
                           transform transition-all duration-500 ease-in-out"
+                        role="listitem"
                       >
                         <h3 className="text-gray-400 text-xs mb-2">
                           {metricKey.split("(")[0]}
@@ -236,6 +244,8 @@ function RecentVoice() {
                                   ? "text-yellow-400"
                                   : "text-red-400"
                               }`}
+                              role="text"
+                              aria-label={`${metricKey} 값`}
                             >
                               {voiceData.analyzeResult?.metrics?.[
                                 metricKey
@@ -250,7 +260,7 @@ function RecentVoice() {
                           </>
                         ) : (
                           <>
-                            <div className="text-lg font-semibold text-gray-500">
+                            <div className="text-lg font-semibold text-gray-500" aria-label="데이터 없음">
                               -- {/* placeholder for value */}
                             </div>
                             <p className="text-xs text-gray-500 mt-1">
