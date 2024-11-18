@@ -16,8 +16,10 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.util.backoff.FixedBackOff;
 
 import com.fixspeech.spring_server.domain.script.dto.VoiceAnalysisMessage;
 
@@ -57,6 +59,14 @@ public class KafkaConfig {
 			props,
 			new StringDeserializer(),
 			deserializer
+		);
+	}
+
+	@Bean
+	public DefaultErrorHandler errorHandler() {
+		// 재시도 간격 1초, 최대 3회 재시도
+		return new DefaultErrorHandler(
+			new FixedBackOff(1000L, 3)
 		);
 	}
 }
