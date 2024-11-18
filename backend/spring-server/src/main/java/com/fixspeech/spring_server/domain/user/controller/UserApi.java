@@ -1,6 +1,8 @@
 // UserApi.java
 package com.fixspeech.spring_server.domain.user.controller;
 
+import java.io.IOException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,5 +44,5 @@ public interface UserApi {
 		@ApiResponse(responseCode = "500", description = "서버 내부 오류")
 	})
 	com.fixspeech.spring_server.global.common.ApiResponse<?> logout(HttpServletRequest request,
-		HttpServletResponse response);
+		HttpServletResponse response) throws IOException;
 }
