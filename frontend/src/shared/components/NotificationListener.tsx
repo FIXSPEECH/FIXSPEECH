@@ -33,6 +33,8 @@ const NotificationListener = () => {
           "Cache-Control": "no-cache",
           Connection: "keep-alive",
         },
+        heartbeatTimeout: 360000,
+
       }
     );
 
