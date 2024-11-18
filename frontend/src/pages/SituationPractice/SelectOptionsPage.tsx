@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 // 아이콘 img import
-import world from "/buttons/world.png";
+import script from "/buttons/script.png";
+import practicelist from "/buttons/practicelist.png";
+import regist from "/buttons/regist.png";
+
 
 function TrainSelect() {
   const navigate = useNavigate();
@@ -10,19 +13,19 @@ function TrainSelect() {
     {
       color: "#FFAB01",
       label: "대본 등록",
-      imageSrc: world,
+      imageSrc: regist,
       url: "regist",
     },
     {
       color: "#FFAB01",
       label: "대본 불러오기",
-      imageSrc: world,
+      imageSrc: script,
       url: "select",
     },
     {
       color: "#FFAB01",
       label: "연습 내역 조회",
-      imageSrc: world,
+      imageSrc: practicelist,
       url: "result",
     },
   ];
