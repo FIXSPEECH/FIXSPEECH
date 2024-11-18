@@ -38,17 +38,20 @@ function UserInfoRegistPage() {
   };
 
   return (
-    <div className="flex items-center justify-center bg-transparent h-[calc(100vh-4rem)]">
-      <div className="bg-gray-800/30 backdrop-blur-sm p-8 rounded-lg border border-gray-700/50 w-full max-w-md">
+    <main className="flex items-center justify-center bg-transparent h-[calc(100vh-4rem)]">
+      <div role="form" aria-label="사용자 정보 등록" className="bg-gray-800/30 backdrop-blur-sm p-8 rounded-lg border border-gray-700/50 w-full max-w-md">
         <h2 className="text-2xl font-bold text-white mb-6 text-center">
           시작하기 전에 알려주세요
         </h2>
 
         <div className="space-y-6">
-          <div>
-            <label className="block text-gray-300 mb-2">성별</label>
+          <div role="radiogroup" aria-label="성별 선택">
+            <label id="gender-label" className="block text-gray-300 mb-2">성별</label>
             <div className="grid grid-cols-2 gap-4">
               <button
+                role="radio"
+                aria-checked={gender === "male"}
+                aria-labelledby="gender-label"
                 onClick={() => setGender("male")}
                 className={`px-4 py-2 rounded-lg border transition-all duration-300
                   ${
@@ -60,6 +63,9 @@ function UserInfoRegistPage() {
                 남성
               </button>
               <button
+                role="radio" 
+                aria-checked={gender === "female"}
+                aria-labelledby="gender-label"
                 onClick={() => setGender("female")}
                 className={`px-4 py-2 rounded-lg border transition-all duration-300
                   ${
@@ -73,9 +79,10 @@ function UserInfoRegistPage() {
             </div>
           </div>
 
-          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+          {error && <p role="alert" className="text-red-400 text-sm text-center">{error}</p>}
 
           <button
+            type="submit"
             onClick={handleSubmit}
             className="w-full px-6 py-3 bg-cyan-500W/20 hover:bg-cyan-500/30 
               text-cyan-300 rounded-lg border border-cyan-500/50 
@@ -85,7 +92,7 @@ function UserInfoRegistPage() {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
