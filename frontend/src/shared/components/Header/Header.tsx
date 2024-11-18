@@ -39,6 +39,7 @@ const ROUTE_CONFIG = {
   },
 } as const;
 
+// 헤더 컴포넌트
 function Header() {
   const location = useLocation();
 
@@ -59,25 +60,27 @@ function Header() {
     <header
       className="flex justify-between items-center px-[3%] py-[1.5%] text-2xl font-bold"
       role="banner"
-      aria-label="사이트 헤더"
     >
-      <Link
-        to="/"
-        className="text-[#B9E5E8] hover:opacity-80 transition-opacity"
-        aria-label="홈으로 이동"
-      >
-        FIXSPEECH
-      </Link>
+      <h1>
+        <Link
+          to="/"
+          className="text-[#B9E5E8] hover:opacity-80 transition-opacity"
+          aria-label="홈으로 이동"
+        >
+          FIXSPEECH
+        </Link>
+      </h1>
 
       {title && (
-        <Link
-          to={url}
-          className={`${colorClass} hover:opacity-80 transition-opacity`}
-          aria-label={`${title} 페이지로 이동`}
-          aria-current={location.pathname === url ? "page" : undefined}
-        >
-          {title}
-        </Link>
+        <nav aria-label="메인 네비게이션">
+          <Link
+            to={url}
+            className={`${colorClass} hover:opacity-80 transition-opacity`}
+            aria-current={location.pathname === url ? "page" : undefined}
+          >
+            {title}
+          </Link>
+        </nav>
       )}
     </header>
   );

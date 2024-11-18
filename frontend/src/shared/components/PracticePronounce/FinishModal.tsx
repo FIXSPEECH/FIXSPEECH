@@ -1,4 +1,3 @@
-import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -12,46 +11,49 @@ interface FinishModalProps {
   onClose: () => void; // 모달 닫을 때 호출되는 함수
 }
 
-export default function AlertDialog({ isOpen, onClose }: FinishModalProps) {
+export default function FinishModal({ isOpen, onClose }: FinishModalProps) {
   const { isNumber } = usePronounceScoreStore();
 
   return (
-    <React.Fragment>
-      <Dialog
-        open={isOpen}
-        onClose={onClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        sx={{
-          "& .MuiPaper-root": {
-            // Dialog의 기본 Paper에 대한 스타일링
-            backgroundColor: "#F3F3F3", // 원하는 색상으로 변경
-            color: "#333", // 텍스트 색상도 필요시 변경
-          },
-        }}
-      >
-        <DialogTitle id="alert-dialog-title">
-          연습이 완료되었습니다!
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText 
-            id="alert-dialog-description"
-            role="status"
-            aria-live="polite"
-          >
-            축하합니다! {isNumber}개의 문장연습을 모두 마쳤습니다.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button 
-            onClick={onClose}
-            sx={{ color: "#EC5A4D" }}
-            aria-label="연습 종료하기"
-          >
-            종료하기
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+      sx={{
+        "& .MuiPaper-root": {
+          // Dialog의 기본 Paper에 대한 스타일링
+          backgroundColor: "#F3F3F3", // 원하는 색상으로 변경
+          color: "#333", // 텍스트 색상도 필요시 변경
+        },
+      }}
+    >
+      <DialogTitle id="alert-dialog-title">연습이 완료되었습니다!</DialogTitle>
+      <DialogContent>
+        <DialogContentText
+          id="alert-dialog-description"
+          role="status"
+          aria-live="polite"
+          sx={{ color: "inherit" }} // 접근성을 위한 텍스트 색상 대비 개선
+        >
+          축하합니다! {isNumber}개의 문장연습을 모두 마쳤습니다.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={onClose}
+          sx={{
+            color: "#EC5A4D",
+            "&:focus": {
+              outline: "2px solid #000",
+              outlineOffset: "2px",
+            },
+          }}
+          aria-label="연습 종료하기"
+        >
+          종료하기
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
