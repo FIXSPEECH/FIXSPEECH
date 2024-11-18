@@ -17,6 +17,8 @@ interface RecorderProps {
   height: number;
   visualizeWidth: string;
   modalType: "record" | "regist";
+  beforeRecordText?: string;
+  recordingText?: string;
 }
 
 declare global {
@@ -34,6 +36,8 @@ function Recorder({
   height,
   visualizeWidth,
   modalType,
+  beforeRecordText,
+  recordingText,
 }: RecorderProps) {
   const { isRecording, setAudioBlob, setIsRecording, setAudioURL } =
     useVoiceStore();
@@ -312,8 +316,8 @@ function Recorder({
         )}
       </button>
 
-      <div className="text-white break-words mt-2 text-xs sm:text-sm md:text-base lg:text-text-base xl:text-lg">
-        *아이콘을 누르고 대본을 읽어주세요.
+      <div className="text-white break-words mt-2 text-xs sm:text-sm md:text-base lg:text-text-base xl:text-lg whitespace-pre-line">
+        {isRecording ? recordingText : beforeRecordText}
       </div>
 
       {/* 녹음된 오디오를 재생할 수 있는 오디오 플레이어 */}
