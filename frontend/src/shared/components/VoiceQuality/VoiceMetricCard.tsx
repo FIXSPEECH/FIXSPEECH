@@ -37,12 +37,13 @@ const VoiceMetricCard = ({ name, data, criteria }: VoiceMetricCardProps) => {
   const [showCriteria, setShowCriteria] = useState(true);
 
   return (
-    <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 hover:border-cyan-500/50">
+    <div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-gray-700/50 hover:border-cyan-500/50" role="article">
       {/* 상단: 제목과 등급 */}
       <div className="flex justify-between items-start mb-6">
         <h3 className="text-lg font-bold">{name}</h3>
         <span
           className="px-3 py-1 rounded-full text-sm font-medium"
+          role="status"
           style={{
             backgroundColor: `${gradeColors[data.grade]}15`,
             color: gradeColors[data.grade],
@@ -80,13 +81,18 @@ const VoiceMetricCard = ({ name, data, criteria }: VoiceMetricCardProps) => {
           <button
             onClick={() => setShowCriteria(!showCriteria)}
             className="text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+            aria-expanded={showCriteria}
+            aria-controls="criteria-section"
           >
             <span>{showCriteria ? "기준 숨기기" : "기준 보기"}</span>
-            <span>{showCriteria ? "▼" : "▶"}</span>
+            <span aria-hidden="true">{showCriteria ? "▼" : "▶"}</span>
           </button>
 
           {showCriteria && (
-            <div className="mt-2 space-y-2 bg-gray-900/30 p-3 rounded">
+            <div 
+              id="criteria-section"
+              className="mt-2 space-y-2 bg-gray-900/30 p-3 rounded"
+            >
               <p className="text-emerald-400">최상: {criteria.excellent}</p>
               <p className="text-yellow-400">양호: {criteria.good}</p>
               <p className="text-red-400">개선 필요: {criteria.poor}</p>

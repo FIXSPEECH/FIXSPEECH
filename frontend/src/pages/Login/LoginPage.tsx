@@ -1,32 +1,32 @@
 import "./Login.css";
-import useAuthStore from "../../shared/stores/authStore";
-import { useNavigate } from "react-router-dom";
+// import useAuthStore from "../../shared/stores/authStore";
+// import { useNavigate } from "react-router-dom";
 import AudioVertexVisualizer from "../../shared/components/Visualizer/AudioVertexVisualizer";
 
 function Login() {
-  const setToken = useAuthStore((state) => state.setToken);
-  const navigate = useNavigate();
+  // const setToken = useAuthStore((state) => state.setToken);
+  // const navigate = useNavigate();
 
   const handleLogin = () => {
     window.location.href =
       import.meta.env.VITE_API_URL + "/oauth2/authorization/kakao";
   };
 
-  // 테스트 로그인 처리
-  const handleTestLogin = (gender: "male" | "female") => {
-    const testToken =
-      gender === "male"
-        ? import.meta.env.VITE_TEST_TOKEN_MALE
-        : import.meta.env.VITE_TEST_TOKEN_FEMALE;
+  // // 테스트 로그인 처리
+  // const handleTestLogin = (gender: "male" | "female") => {
+  //   const testToken =
+  //     gender === "male"
+  //       ? import.meta.env.VITE_TEST_TOKEN_MALE
+  //       : import.meta.env.VITE_TEST_TOKEN_FEMALE;
 
-    setToken(testToken);
-    navigate("/");
-  };
+  //   setToken(testToken);
+  //   navigate("/");
+  // };
 
   return (
     <main className="flex flex-col items-center justify-center">
       <div 
-        className="w-[300px] h-[300px]"
+        className="w-[300px] h-[300px] mt-24"
         aria-hidden="true"
       >
         <AudioVertexVisualizer size="large" />
@@ -38,20 +38,6 @@ function Login() {
           aria-label="카카오 계정으로 로그인"
         >
           카카오 로그인
-        </button>
-        <button
-          onClick={() => handleTestLogin("male")}
-          className="neon-male-button"
-          aria-label="남성 사용자로 체험하기"
-        >
-          체험하기(남성)
-        </button>
-        <button
-          onClick={() => handleTestLogin("female")}
-          className="neon-female-button"
-          aria-label="여성 사용자로 체험하기"
-        >
-          체험하기(여성)
         </button>
       </div>
     </main>
