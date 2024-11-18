@@ -1,5 +1,6 @@
 package com.fixspeech.spring_server.domain.user.controller;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
@@ -134,8 +135,8 @@ public class UserController implements UserApi {
 	 * @param response    response
 	 * @return 로그아웃 성공 메세지
 	 */
-	@PostMapping("/public/logout")
-	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) {
+	@PostMapping("/logout")
+	public ApiResponse<?> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String refreshToken = CookieUtil.extractRefreshToken(request);
 		if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
 			tokenService.blacklistRefreshToken(refreshToken);
