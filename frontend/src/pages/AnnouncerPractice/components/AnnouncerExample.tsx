@@ -159,7 +159,8 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
   return (
     <>
       <div className="flex justify-center items-center w-screen">
-        <div className="flex items-center">
+        <div className="flex items-center flex-col w-full">
+        <div className="flex items-center justify-center w-full"> {/* 수정된 부분 */}
           {announcerUrl && (
             <div>
               <audio
@@ -174,15 +175,21 @@ function AnnouncerExample({ color, size }: PronounceExampleProps) {
               >
                 <VolumeDownIcon
                   style={{ cursor: "pointer", color, fontSize: `${size}rem` }}
-                  className="mb-6"
                 />
               </button>
             </div>
           )}
-          <div className="text-[#B18CFE] break-words sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl text-center ml-8">
+          <div 
+            className="text-[#B18CFE] sm:text-xl md:text-2xl lg:text-3xl xl:text-3xl text-center mt-5 max-w-[70%]"
+            aria-label="예문"
+            style={{
+              wordBreak: "keep-all"
+            }}
+            >
             {example}
           </div>
         </div>
+      </div>
       </div>
 
       {/* ArrowRight 컴포넌트 */}

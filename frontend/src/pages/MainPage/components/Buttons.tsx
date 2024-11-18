@@ -29,7 +29,7 @@ function Buttons() {
     },
     {
       color: "#FFAB01",
-      label: "상황별 연습",
+      label: "대본 연습",
       imageSrc: world,
       url: "/situation",
       imgMargin: 40,
