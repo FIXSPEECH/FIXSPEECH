@@ -1,0 +1,96 @@
+spring:
+  profiles:
+    include: oauth
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: spring-server
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: 30           # 최대 커넥션 풀 크기
+      minimum-idle: 10                # 최소 유휴 커넥션 수
+      connection-timeout: 300000      # 커넥션 타임아웃 (300초 = 5분)
+      idle-timeout: 600000           # 유휴 커넥션 타임아웃 (10분)
+      max-lifetime: 1800000          # 커넥션 최대 수명 (30분)
+  jpa:
+    properties:
+      hibernate.format_sql: true
+      dialect: org.hibernate.dialect.MySQL8InnoDBDialect
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  kafka:
+    bootstrap-servers: ${BOOTSTRAP_SERVER}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: "*"
+        message.max.bytes: 52428800  # 50MB
+        max.request.size: 52428800   # 50MB를 bytes로 변환
+        buffer.memory: 52428800
+
+    consumer:
+      group-id: voice-analysis-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        fetch.message.max.bytes: 52428800     # 50MB
+        max.partition.fetch.bytes: 52428800
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      repositories:
+        enabled: false
+
+
+server:
+  port: 8081  # 원하는 포트 번호로 변경
+
+
+
+cloud:
+  aws:
+    s3:
+      bucket: fixspeech
+    stack.auto: false
+    region.static: us-east-1
+    credentials:
+      accessKey: ${S3_ACCESS_KEY}
+      secretKey: ${S3_SECRET_KEY}
+
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+  access-token:
+    expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+  refresh-token:
+    expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+  oauth:
+    access-token:
+      expiration: ${JWT_OAUTH_ACCESS_TOKEN_EXPIRATION}
+    refresh-token:
+      expiration: ${JWT_OAUTH_REFRESH_TOKEN_EXPIRATION}
+      cookie:
+        domain: ${JWT_OAUTH_REFRESH_TOKEN_COOKIE_DOMAIN}
+frontend:
+  url: ${FRONTEND_URL}
+
+cors:
+  allowed-origin: ${CORS_ALLOWED_ORIGIN}
+  allowed-methods: ${CORS_ALLOWED_METHODS}
+
+youtube:
+  api:
+    key: ${YOUTUBE_KEY}

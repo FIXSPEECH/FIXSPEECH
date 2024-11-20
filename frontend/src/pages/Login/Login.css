@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .neon-kakao-button {
+    background: #fee500;
+    color: #000000;
+    padding: 1rem 2.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(254, 229, 0, 0.5);
+  }
+
+  .neon-kakao-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: 0.5s;
+  }
+
+  .neon-kakao-button:hover::before {
+    left: 100%;
+  }
+
+  .neon-male-button {
+    @apply px-5 py-2.5 text-base font-bold text-black bg-transparent 
+           border-2 border-[#00BFFF] rounded-lg cursor-pointer 
+           relative overflow-hidden uppercase
+           shadow-[0_0_10px_#00BFFF,0_0_20px_#00BFFF,inset_0_0_10px_#00BFFF]
+           transition-all duration-300 ease-in-out
+           [text-shadow:-1px_-1px_0_#00BFFF,1px_-1px_0_#00BFFF,-1px_1px_0_#00BFFF,1px_1px_0_#00BFFF,0_0_10px_#00BFFF]
+           hover:bg-[#00BFFF] hover:text-white hover:shadow-[0_0_20px_#00BFFF,0_0_30px_#00BFFF] 
+           hover:[text-shadow:none]
+           active:scale-95;
+  }
+
+  .neon-female-button {
+    @apply px-5 py-2.5 text-base font-bold text-black bg-transparent 
+           border-2 border-[#FF69B4] rounded-lg cursor-pointer 
+           relative overflow-hidden uppercase
+           shadow-[0_0_10px_#FF69B4,0_0_20px_#FF69B4,inset_0_0_10px_#FF69B4]
+           transition-all duration-300 ease-in-out
+           [text-shadow:-1px_-1px_0_#FF69B4,1px_-1px_0_#FF69B4,-1px_1px_0_#FF69B4,1px_1px_0_#FF69B4,0_0_10px_#FF69B4]
+           hover:bg-[#FF69B4] hover:text-white hover:shadow-[0_0_20px_#FF69B4,0_0_30px_#FF69B4] 
+           hover:[text-shadow:none]
+           active:scale-95;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main > div {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+main > div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+main > div:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.shadow-neon {
+  box-shadow: 0 0 15px rgba(77, 255, 181, 0.3);
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
